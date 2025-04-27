@@ -1,5 +1,6 @@
 package com.secure_prints.controller;
 
+import com.secure_prints.database.entity.AppointmentInformationEntity;
 import com.secure_prints.model.ApiResponse;
 import com.secure_prints.model.AppointmentRequest;
 import com.secure_prints.model.AppointmentResponse;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -67,6 +69,25 @@ public class AppointmentInformationController {
         ApiResponse apiResponse = appointmentInformationService.cancelAppointment(appointmentId);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
+    }
+
+    /**
+     * Get appointment details
+     * @param appointmentId appointmentId
+     * @return AppointmentInformationEntity
+     */
+    @GetMapping(value = "appointment", produces = MediaType.APPLICATION_JSON_VALUE)
+    public AppointmentInformationEntity getAppointment(@RequestParam(name = "appointment-id") long appointmentId) {
+        return appointmentInformationService.getAppointment(appointmentId);
+    }
+
+    /**
+     * Get list of all appointments
+     * @return List<AppointmentInformationEntity>
+     */
+    @GetMapping(value = "all-appointments", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AppointmentInformationEntity> getAllAppointments() {
+        return appointmentInformationService.getAllAppointments();
     }
 
 }

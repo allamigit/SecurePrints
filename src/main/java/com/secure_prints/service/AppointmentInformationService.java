@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.List;
 
 @Service
 public class AppointmentInformationService {
@@ -120,7 +121,7 @@ public class AppointmentInformationService {
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = appointmentInformationRepository.findByAppointmentId(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = this.getAppointment(appointmentId);
         int appointmentStatus = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatus = appointmentInformationEntity.getAppointmentStatus();
@@ -181,7 +182,7 @@ public class AppointmentInformationService {
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = appointmentInformationRepository.findByAppointmentId(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = this.getAppointment(appointmentId);
         int appointmentStatus = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatus = appointmentInformationEntity.getAppointmentStatus();
@@ -223,6 +224,23 @@ public class AppointmentInformationService {
                 .apiResponse(appointmentResponse)
                 .build();
         return apiResponse;
+    }
+
+    /**
+     * Get appointment details
+     * @param appointmentId appointmentId
+     * @return AppointmentInformationEntity
+     */
+    public AppointmentInformationEntity getAppointment(long appointmentId) {
+        return appointmentInformationRepository.findByAppointmentId(appointmentId);
+    }
+
+    /**
+     * Get list of all appointments
+     * @return List<AppointmentInformationEntity>
+     */
+    public List<AppointmentInformationEntity> getAllAppointments() {
+        return appointmentInformationRepository.findAll();
     }
 
 }

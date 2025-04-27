@@ -7,89 +7,311 @@
 	},
 	"item": [
 		{
-			"name": "Schedule an Appointment",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"customerFirstName\": \"testFirstName\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI & FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"Ohio Treasurer of State Employees, applicants\",\r\n    \"appointmentTimestamp\": \"2025-04-24 11:15:00.000\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/secure-prints/schedule-appointment",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"secure-prints",
-						"schedule-appointment"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Reschedule Appointment",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/secure-prints/reschedule-appointment?appointment-id=1005&appointment-timestamp=2025-04-24 13:30:00.000",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"secure-prints",
-						"reschedule-appointment"
-					],
-					"query": [
+			"name": "LOCAL",
+			"item": [
+				{
+					"name": "Customer",
+					"item": [
 						{
-							"key": "appointment-id",
-							"value": "1005"
+							"name": "Schedule an Appointment",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"customerFirstName\": \"testFirstName\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"Ohio Treasurer of State Employees, applicants\",\r\n    \"appointmentDate\": \"2025-04-28\",\r\n    \"appointmentTime\": \"11:30\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/schedule-appointment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"schedule-appointment"
+									]
+								}
+							},
+							"response": []
 						},
 						{
-							"key": "appointment-timestamp",
-							"value": "2025-04-24 13:30:00.000"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Cancel Appointment",
-			"request": {
-				"method": "PATCH",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8080/secure-prints/cancel-appointment?appointment-id=1002",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"secure-prints",
-						"cancel-appointment"
-					],
-					"query": [
+							"name": "Reschedule Appointment",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/reschedule-appointment?appointment-id=1043&appointment-date=2025-04-28&appointment-time=13:45",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"reschedule-appointment"
+									],
+									"query": [
+										{
+											"key": "appointment-id",
+											"value": "1043"
+										},
+										{
+											"key": "appointment-date",
+											"value": "2025-04-28"
+										},
+										{
+											"key": "appointment-time",
+											"value": "13:45"
+										}
+									]
+								}
+							},
+							"response": []
+						},
 						{
-							"key": "appointment-id",
-							"value": "1002"
+							"name": "Cancel Appointment",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/cancel-appointment?appointment-id=1043",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"cancel-appointment"
+									],
+									"query": [
+										{
+											"key": "appointment-id",
+											"value": "1043"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reason List",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/reason-list?service-code=BCI",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"reason-list"
+									],
+									"query": [
+										{
+											"key": "service-code",
+											"value": "BCI"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin",
+					"item": [
+						{
+							"name": "Complete Appointment",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/complete-appointment?appointment-id=1007",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"complete-appointment"
+									],
+									"query": [
+										{
+											"key": "appointment-id",
+											"value": "1007"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Refund Fee",
+							"request": {
+								"method": "POST",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Add Invoice",
+							"request": {
+								"method": "POST",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Update Invoice",
+							"request": {
+								"method": "PUT",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Add Expense",
+							"request": {
+								"method": "POST",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Update Expense",
+							"request": {
+								"method": "PUT",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Refund Expense",
+							"request": {
+								"method": "POST",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh Reason List",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/refresh-reason-list",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"refresh-reason-list"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Appointments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/all-appointments",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"all-appointments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Appointment",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/appointment?appointment-id=1050",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"appointment"
+									],
+									"query": [
+										{
+											"key": "appointment-id",
+											"value": "1050"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Reports",
+					"item": [
+						{
+							"name": "Get All Invoices",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Invoice",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Expenses",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Expense",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
 						}
 					]
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }

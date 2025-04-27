@@ -65,10 +65,10 @@ public class ReasonService {
                 reasonList.stream()
                         .filter(r -> r.getServiceCode().equals("FBI"))
                         .toList();
-        for (ReasonEntity reason : bciReasonList) {
+        for(ReasonEntity reason : bciReasonList) {
             bciReasonMap.put(reason.getReasonCode(), reason.getReasonText());
         }
-        for (ReasonEntity reason : fbiReasonList) {
+        for(ReasonEntity reason : fbiReasonList) {
             fbiReasonMap.put(reason.getReasonCode(), reason.getReasonText());
         }
     }
