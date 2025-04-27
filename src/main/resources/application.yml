@@ -1,0 +1,25 @@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /secure-prints
+
+spring:
+  application:
+    name: secure-prints
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgresql-dev.c2ywefhxo11e.us-east-2.rds.amazonaws.com:5432/postgresql_dev?currentSchema=secure-prints
+    username: postgresql_dev
+    password: M01041972i
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: true
+    show-sql: false

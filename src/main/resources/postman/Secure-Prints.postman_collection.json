@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "a1903fb3-e740-441e-85d0-e066a978de42",
+		"name": "Secure-Prints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12075612"
+	},
+	"item": [
+		{
+			"name": "Schedule an Appointment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"customerFirstName\": \"testFirstName\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI & FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"Ohio Treasurer of State Employees, applicants\",\r\n    \"appointmentTimestamp\": \"2025-04-24 11:15:00.000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/secure-prints/schedule-appointment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"secure-prints",
+						"schedule-appointment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reschedule Appointment",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/secure-prints/reschedule-appointment?appointment-id=1005&appointment-timestamp=2025-04-24 13:30:00.000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"secure-prints",
+						"reschedule-appointment"
+					],
+					"query": [
+						{
+							"key": "appointment-id",
+							"value": "1005"
+						},
+						{
+							"key": "appointment-timestamp",
+							"value": "2025-04-24 13:30:00.000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cancel Appointment",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/secure-prints/cancel-appointment?appointment-id=1002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"secure-prints",
+						"cancel-appointment"
+					],
+					"query": [
+						{
+							"key": "appointment-id",
+							"value": "1002"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
