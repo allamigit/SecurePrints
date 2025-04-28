@@ -8,34 +8,79 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Repository
 @Transactional
 public interface AppointmentInformationRepository extends JpaRepository<AppointmentInformationEntity, Long> {
 
+    /**
+     * Get appointment details by appointment ID
+     * @param appointmentId appointmentId
+     * @return AppointmentInformationEntity
+     */
     AppointmentInformationEntity findByAppointmentId(long appointmentId);
 
+
+    /**
+     * Update appointment status as Rescheduled
+     * @param appointmentId appointmentId
+     * @param appointmentTimestamp appointmentTimestamp
+     * @param currentTimestamp currentTimestamp
+     */
     @Modifying
     @Query(value = "UPDATE AppointmentInformationEntity a SET a.appointmentTimestamp = :appointmentTimestamp, " +
-            "a.resheduleTimestamp = :currentTimestamp, a.appointmentStatus = 102 WHERE a.appointmentId = :appointmentId")
+            "a.resheduleTimestamp = :currentTimestamp, a.appointmentStatusCode = 102 WHERE a.appointmentId = :appointmentId")
     void rescheduleAppointment(@Param("appointmentId") long appointmentId,
                                @Param("appointmentTimestamp") OffsetDateTime appointmentTimestamp,
                                @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
+
+    /**
+     * Update appointment status as Cancelled
+     * @param appointmentId appointmentId
+     * @param currentTimestamp currentTimestamp
+     */
     @Modifying
     @Query(value = "UPDATE AppointmentInformationEntity a SET a.cancelTimestamp = :currentTimestamp, " +
-            "a.appointmentStatus = 103 WHERE a.appointmentId = :appointmentId")
+            "a.appointmentStatusCode = 103 WHERE a.appointmentId = :appointmentId")
     void cancelAppointment(@Param("appointmentId") long appointmentId,
                            @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
+    /**
+     * Update appointment status as Completed
+     * @param appointmentId appointmentId
+     * @param currentTimestamp currentTimestamp
+     */
     @Modifying
     @Query(value = "UPDATE AppointmentInformationEntity a SET a.completeTimestamp = :currentTimestamp, " +
-            "a.appointmentStatus = 104 WHERE a.appointmentId = :appointmentId")
+            "a.appointmentStatusCode = 104 WHERE a.appointmentId = :appointmentId")
     void completeAppointment(@Param("appointmentId") long appointmentId,
                              @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
+    /**
+     * Get next value of appointment sequence
+     * @return nextAppointmentId
+     */
     @Query(value = "SELECT nextval('appt_info_seq')")
     long getNextAppointmentId();
 
+    /**
+     * Get appointment list for a specific date range
+     * @param startTimestamp startTimestamp
+     * @param endTimestamp endTimestamp
+     * @return List of appointments
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.orderTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.orderTimestamp DESC")
+    List<AppointmentInformationEntity> getAllAppointmentsForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
+                                                                      @Param("endTimestamp") OffsetDateTime endTimestamp);
+
+    /**
+     * Get appointment list for all appointment table data
+     * @return List of appointments
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.orderTimestamp DESC")
+    List<AppointmentInformationEntity> getAllAppointments();
 }

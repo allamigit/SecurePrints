@@ -65,8 +65,8 @@ public class AppointmentInformationEntity implements Serializable {
     @Column(name = "svc_amt")
     private BigDecimal serviceAmount;
 
-    @Column(name = "appt_sts")
-    private Integer appointmentStatus;
+    @Column(name = "appt_sts_code")
+    private Integer appointmentStatusCode;
 
     @Column(name = "ordr_ts")
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)

@@ -19,7 +19,7 @@ public class ReasonController {
      * @return reasonList
      */
     @GetMapping(value = "reason-list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static Map<String, String> getReasonList(@RequestParam("service-code") String serviceCode) {
+    public static Map<String, String> getReasonList(@RequestParam("reason-list-type") String serviceCode) {
         return ReasonService.getReasonList(serviceCode);
     }
 

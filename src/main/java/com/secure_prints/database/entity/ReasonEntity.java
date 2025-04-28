@@ -27,8 +27,8 @@ public class ReasonEntity implements Serializable {
     @Column(name = "rsn_id")
     private Integer reasonId;
 
-    @Column(name = "svc_code")
-    private String serviceCode;
+    @Column(name = "rsn_list_type")
+    private String reasonListType;
 
     @Column(name = "rsn_code")
     private String reasonCode;

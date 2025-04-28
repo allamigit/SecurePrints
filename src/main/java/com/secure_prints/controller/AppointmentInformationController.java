@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpResponse;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -72,22 +73,36 @@ public class AppointmentInformationController {
     }
 
     /**
+     * Update appointment status to Completed and add payment entry
+     * @param appointmentId appointmentId
+     * @return AppointmentResponse
+     */
+    @PostMapping(value = "complete-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse completeAppointment(HttpServletResponse response,
+                                           @RequestParam(name = "appointment-id") long appointmentId) {
+        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId);
+        response.setStatus(apiResponse.getApiStatus().getResponseCode());
+        return apiResponse;
+    }
+
+    /**
      * Get appointment details
      * @param appointmentId appointmentId
      * @return AppointmentInformationEntity
      */
     @GetMapping(value = "appointment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppointmentInformationEntity getAppointment(@RequestParam(name = "appointment-id") long appointmentId) {
-        return appointmentInformationService.getAppointment(appointmentId);
+    public AppointmentInformationEntity getAppointmentDetails(@RequestParam(name = "appointment-id") long appointmentId) {
+        return appointmentInformationService.getAppointmentDetails(appointmentId);
     }
 
     /**
-     * Get list of all appointments
-     * @return List<AppointmentInformationEntity>
+     * Get list of all appointments or appointments for a specific date range
+     * @return List of appointments
      */
     @GetMapping(value = "all-appointments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AppointmentInformationEntity> getAllAppointments() {
-        return appointmentInformationService.getAllAppointments();
+    public List<AppointmentInformationEntity> getAllAppointments(@RequestParam(name = "start-date", required = false) LocalDate startDate,
+                                                                 @RequestParam(name = "end-date", required = false) LocalDate endDate) {
+        return appointmentInformationService.getAllAppointments(startDate, endDate);
     }
 
 }

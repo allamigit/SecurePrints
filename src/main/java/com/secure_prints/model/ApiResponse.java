@@ -18,6 +18,6 @@ public class ApiResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private ApiStatus apiStatus;
-    private AppointmentResponse apiResponse;
+    private Object apiResponse;
 
 }

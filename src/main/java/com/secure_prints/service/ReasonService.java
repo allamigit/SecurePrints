@@ -31,10 +31,23 @@ public class ReasonService {
      * @return reasonCode
      */
     public static String getReasonCode(String serviceCode, String reasonText) {
-        List<ReasonEntity> result = reasonList.stream()
-                .filter(r -> r.getServiceCode().equals(serviceCode) && r.getReasonText().equals(reasonText))
+        List<ReasonEntity> reasonCode = reasonList.stream()
+                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonText().equals(reasonText))
                 .toList();
-        return !result.isEmpty() ? result.get(0).getReasonCode() : null;
+        return !reasonCode.isEmpty() ? reasonCode.get(0).getReasonCode() : null;
+    }
+
+    /**
+     * Get reason text
+     * @param serviceCode serviceCode
+     * @param reasonCode serviceCode
+     * @return reasonText
+     */
+    public static String getReasonText(String serviceCode, String reasonCode) {
+        List<ReasonEntity> reasonText = reasonList.stream()
+                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonText().equals(reasonCode))
+                .toList();
+        return !reasonText.isEmpty() ? reasonText.get(0).getReasonCode() : null;
     }
 
     /**
@@ -59,11 +72,11 @@ public class ReasonService {
         fbiReasonMap = new HashMap<>();
         List<ReasonEntity> bciReasonList =
                 reasonList.stream()
-                .filter(r -> r.getServiceCode().equals("BCI"))
+                .filter(r -> r.getReasonListType().equals("BCI"))
                 .toList();
         List<ReasonEntity> fbiReasonList =
                 reasonList.stream()
-                        .filter(r -> r.getServiceCode().equals("FBI"))
+                        .filter(r -> r.getReasonListType().equals("FBI"))
                         .toList();
         for(ReasonEntity reason : bciReasonList) {
             bciReasonMap.put(reason.getReasonCode(), reason.getReasonText());
