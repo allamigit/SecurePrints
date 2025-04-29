@@ -1,4 +1,4 @@
-package com.secure_prints.config;
+package com.secure.prints.config;
 
 import org.springframework.context.annotation.Configuration;
 

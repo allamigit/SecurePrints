@@ -1,6 +1,6 @@
-package com.secure_prints;
+package com.secure.prints;
 
-import com.secure_prints.service.ReasonService;
+import com.secure.prints.service.ReasonService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

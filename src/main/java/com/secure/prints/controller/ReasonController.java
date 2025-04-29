@@ -1,6 +1,6 @@
-package com.secure_prints.controller;
+package com.secure.prints.controller;
 
-import com.secure_prints.service.ReasonService;
+import com.secure.prints.service.ReasonService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

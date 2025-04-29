@@ -1,6 +1,6 @@
-package com.secure_prints.database;
+package com.secure.prints.database;
 
-import com.secure_prints.database.entity.ReasonEntity;
+import com.secure.prints.database.entity.ReasonEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

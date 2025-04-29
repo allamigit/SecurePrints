@@ -1,18 +1,14 @@
-package com.secure_prints.controller;
+package com.secure.prints.controller;
 
-import com.secure_prints.database.entity.AppointmentInformationEntity;
-import com.secure_prints.model.ApiResponse;
-import com.secure_prints.model.AppointmentRequest;
-import com.secure_prints.model.AppointmentResponse;
-import com.secure_prints.service.AppointmentInformationService;
+import com.secure.prints.database.entity.AppointmentInformationEntity;
+import com.secure.prints.model.ApiResponse;
+import com.secure.prints.model.AppointmentRequest;
+import com.secure.prints.service.AppointmentInformationService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController

@@ -1,9 +1,9 @@
-package com.secure_prints.service;
+package com.secure.prints.service;
 
-import com.secure_prints.database.entity.AppointmentInformationEntity;
-import com.secure_prints.model.*;
-import com.secure_prints.database.AppointmentInformationRepository;
-import com.secure_prints.util.TimestampUtil;
+import com.secure.prints.database.entity.AppointmentInformationEntity;
+import com.secure.prints.model.*;
+import com.secure.prints.database.AppointmentInformationRepository;
+import com.secure.prints.util.TimestampUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,27 +37,27 @@ public class AppointmentInformationService {
 
         if(TimestampUtil.isValidTimestamp(appointmentTimestamp)) {
             responseCode = 409;
-            responseMessage = "Invalid given appointment date or time (past date or at weekend)";
+            responseMessage = "Invalid given appointment date or time (past date or weekend)";
         } else {
             String serviceName = appointmentRequest.getServiceName();
             String serviceCode = ServiceType.getServiceCode(serviceName);
-            BigDecimal serviceAmount = ServiceType.getServicePrice(serviceCode);
+            BigDecimal serviceAmount = ServiceType.getServiceFee(serviceCode);
             String bciReasonCode = appointmentRequest.getBciReasonCode();
-            String bciReasonText = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentRequest.getBciReasonText() : null;
             String fbiReasonCode = appointmentRequest.getFbiReasonCode();
-            String fbiReasonText = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentRequest.getFbiReasonText() : null;
-
-            if (appointmentRequest.getBciReasonCode() == null && appointmentRequest.getBciReasonText() != null) {
+            if (bciReasonCode == null && appointmentRequest.getBciReasonText() != null) {
                 assert serviceCode != null;
                 bciReasonCode = serviceCode.equals(ServiceType.BCI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name()) ?
                         ReasonService.getReasonCode(ServiceType.BCI.name(), appointmentRequest.getBciReasonText()) : null;
             }
-            if (appointmentRequest.getFbiReasonCode() == null && appointmentRequest.getFbiReasonText() != null) {
+            if (fbiReasonCode == null && appointmentRequest.getFbiReasonText() != null) {
                 assert serviceCode != null;
                 fbiReasonCode = serviceCode.equals(ServiceType.FBI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name()) ?
                         ReasonService.getReasonCode(ServiceType.FBI.name(), appointmentRequest.getFbiReasonText()) : null;
             }
 
+            // Assign reason text values to save in appt_info table when reasonCode is NO ORC or null
+            ReasonText reasonText = this.getReasonText(bciReasonCode, appointmentRequest.getBciReasonText(), fbiReasonCode, appointmentRequest.getFbiReasonText());
+            // Get next sequence value for appt_info table primary key
             long appointmentId = appointmentInformationRepository.getNextAppointmentId();
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
                     .appointmentId(appointmentId)
@@ -67,9 +67,9 @@ public class AppointmentInformationService {
                     .customerPhone(appointmentRequest.getCustomerPhone())
                     .serviceCode(serviceCode)
                     .bciReasonCode(bciReasonCode)
-                    .bciReasonText(bciReasonText)
+                    .bciReasonText(reasonText.getBciReasonText())
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonText(fbiReasonText)
+                    .fbiReasonText(reasonText.getFbiReasonText())
                     .appointmentTimestamp(appointmentTimestamp)
                     .serviceAmount(serviceAmount)
                     .appointmentStatusCode(AppointmentStatus.Scheduled.getStatusCode())
@@ -117,7 +117,6 @@ public class AppointmentInformationService {
      * @return AppointmentResponse
      */
     public ApiResponse rescheduleAppointment(long appointmentId, String strAppointmentDate, String strAppointmentTime) {
-        //TODO validate appointmentId, strAppointmentDate and strAppointmentTime for null values
         responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
@@ -133,7 +132,7 @@ public class AppointmentInformationService {
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found";
         } else if(TimestampUtil.isValidTimestamp(appointmentTimestamp)) {
-            responseMessage = "Invalid given appointment date or time (past date or at weekend)";
+            responseMessage = "Invalid given appointment date or time (past date or weekend)";
         } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to reschedule: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
@@ -178,7 +177,6 @@ public class AppointmentInformationService {
      * @return AppointmentResponse
      */
     public ApiResponse cancelAppointment(long appointmentId) {
-        //TODO validate appointmentId for null value
         responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
@@ -256,9 +254,8 @@ public class AppointmentInformationService {
     public List<AppointmentInformationEntity> getAllAppointments(LocalDate startDate, LocalDate endDate) {
         List<AppointmentInformationEntity> resultList;
         if(startDate != null && endDate != null) {
-            OffsetDateTime startTimestamp = TimestampUtil.getOffsetDateTime(startDate + " 00:00:00");
-            OffsetDateTime endTimestamp = TimestampUtil.getOffsetDateTime(endDate + " 23:59:59");
-            resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(startTimestamp, endTimestamp);
+            DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
+            resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         } else {
             resultList = appointmentInformationRepository.getAllAppointments();
         }
@@ -273,6 +270,21 @@ public class AppointmentInformationService {
     private boolean isAppointmentStatusFinal(int appointmentStatusCode) {
         return appointmentStatusCode == AppointmentStatus.Cancelled.getStatusCode()
                || appointmentStatusCode == AppointmentStatus.Completed.getStatusCode();
+    }
+
+    /**
+     * Assign reason text values to save in appt_info table when reasonCode is NO ORC or null
+     * @param bciReasonCode bciReasonCode
+     * @param bciReasonText bciReasonText
+     * @param fbiReasonCode fbiReasonCode
+     * @param fbiReasonText fbiReasonText
+     * @return ReasonText
+     */
+    private ReasonText getReasonText(String bciReasonCode, String bciReasonText, String fbiReasonCode, String fbiReasonText) {
+        return ReasonText.builder()
+                .bciReasonText((bciReasonCode != null && bciReasonCode.equals("NO ORC")) || (bciReasonCode == null && bciReasonText != null) ? bciReasonText : null)
+                .fbiReasonText((fbiReasonCode != null && fbiReasonCode.equals("NO ORC")) || (fbiReasonCode == null && fbiReasonText != null) ? fbiReasonText : null)
+                .build();
     }
 
 }

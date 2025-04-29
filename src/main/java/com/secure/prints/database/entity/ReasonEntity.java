@@ -1,4 +1,4 @@
-package com.secure_prints.database.entity;
+package com.secure.prints.database.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

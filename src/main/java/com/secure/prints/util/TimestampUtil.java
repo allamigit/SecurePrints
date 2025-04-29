@@ -1,4 +1,6 @@
-package com.secure_prints.util;
+package com.secure.prints.util;
+
+import com.secure.prints.model.DateRange;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +16,21 @@ public class TimestampUtil {
     public static OffsetDateTime getOffsetTimestamp(String strDate, String strTime) {
         String strTimestamp = strDate + " " + strTime + ":00";
         return getOffsetDateTime(strTimestamp);
+    }
+
+    /**
+     * Convert LocalDate range to OffsetDateTime range for given start and end dates
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return DateRange
+     */
+    public static DateRange getOffsetDateRange(LocalDate startDate, LocalDate endDate) {
+        OffsetDateTime startTimestamp = getOffsetDateTime(startDate + " 00:00:00");
+        OffsetDateTime endTimestamp = getOffsetDateTime(endDate + " 23:59:59");
+        return DateRange.builder()
+                .startTimestamp(startTimestamp)
+                .endTimestamp(endTimestamp)
+                .build();
     }
 
     /**

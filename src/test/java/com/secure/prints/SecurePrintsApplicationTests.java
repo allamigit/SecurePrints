@@ -1,4 +1,4 @@
-package com.secure_prints;
+package com.secure.prints;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

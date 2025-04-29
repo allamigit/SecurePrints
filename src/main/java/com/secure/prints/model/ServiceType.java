@@ -1,4 +1,4 @@
-package com.secure_prints.model;
+package com.secure.prints.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Generated;
@@ -16,7 +16,7 @@ public enum ServiceType {
     BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68));
 
     private final String serviceName;
-    private final BigDecimal servicePrice;
+    private final BigDecimal serviceFee;
 
     public static String getServiceCode(String serviceName) {
         for(ServiceType serviceType : ServiceType.values()) {
@@ -36,10 +36,10 @@ public enum ServiceType {
         return null;
     }
 
-    public static BigDecimal getServicePrice(String serviceCode) {
+    public static BigDecimal getServiceFee(String serviceCode) {
         for(ServiceType serviceType : ServiceType.values()) {
             if(serviceType.name().equals(serviceCode)) {
-                return serviceType.getServicePrice();
+                return serviceType.getServiceFee();
             }
         }
         return BigDecimal.ZERO;

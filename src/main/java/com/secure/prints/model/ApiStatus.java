@@ -1,4 +1,4 @@
-package com.secure_prints.model;
+package com.secure.prints.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

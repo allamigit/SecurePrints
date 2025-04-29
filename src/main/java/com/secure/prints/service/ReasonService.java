@@ -1,7 +1,7 @@
-package com.secure_prints.service;
+package com.secure.prints.service;
 
-import com.secure_prints.database.ReasonRepository;
-import com.secure_prints.database.entity.ReasonEntity;
+import com.secure.prints.database.ReasonRepository;
+import com.secure.prints.database.entity.ReasonEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
