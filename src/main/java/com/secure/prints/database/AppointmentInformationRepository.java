@@ -82,4 +82,5 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.orderTimestamp DESC")
     List<AppointmentInformationEntity> getAllAppointments();
+
 }

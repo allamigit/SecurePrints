@@ -28,7 +28,7 @@ public class AppointmentInformationController {
     /**
      * Schedule Appointment
      * @param appointmentRequest appointmentRequest
-     * @return AppointmentResponse
+     * @return ApiResponse
      */
     @PostMapping(value = "schedule-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse scheduleAppointment(HttpServletResponse response,
@@ -43,7 +43,7 @@ public class AppointmentInformationController {
      * @param appointmentId appointmentId
      * @param strAppointmentDate strAppointmentDate
      * @param strAppointmentTime strAppointmentTime
-     * @return AppointmentResponse
+     * @return ApiResponse
      */
     @PatchMapping(value = "reschedule-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse rescheduleAppointment(HttpServletResponse response,
@@ -58,7 +58,7 @@ public class AppointmentInformationController {
     /**
      * Cancel Appointment
      * @param appointmentId appointmentId
-     * @return AppointmentResponse
+     * @return ApiResponse
      */
     @PatchMapping(value = "cancel-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse cancelAppointment(HttpServletResponse response,
@@ -71,12 +71,14 @@ public class AppointmentInformationController {
     /**
      * Update appointment status to Completed and add payment entry
      * @param appointmentId appointmentId
-     * @return AppointmentResponse
+     * @param paymentMethodName paymentMethodName
+     * @return ApiResponse
      */
     @PostMapping(value = "complete-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse completeAppointment(HttpServletResponse response,
-                                           @RequestParam(name = "appointment-id") long appointmentId) {
-        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId);
+                                           @RequestParam(name = "appointment-id") long appointmentId,
+                                           @RequestParam(name = "payment-method") String paymentMethodName) {
+        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId, paymentMethodName);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
     }

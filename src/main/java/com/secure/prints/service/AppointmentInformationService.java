@@ -1,6 +1,8 @@
 package com.secure.prints.service;
 
+import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.entity.AppointmentInformationEntity;
+import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.*;
 import com.secure.prints.database.AppointmentInformationRepository;
 import com.secure.prints.util.TimestampUtil;
@@ -14,21 +16,25 @@ import java.util.List;
 public class AppointmentInformationService {
 
     private final AppointmentInformationRepository appointmentInformationRepository;
+    private final AppointmentPaymentRepository appointmentPaymentRepository;
     private int responseCode;
     private String responseMessage;
 
     /**
      * Constructor for AppointmentInformationService
      * @param appointmentInformationRepository appointmentInformationRepository
+     * @param appointmentPaymentRepository appointmentPaymentRepository
      */
-    public AppointmentInformationService(AppointmentInformationRepository appointmentInformationRepository) {
+    public AppointmentInformationService(AppointmentInformationRepository appointmentInformationRepository,
+                                         AppointmentPaymentRepository appointmentPaymentRepository) {
         this.appointmentInformationRepository = appointmentInformationRepository;
+        this.appointmentPaymentRepository = appointmentPaymentRepository;
     }
 
     /**
      * Schedule Appointment
      * @param appointmentRequest appointmentRequest
-     * @return AppointmentResponse
+     * @return ApiResponse
      */
     public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
@@ -114,7 +120,7 @@ public class AppointmentInformationService {
      * @param appointmentId appointmentId
      * @param strAppointmentDate strAppointmentDate
      * @param strAppointmentTime strAppointmentTime
-     * @return AppointmentResponse
+     * @return ApiResponse
      */
     public ApiResponse rescheduleAppointment(long appointmentId, String strAppointmentDate, String strAppointmentTime) {
         responseCode = 409;
@@ -131,10 +137,10 @@ public class AppointmentInformationService {
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetTimestamp(strAppointmentDate, strAppointmentTime);
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found";
-        } else if(TimestampUtil.isValidTimestamp(appointmentTimestamp)) {
-            responseMessage = "Invalid given appointment date or time (past date or weekend)";
         } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to reschedule: " + AppointmentStatus.getStatusName(appointmentStatusCode);
+        } else if(TimestampUtil.isValidTimestamp(appointmentTimestamp)) {
+            responseMessage = "Invalid given appointment date or time (past date or weekend)";
         } else {
             appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
             responseCode = 200;
@@ -174,7 +180,7 @@ public class AppointmentInformationService {
     /**
      * Cancel Appointment
      * @param appointmentId appointmentId
-     * @return AppointmentResponse
+     * @return ApiResponse
      */
     public ApiResponse cancelAppointment(long appointmentId) {
         responseCode = 409;
@@ -231,11 +237,71 @@ public class AppointmentInformationService {
     /**
      * Update appointment status to Completed and add payment entry
      * @param appointmentId appointmentId
-     * @return AppointmentResponse
+     * @param paymentMethodName paymentMethodName
+     * @return ApiResponse
      */
-    public ApiResponse completeAppointment(long appointmentId) {
+    public ApiResponse completeAppointment(long appointmentId, String paymentMethodName) {
         //TODO implementation of completing appointment and add payment entry
-        return null;
+        responseCode = 409;
+        ApiStatus apiStatus;
+        AppointmentResponse appointmentResponse = null;
+        ApiResponse apiResponse;
+        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        int appointmentStatusCode = 0;
+        if(appointmentInformationEntity != null) {
+            appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
+        }
+
+        if(appointmentInformationEntity == null) {
+            responseMessage = "Appointment ID not found";
+        } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
+            responseMessage = "Invalid appointment status to complete: " + AppointmentStatus.getStatusName(appointmentStatusCode);
+        } else {
+            OffsetDateTime currentTimestamp = OffsetDateTime.now();
+            appointmentInformationRepository.completeAppointment(appointmentId, currentTimestamp);
+            responseCode = 200;
+            responseMessage = "Appointment Completed";
+            String serviceCode = appointmentInformationEntity.getServiceCode();
+            String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
+            String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
+            appointmentResponse = AppointmentResponse.builder()
+                    .appointmentId(appointmentId)
+                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
+                    .serviceName(ServiceType.getServiceName(serviceCode))
+                    .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
+                    .bciReasonText(ReasonService.getReasonText("BCI", bciReasonCode))
+                    .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
+                    .fbiReasonText(ReasonService.getReasonText("FBI", fbiReasonCode))
+                    .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
+                    .appointmentStatus(AppointmentStatus.Completed.name())
+                    .statusTimestamp(currentTimestamp)
+                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
+                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
+                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
+                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
+                    .build();
+
+            // Add payment entry to appointment payment table
+            AppointmentPaymentEntity appointmentPaymentEntity = AppointmentPaymentEntity.builder()
+                    .appointmentId(appointmentId)
+                    .serviceCode(serviceCode)
+                    .serviceAmount(appointmentInformationEntity.getServiceAmount())
+                    .paymentType(PaymentType.Fee.getPaymentTypeCode())
+                    .paymentMethod(PaymentMethod.getPaymentMethodCode(paymentMethodName))
+                    .paymentDate(LocalDate.now())
+                    .build();
+            appointmentPaymentRepository.save(appointmentPaymentEntity);
+        }
+
+        apiStatus = ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+        apiResponse = ApiResponse.builder()
+                .apiStatus(apiStatus)
+                .apiResponse(appointmentResponse)
+                .build();
+        return apiResponse;
     }
 
     /**

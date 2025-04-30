@@ -1,16 +1,15 @@
 
--- DATA TABLES
 -- REASON LIST TABLE
 CREATE TABLE "secure-prints".rsn_list (
 	rsn_id int4 NOT NULL,
-	svc_code varchar(10) NOT NULL,
+	rsn_list_type varchar(3) NOT NULL,
 	rsn_code varchar(10) NOT NULL,
 	rsn_text varchar(150) NULL,
 	CONSTRAINT pk_rsn_id PRIMARY KEY (rsn_id)
 );
 
--- CUSTOMER INFORMATION TABLE
 
+-- CUSTOMER INFORMATION TABLE
 CREATE SEQUENCE "secure-prints".appt_info_seq
 	INCREMENT BY 1
 	MINVALUE 1000
@@ -31,12 +30,26 @@ CREATE TABLE "secure-prints".appt_info (
 	fbi_rsn_text varchar(150) NULL,
 	appt_ts timestamp NOT NULL DEFAULT now(),
 	svc_amt numeric(6,2) NOT NULL,
-	appt_sts int4 NOT NULL,
+	appt_sts_code int4 NOT NULL,
 	ordr_ts timestamp NOT NULL DEFAULT now(),
 	rsch_ts timestamp NULL,
 	cncl_ts timestamp NULL,
 	cmpl_ts timestamp NULL,
 	CONSTRAINT pk_appt_id PRIMARY KEY (appt_id)
+);
+
+
+-- APPOINTMENT PAYMENT TABLE
+CREATE TABLE "secure-prints".appt_pymt (
+	appt_id int8 NOT NULL,
+	svc_code varchar(10) NOT NULL,
+	svc_amt numeric(6,2) NOT NULL,
+	pymt_type int4 NOT NULL,
+	pymt_method int4 NOT NULL,
+	pymt_dt date NOT NULL,
+	pymt_cmt varchar(100) NULL,
+	pymt_rcncl_dt date NULL,
+	CONSTRAINT pk_pymt_appt_id PRIMARY KEY (appt_id)
 );
 
 
