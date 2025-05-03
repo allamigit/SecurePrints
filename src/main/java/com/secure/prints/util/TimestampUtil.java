@@ -14,7 +14,7 @@ public class TimestampUtil {
      * @return String
      */
     public static OffsetDateTime getOffsetTimestamp(String strDate, String strTime) {
-        String strTimestamp = strDate + " " + strTime + ":00";
+        String strTimestamp = strDate + " " + strTime;
         return getOffsetDateTime(strTimestamp);
     }
 
@@ -52,8 +52,8 @@ public class TimestampUtil {
      */
     public static boolean isValidTimestamp(OffsetDateTime timestamp) {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
-        return timestamp.isBefore(currentTimestamp) || timestamp.getDayOfWeek().equals(DayOfWeek.SATURDAY)
-               || timestamp.getDayOfWeek().equals(DayOfWeek.SUNDAY);
+        return timestamp.isBefore(currentTimestamp) || timestamp.getDayOfWeek() == DayOfWeek.SATURDAY
+               || timestamp.getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 
 }

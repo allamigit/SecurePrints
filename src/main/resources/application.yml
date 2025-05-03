@@ -23,3 +23,7 @@ spring:
         format_sql: true
     open-in-view: true
     show-sql: false
+
+secure-prints:
+  appointment:
+    cut-from-index: 3

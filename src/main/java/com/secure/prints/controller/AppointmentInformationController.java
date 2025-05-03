@@ -3,6 +3,7 @@ package com.secure.prints.controller;
 import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.model.ApiResponse;
 import com.secure.prints.model.AppointmentRequest;
+import com.secure.prints.model.AppointmentTime;
 import com.secure.prints.service.AppointmentInformationService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -95,12 +96,26 @@ public class AppointmentInformationController {
 
     /**
      * Get list of all appointments or appointments for a specific date range
+     * @param startDate startDate
+     * @param endDate endDate
+     * @param showByAppointmentDate showByAppointmentDate
      * @return List of appointments
      */
     @GetMapping(value = "all-appointments", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AppointmentInformationEntity> getAllAppointments(@RequestParam(name = "start-date", required = false) LocalDate startDate,
-                                                                 @RequestParam(name = "end-date", required = false) LocalDate endDate) {
-        return appointmentInformationService.getAllAppointments(startDate, endDate);
+                                                                 @RequestParam(name = "end-date", required = false) LocalDate endDate,
+                                                                 @RequestParam(name = "show-by-appointment-date", required = false) boolean showByAppointmentDate) {
+        return appointmentInformationService.getAllAppointments(startDate, endDate, showByAppointmentDate);
+    }
+
+    /**
+     * Get all available appointments list for a specific date
+     * @param selectedDate selectedDate
+     * @return List of available appointments
+     */
+    @GetMapping(value = "times-list", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AppointmentTime> getAppointmentTimes(@RequestParam(name = "selected-date") LocalDate selectedDate) {
+        return appointmentInformationService.getAppointmentTimes(selectedDate);
     }
 
 }
