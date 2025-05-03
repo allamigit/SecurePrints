@@ -92,4 +92,16 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.orderTimestamp DESC")
     List<AppointmentInformationEntity> getAllAppointments();
 
+    /**
+     * Check appointment if it is duplicate
+     * @param customerFirstName customerFirstName
+     * @param customerLastName customerLastName
+     * @param serviceCode serviceCode
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
+            "AND a.serviceCode = :serviceCode AND (a.appointmentStatusCode = 101 OR a.appointmentStatusCode = 102)")
+    AppointmentInformationEntity checkDuplicateAppointment(@Param("customerFirstName") String customerFirstName,
+                                                           @Param("customerLastName") String customerLastName,
+                                                           @Param("serviceCode") String serviceCode);
+
 }

@@ -45,9 +45,9 @@ public class ReasonService {
      */
     public static String getReasonText(String serviceCode, String reasonCode) {
         List<ReasonEntity> reasonText = reasonList.stream()
-                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonText().equals(reasonCode))
+                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonCode().equals(reasonCode))
                 .toList();
-        return !reasonText.isEmpty() ? reasonText.get(0).getReasonCode() : null;
+        return !reasonText.isEmpty() ? reasonText.get(0).getReasonText() : null;
     }
 
     /**

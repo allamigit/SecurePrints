@@ -43,11 +43,11 @@ public class AppointmentInformationService {
     public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetTimestamp(appointmentRequest.getAppointmentDate(), appointmentRequest.getAppointmentTime());
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
-        if(TimestampUtil.isValidTimestamp(appointmentTimestamp)) {
+        if( appointmentResponse != null) {
             responseCode = 409;
-            responseMessage = "Invalid given appointment date or time (past date or weekend)";
+            responseMessage = "Duplicate appointment for the same service was found and not processed yet";
         } else {
             String serviceName = appointmentRequest.getServiceName();
             String serviceCode = ServiceType.getServiceCode(serviceName);
@@ -380,8 +380,8 @@ public class AppointmentInformationService {
 
         DateRange dateRange = TimestampUtil.getOffsetDateRange(selectedDate, selectedDate);
         OffsetDateTime endTimestamp = dateRange.getEndTimestamp();
-        if(OffsetDateTime.now().isAfter(endTimestamp) || endTimestamp.getDayOfWeek() == DayOfWeek.SATURDAY
-                || endTimestamp.getDayOfWeek() == DayOfWeek.SUNDAY) {
+        if(OffsetDateTime.now().isAfter(endTimestamp) /*|| endTimestamp.getDayOfWeek() == DayOfWeek.SATURDAY
+                || endTimestamp.getDayOfWeek() == DayOfWeek.SUNDAY*/) {
             return timeList;
         }
 
@@ -419,6 +419,44 @@ public class AppointmentInformationService {
             }
         }
         return timeList;
+    }
+
+    /**
+     * Check appointment if it is duplicate
+     * @param appointmentRequest appointmentRequest
+     * @return TRUE/FALSE
+     */
+    private AppointmentResponse checkDuplicateAppointment(AppointmentRequest appointmentRequest) {
+        String serviceCode = ServiceType.getServiceCode(appointmentRequest.getServiceName());
+        AppointmentInformationEntity appointmentInformationEntity = appointmentInformationRepository.checkDuplicateAppointment
+                (appointmentRequest.getCustomerFirstName(),
+                 appointmentRequest.getCustomerLastName(),
+                 serviceCode);
+
+        AppointmentResponse appointmentResponse = null;
+        if(appointmentInformationEntity != null) {
+            int appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
+            String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
+            String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
+            appointmentResponse = AppointmentResponse.builder()
+                    .appointmentId(appointmentInformationEntity.getAppointmentId())
+                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
+                    .serviceName(ServiceType.getServiceName(serviceCode))
+                    .bciReasonCode(bciReasonCode)
+                    .bciReasonText(ReasonService.getReasonText(serviceCode, bciReasonCode))
+                    .fbiReasonCode(fbiReasonCode)
+                    .fbiReasonText(ReasonService.getReasonText(serviceCode, fbiReasonCode))
+                    .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
+                    .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
+                    .statusTimestamp(appointmentStatusCode == 101 ? appointmentInformationEntity.getOrderTimestamp() : appointmentInformationEntity.getResheduleTimestamp())
+                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
+                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
+                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
+                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
+                    .build();
+        }
+
+        return appointmentResponse;
     }
 
     /**
