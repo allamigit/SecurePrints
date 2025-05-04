@@ -19,7 +19,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"customerFirstName\": \"testFirstName\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"Ohio Treasurer of State Employees, applicants\",\r\n    \"appointmentDate\": \"2025-04-29\",\r\n    \"appointmentTime\": \"11:30\"\r\n}",
+									"raw": "{\r\n    \"customerFirstName\": \"testFirstName1\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"Ohio Treasurer of State Employees, applicants\",\r\n    \"appointmentTimestamp\": \"2025-05-05 14:30:00\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -47,7 +47,7 @@
 								"method": "PATCH",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/secure-prints/reschedule-appointment?appointment-id=1060&appointment-date=2025-04-30&appointment-time=13:45",
+									"raw": "http://localhost:8080/secure-prints/reschedule-appointment?appointmentId=1078&appointmentTimestamp=2025-05-06 15:30:00",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -59,16 +59,12 @@
 									],
 									"query": [
 										{
-											"key": "appointment-id",
-											"value": "1060"
+											"key": "appointmentId",
+											"value": "1078"
 										},
 										{
-											"key": "appointment-date",
-											"value": "2025-04-30"
-										},
-										{
-											"key": "appointment-time",
-											"value": "13:45"
+											"key": "appointmentTimestamp",
+											"value": "2025-05-06 15:30:00"
 										}
 									]
 								}
@@ -81,7 +77,7 @@
 								"method": "PATCH",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/secure-prints/cancel-appointment?appointment-id=1060",
+									"raw": "http://localhost:8080/secure-prints/cancel-appointment?appointmentId=1077",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -93,8 +89,8 @@
 									],
 									"query": [
 										{
-											"key": "appointment-id",
-											"value": "1060"
+											"key": "appointmentId",
+											"value": "1077"
 										}
 									]
 								}
@@ -107,7 +103,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/secure-prints/reason-list?reason-list-type=BCI",
+									"raw": "http://localhost:8080/secure-prints/reason-list?bciOrFbi=BCI",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -119,8 +115,34 @@
 									],
 									"query": [
 										{
-											"key": "reason-list-type",
+											"key": "bciOrFbi",
 											"value": "BCI"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Appointment Times List",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/times-list?selectedDate=2025-05-09",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"times-list"
+									],
+									"query": [
+										{
+											"key": "selectedDate",
+											"value": "2025-05-09"
 										}
 									]
 								}
@@ -138,7 +160,7 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/secure-prints/complete-appointment?appointment-id=1061&payment-method=Card",
+									"raw": "http://localhost:8080/secure-prints/complete-appointment?appointmentId=1061&paymentMethodName=Card",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -150,11 +172,11 @@
 									],
 									"query": [
 										{
-											"key": "appointment-id",
+											"key": "appointmentId",
 											"value": "1061"
 										},
 										{
-											"key": "payment-method",
+											"key": "paymentMethodName",
 											"value": "Card"
 										}
 									]
@@ -233,6 +255,177 @@
 							"response": []
 						},
 						{
+							"name": "Import Reason List",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/import-reason-data-file?fileName=ReasonList.txt",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"import-reason-data-file"
+									],
+									"query": [
+										{
+											"key": "fileName",
+											"value": "ReasonList.txt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh Reason List",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/refresh-reason-list",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"refresh-reason-list"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Appointments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/all-appointments?startDate=2025-05-07&endDate=2025-05-07&showByAppointmentDate=true",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"all-appointments"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2025-05-07"
+										},
+										{
+											"key": "endDate",
+											"value": "2025-05-07"
+										},
+										{
+											"key": "showByAppointmentDate",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Appointment Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/appointment?appointmentId=1072",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"appointment"
+									],
+									"query": [
+										{
+											"key": "appointmentId",
+											"value": "1072"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Payments",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/all-payments?start-date=2025-04-28&end-date=2025-04-28&show-reconciled=true",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"all-payments"
+									],
+									"query": [
+										{
+											"key": "start-date",
+											"value": "2025-04-28"
+										},
+										{
+											"key": "end-date",
+											"value": "2025-04-28"
+										},
+										{
+											"key": "show-reconciled",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Payment Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/secure-prints/payment?appointment-id=1072",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"secure-prints",
+										"payment"
+									],
+									"query": [
+										{
+											"key": "appointment-id",
+											"value": "1072"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "AR and AP",
+					"item": [
+						{
 							"name": "Add Invoice",
 							"request": {
 								"method": "POST",
@@ -269,142 +462,6 @@
 							"request": {
 								"method": "POST",
 								"header": []
-							},
-							"response": []
-						},
-						{
-							"name": "Refresh Reason List",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/secure-prints/refresh-reason-list",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"secure-prints",
-										"refresh-reason-list"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Appointments",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/secure-prints/all-appointments?start-date=2025-04-28&end-date=2025-04-28",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"secure-prints",
-										"all-appointments"
-									],
-									"query": [
-										{
-											"key": "start-date",
-											"value": "2025-04-28"
-										},
-										{
-											"key": "end-date",
-											"value": "2025-04-28"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Appointment Details",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/secure-prints/appointment?appointment-id=1060",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"secure-prints",
-										"appointment"
-									],
-									"query": [
-										{
-											"key": "appointment-id",
-											"value": "1060"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get All Payments",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/secure-prints/all-payments?start-date=2025-04-28&end-date=2025-04-28&show-reconciled=false",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"secure-prints",
-										"all-payments"
-									],
-									"query": [
-										{
-											"key": "start-date",
-											"value": "2025-04-28"
-										},
-										{
-											"key": "end-date",
-											"value": "2025-04-28"
-										},
-										{
-											"key": "show-reconciled",
-											"value": "false"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Payment Details",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:8080/secure-prints/payment?appointment-id=1050",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "8080",
-									"path": [
-										"secure-prints",
-										"payment"
-									],
-									"query": [
-										{
-											"key": "appointment-id",
-											"value": "1050"
-										}
-									]
-								}
 							},
 							"response": []
 						}

@@ -95,7 +95,7 @@ public class ReasonService {
     }
 
     /**
-     * Import reason data into rsn_list table from CSV file
+     * Import reason data into rsn_list table from TXT file
      * @param fileName fileName
      */
     public void importReasonDataFile(String fileName) {
@@ -111,12 +111,12 @@ public class ReasonService {
         reasonRepository.removeAllReasonData();
         for(int id = 1; id< fileLines.size(); id++) {
             String[] eachLine = fileLines.get(id).split(", ");
-            String[] lineData = eachLine[0].split(",");
+            String[] lineData = eachLine[0].split("~");
             ReasonEntity reasonEntity = ReasonEntity.builder()
                     .reasonId(id)
                     .reasonListType(lineData[0])
                     .reasonCode(lineData[1])
-                    .reasonText(lineData[2])
+                    .reasonText(lineData[2].replace(",", ", "))
                     .build();
             reasonRepository.save(reasonEntity);
         }

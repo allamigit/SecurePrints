@@ -40,7 +40,7 @@ public class ReasonController {
     }
 
     /**
-     * Import reason data into rsn_list table from CSV file
+     * Import reason data into rsn_list table from TXT file
      * @param fileName fileName
      */
     @PostMapping(value = "import-reason-data-file", produces = MediaType.APPLICATION_JSON_VALUE)
