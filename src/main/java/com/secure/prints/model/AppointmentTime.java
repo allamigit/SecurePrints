@@ -17,7 +17,7 @@ public class AppointmentTime implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String appointmentTimestamp;
     private String appointmentTimeLabel;
+    private String appointmentTimestamp;
 
 }

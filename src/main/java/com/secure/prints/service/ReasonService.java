@@ -2,11 +2,17 @@ package com.secure.prints.service;
 
 import com.secure.prints.database.ReasonRepository;
 import com.secure.prints.database.entity.ReasonEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Service
 public class ReasonService {
@@ -15,6 +21,8 @@ public class ReasonService {
     private static List<ReasonEntity> reasonList;
     private static Map<String, String> bciReasonMap;
     private static Map<String, String> fbiReasonMap;
+    @Value("${secure-prints.reason-file-path}")
+    private String fileLocalPath;
 
     /**
      * Constructor for ReasonService
@@ -83,6 +91,34 @@ public class ReasonService {
         }
         for(ReasonEntity reason : fbiReasonList) {
             fbiReasonMap.put(reason.getReasonCode(), reason.getReasonText());
+        }
+    }
+
+    /**
+     * Import reason data into rsn_list table from CSV file
+     * @param fileName fileName
+     */
+    public void importReasonDataFile(String fileName) {
+        Path filePath = Paths.get(fileLocalPath, fileName);
+        List<String> fileLines = null;
+        try (Stream<String> lines = Files.lines(filePath)) {
+            fileLines = lines.toList();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        reasonRepository.removeAllReasonData();
+        for(int id = 1; id< fileLines.size(); id++) {
+            String[] eachLine = fileLines.get(id).split(", ");
+            String[] lineData = eachLine[0].split(",");
+            ReasonEntity reasonEntity = ReasonEntity.builder()
+                    .reasonId(id)
+                    .reasonListType(lineData[0])
+                    .reasonCode(lineData[1])
+                    .reasonText(lineData[2])
+                    .build();
+            reasonRepository.save(reasonEntity);
         }
     }
     

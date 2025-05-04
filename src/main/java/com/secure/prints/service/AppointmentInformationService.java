@@ -23,6 +23,10 @@ public class AppointmentInformationService {
     private String responseMessage;
     @Value("${secure-prints.appointment.cut-from-index}")
     private int cutFromIndex;
+    @Value("${secure-prints.appointment.start-hour}")
+    private int startHour;
+    @Value("${secure-prints.appointment.end-hour}")
+    private int endHour;
 
     /**
      * Constructor for AppointmentInformationService
@@ -42,7 +46,7 @@ public class AppointmentInformationService {
      */
     public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
-        OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetTimestamp(appointmentRequest.getAppointmentDate(), appointmentRequest.getAppointmentTime());
+        OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
         AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
         if( appointmentResponse != null) {
@@ -122,11 +126,10 @@ public class AppointmentInformationService {
     /**
      * Reschedule Appointment
      * @param appointmentId appointmentId
-     * @param strAppointmentDate strAppointmentDate
-     * @param strAppointmentTime strAppointmentTime
+     * @param strAppointmentTimestamp strAppointmentTimestamp
      * @return ApiResponse
      */
-    public ApiResponse rescheduleAppointment(long appointmentId, String strAppointmentDate, String strAppointmentTime) {
+    public ApiResponse rescheduleAppointment(long appointmentId, String strAppointmentTimestamp) {
         responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
@@ -138,13 +141,14 @@ public class AppointmentInformationService {
         }
 
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
-        OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetTimestamp(strAppointmentDate, strAppointmentTime);
+        OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(strAppointmentTimestamp);
+        String strNewAppointmentTs = appointmentTimestamp.toString().substring(0, appointmentTimestamp.toString().length() - 6) + "Z";
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found";
         } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to reschedule: " + AppointmentStatus.getStatusName(appointmentStatusCode);
-        } else if(TimestampUtil.isValidTimestamp(appointmentTimestamp)) {
-            responseMessage = "Invalid given appointment date or time (past date or weekend)";
+        } else if(appointmentInformationEntity.getAppointmentTimestamp().toString().equals(strNewAppointmentTs)) {
+            responseMessage = "The given appointment date and time are not changed";
         } else {
             appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
             responseCode = 200;
@@ -347,50 +351,29 @@ public class AppointmentInformationService {
     public List<AppointmentTime> getAppointmentTimes(LocalDate selectedDate) {
         String strDate = selectedDate.toString() + " ";
         List<AppointmentTime> timeList = new ArrayList<>();
-//        timeList.add(new AppointmentTime(strDate + "09:00:00", "9:00 AM"));
-//        timeList.add(new AppointmentTime(strDate + "09:10:00", "9:10 AM"));
-//        timeList.add(new AppointmentTime(strDate + "09:20:00", "9:20 AM"));
-//        timeList.add(new AppointmentTime(strDate + "09:30:00", "9:30 AM"));
-//        timeList.add(new AppointmentTime(strDate + "09:40:00", "9:40 AM"));
-//        timeList.add(new AppointmentTime(strDate + "09:50:00", "9:50 AM"));
-//        timeList.add(new AppointmentTime(strDate + "10:00:00", "10:00 AM"));
-//        timeList.add(new AppointmentTime(strDate + "10:10:00", "10:10 AM"));
-//        timeList.add(new AppointmentTime(strDate + "10:20:00", "10:20 AM"));
-//        timeList.add(new AppointmentTime(strDate + "10:30:00", "10:30 AM"));
-//        timeList.add(new AppointmentTime(strDate + "10:40:00", "10:40 AM"));
-//        timeList.add(new AppointmentTime(strDate + "10:50:00", "10:50 AM"));
-//        timeList.add(new AppointmentTime(strDate + "11:00:00", "11:00 AM"));
-//        timeList.add(new AppointmentTime(strDate + "11:10:00", "11:10 AM"));
-//        timeList.add(new AppointmentTime(strDate + "11:20:00", "11:20 AM"));
-//        timeList.add(new AppointmentTime(strDate + "11:30:00", "11:30 AM"));
-//        timeList.add(new AppointmentTime(strDate + "11:40:00", "11:40 AM"));
-//        timeList.add(new AppointmentTime(strDate + "11:50:00", "11:50 AM"));
-//        timeList.add(new AppointmentTime(strDate + "12:00:00", "12:00 PM"));
-//        timeList.add(new AppointmentTime(strDate + "12:10:00", "12:10 PM"));
-//        timeList.add(new AppointmentTime(strDate + "12:20:00", "12:20 PM"));
-//        timeList.add(new AppointmentTime(strDate + "12:30:00", "12:30 PM"));
-//        timeList.add(new AppointmentTime(strDate + "12:40:00", "12:40 PM"));
-//        timeList.add(new AppointmentTime(strDate + "12:50:00", "12:50 PM"));
-//        timeList.add(new AppointmentTime(strDate + "13:00:00", "1:00 PM"));
-//        timeList.add(new AppointmentTime(strDate + "13:10:00", "1:10 PM"));
-//        timeList.add(new AppointmentTime(strDate + "13:20:00", "1:20 PM"));
-//        timeList.add(new AppointmentTime(strDate + "13:30:00", "1:30 PM"));
-//        timeList.add(new AppointmentTime(strDate + "13:40:00", "1:40 PM"));
-//        timeList.add(new AppointmentTime(strDate + "13:50:00", "1:50 PM"));
-
         DateRange dateRange = TimestampUtil.getOffsetDateRange(selectedDate, selectedDate);
-        OffsetDateTime endTimestamp = dateRange.getEndTimestamp();
-        if(OffsetDateTime.now().isAfter(endTimestamp) /*|| endTimestamp.getDayOfWeek() == DayOfWeek.SATURDAY
-                || endTimestamp.getDayOfWeek() == DayOfWeek.SUNDAY*/) {
+        if(TimestampUtil.isValidTimestamp(dateRange.getEndTimestamp())) {
             return timeList;
         }
 
-        timeList.add(new AppointmentTime(strDate + "13:40:00", "1:40 PM"));
-        timeList.add(new AppointmentTime(strDate + "13:42:00", "1:42 PM"));
-        timeList.add(new AppointmentTime(strDate + "13:44:00", "1:44 PM"));
-        timeList.add(new AppointmentTime(strDate + "13:46:00", "1:46 PM"));
-        timeList.add(new AppointmentTime(strDate + "13:48:00", "1:48 PM"));
-        timeList.add(new AppointmentTime(strDate + "13:50:00", "1:50 PM"));
+        // Create Time List
+        StringBuilder timeLabel;
+        StringBuilder apptTs;
+        for(int hour = startHour; hour <= endHour; hour++) {
+            for(int minute = 0; minute < 60; minute = minute + 10) {
+                timeLabel = new StringBuilder(hour > 12 ? String.valueOf(hour - 12) : String.valueOf(hour));
+                apptTs = new StringBuilder(hour < 10 ? "0" + hour : String.valueOf(hour));
+                if(minute == 0) {
+                    timeLabel.append(":00");
+                    apptTs.append(":00:00");
+                } else {
+                    timeLabel.append(":").append(minute);
+                    apptTs.append(":").append(minute).append(":00");
+                }
+                timeLabel = new StringBuilder(hour > 11 ? timeLabel + " PM" : timeLabel + " AM");
+                timeList.add(new AppointmentTime(timeLabel.toString(), strDate + apptTs));
+            }
+        }
 
         if(dateRange.getStartTimestamp().getDayOfWeek() == DayOfWeek.FRIDAY) {
             timeList.subList(cutFromIndex, timeList.size()).clear();
@@ -424,7 +407,7 @@ public class AppointmentInformationService {
     /**
      * Check appointment if it is duplicate
      * @param appointmentRequest appointmentRequest
-     * @return TRUE/FALSE
+     * @return AppointmentResponse
      */
     private AppointmentResponse checkDuplicateAppointment(AppointmentRequest appointmentRequest) {
         String serviceCode = ServiceType.getServiceCode(appointmentRequest.getServiceName());
