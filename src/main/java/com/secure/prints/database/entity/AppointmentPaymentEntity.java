@@ -27,7 +27,7 @@ public class AppointmentPaymentEntity implements Serializable {
 
     @Id
     @Column(name = "appt_id")
-    private Long appointmentId;
+    private String appointmentId;
 
     @Column(name = "svc_code")
     private String serviceCode;
@@ -35,11 +35,11 @@ public class AppointmentPaymentEntity implements Serializable {
     @Column(name = "svc_amt")
     private BigDecimal serviceAmount;
 
-    @Column(name = "pymt_type")
-    private Integer paymentType;
+    @Column(name = "pymt_sts_code")
+    private Integer paymentStatusCode;
 
-    @Column(name = "pymt_method")
-    private Integer paymentMethod;
+    @Column(name = "pymt_method_code")
+    private Integer paymentMethodCode;
 
     @Column(name = "pymt_dt")
     private LocalDate paymentDate;

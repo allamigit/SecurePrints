@@ -291,11 +291,11 @@ public class AppointmentInformationService {
 
             // Add payment entry to appointment payment table
             AppointmentPaymentEntity appointmentPaymentEntity = AppointmentPaymentEntity.builder()
-                    .appointmentId(appointmentId)
+                    .appointmentId(String.valueOf(appointmentId))
                     .serviceCode(serviceCode)
                     .serviceAmount(appointmentInformationEntity.getServiceAmount())
-                    .paymentType(PaymentType.Fee.getPaymentTypeCode())
-                    .paymentMethod(PaymentMethod.getPaymentMethodCode(paymentMethodName))
+                    .paymentStatusCode(PaymentStatus.Processed.getPaymentStatusCode())
+                    .paymentMethodCode(PaymentMethod.getPaymentMethodCode(paymentMethodName))
                     .paymentDate(LocalDate.now())
                     .build();
             appointmentPaymentRepository.save(appointmentPaymentEntity);

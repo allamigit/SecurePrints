@@ -13,14 +13,14 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface AppointmentPaymentRepository extends JpaRepository<AppointmentPaymentEntity, Long> {
+public interface AppointmentPaymentRepository extends JpaRepository<AppointmentPaymentEntity, String> {
 
     /**
      * Get appointment payment details by appointment ID
      * @param appointmentId appointmentId
      * @return AppointmentPaymentEntity
      */
-    AppointmentPaymentEntity findPaymentByAppointmentId(long appointmentId);
+    AppointmentPaymentEntity findPaymentByAppointmentId(String appointmentId);
 
     /**
      * Update appointment reconcile date
@@ -30,7 +30,7 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
     @Modifying
     @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentReconcileDate = :currentDate " +
             "WHERE a.appointmentId = :appointmentId")
-    void reconcilePayment(@Param("appointmentId") long appointmentId,
+    void reconcilePayment(@Param("appointmentId") String appointmentId,
                           @Param("currentDate") LocalDate currentDate);
 
     /**

@@ -1,5 +1,5 @@
 
--- DATA TABLES
+
 -- REASON LIST TABLE
 CREATE TABLE "secure-prints".rsn_list (
 	rsn_id int4 NOT NULL,
@@ -9,8 +9,45 @@ CREATE TABLE "secure-prints".rsn_list (
 	CONSTRAINT pk_rsn_id PRIMARY KEY (rsn_id)
 );
 
--- CUSTOMER INFORMATION TABLE
 
+-- COMPANY INFORMATION TABLE
+CREATE SEQUENCE "secure-prints".com_info_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 10000
+	START 1
+	CACHE 1
+	NO CYCLE;
+CREATE TABLE "secure-prints".com_info (
+	com_id int4 NOT NULL DEFAULT nextval('com_info_seq'),
+	com_name varchar(60) NOT NULL,
+	com_address_1 varchar(100) NOT NULL,
+	com_address_2 varchar(100) NOT NULL,
+	com_phone varchar(20) NOT NULL,
+	com_email varchar(80) NOT NULL,
+	CONSTRAINT pk_com_id PRIMARY KEY (com_id)
+);
+
+
+-- USER INFORMATION TABLE
+CREATE SEQUENCE "secure-prints".usr_info_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 10000
+	START 1
+	CACHE 1
+	NO CYCLE;
+CREATE TABLE "secure-prints".usr_info (
+	usr_id int4 NOT NULL DEFAULT nextval('usr_info_seq'),
+	usr_full_name varchar(60) NOT NULL,
+	usr_name varchar(20) NOT NULL,
+	usr_paswd varchar(20) NOT NULL,
+	usr_sts boolean NOT NULL,
+	CONSTRAINT pk_usr_id PRIMARY KEY (usr_id)
+);
+
+
+-- CUSTOMER APPOINTMENT INFORMATION TABLE
 CREATE SEQUENCE "secure-prints".appt_info_seq
 	INCREMENT BY 1
 	MINVALUE 1000
@@ -40,15 +77,22 @@ CREATE TABLE "secure-prints".appt_info (
 );
 
 
+-- CUSTOMER PAYMENT TABLE
+CREATE TABLE "secure-prints".appt_pymt (
+	appt_id varchar(10) NOT NULL,
+	svc_code varchar(10) NOT NULL,
+	svc_amt numeric(6, 2) NOT NULL,
+	pymt_sts_code int4 NOT NULL,
+	pymt_method_code int4 NOT NULL,
+	pymt_dt date NOT NULL,
+	pymt_cmt varchar(100) NULL,
+	pymt_rcncl_dt date NULL,
+	CONSTRAINT pk_pymt_appt_id PRIMARY KEY (appt_id)
+);
+
+
 -- INSERT DATA
--- RSN_LIST
-insert into rsn_list values (1, 'BCI', 'NO ORC', '');
-insert into rsn_list values (2, 'BCI', '4768 06', 'A controlling person of an appraisal management company');
-insert into rsn_list values (3, 'BCI', '4701 08', 'Accountancy Board license applicants');
+insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '+1 (713) 815-8120', 'secure_prints@gmail.com');
 
-insert into rsn_list values (4, 'FBI', 'NO ORC', '');
-insert into rsn_list values (5, 'FBI', '3769 03', 'Ohio Racing Commission – Horse Racing applicants');
-insert into rsn_list values (6, 'FBI', '113 041', 'Ohio Treasurer of State Employees, applicants');
-
-
+insert into usr_info values (default, 'Mawj Al-Lami', 'admin', 'admin', true);
 
