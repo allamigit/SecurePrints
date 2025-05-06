@@ -1,6 +1,8 @@
 package com.secure.prints;
 
+import com.secure.prints.service.CompanyService;
 import com.secure.prints.service.ReasonService;
+import com.secure.prints.service.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,6 +12,8 @@ public class SecurePrintsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SecurePrintsApplication.class, args);
 		ReasonService.refreshReasonList();
+		CompanyService.getCompanyDetails(1);
+		UserService.getAllUsers();
 	}
 
 }

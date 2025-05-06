@@ -1,10 +1,12 @@
 package com.secure.prints.controller;
 
+import com.secure.prints.database.entity.ReasonEntity;
 import com.secure.prints.service.ReasonService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,16 +25,16 @@ public class ReasonController {
 
     /**
      * Get reason list
-     * @param serviceCode serviceCode
+     * @param listType listType
      * @return reasonList
      */
     @GetMapping(value = "reason-list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static Map<String, String> getReasonList(@RequestParam("bciOrFbi") String serviceCode) {
-        return ReasonService.getReasonList(serviceCode);
+    public static List<ReasonEntity> getReasonList(@RequestParam("listType") String listType) {
+        return ReasonService.getReasonList(listType);
     }
 
     /**
-     * Reload rsn_list table data into bciReasonMap and fbiReasonMap
+     * Reload rsn_list table data into bciReasonList and fbiReasonList
      */
     @GetMapping(value = "refresh-reason-list", produces = MediaType.APPLICATION_JSON_VALUE)
     public static void refreshReasonList() {

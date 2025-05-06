@@ -27,6 +27,7 @@ spring:
 secure-prints:
   reason-file-path: C:\Users\moial\OneDrive\Desktop\SecurePrints\
   appointment:
-    cut-from-index: 42
+    cut-from-start-index: 0
+    cut-from-end-index: 28
     start-hour: 9
     end-hour: 16

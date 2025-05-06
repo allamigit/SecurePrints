@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"testFirstName1\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"Ohio Treasurer of State Employees, applicants\",\r\n    \"appointmentTimestamp\": \"2025-05-05 14:30:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"testFirstName6\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"appointmentTimestamp\": \"2025-05-05 15:30:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -94,7 +94,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/reason-list?bciOrFbi=BCI",
+							"raw": "{{url}}/secure-prints/reason-list?listType=BCI",
 							"host": [
 								"{{url}}"
 							],
@@ -104,7 +104,7 @@
 							],
 							"query": [
 								{
-									"key": "bciOrFbi",
+									"key": "listType",
 									"value": "BCI"
 								}
 							]
@@ -468,6 +468,209 @@
 					"request": {
 						"method": "GET",
 						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "Get Company Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/company?companyId=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"company"
+							],
+							"query": [
+								{
+									"key": "companyId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Company",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyId\": 1,\r\n    \"companyName\": \"Secure Prints LLC\",\r\n    \"companyAddress1\": \"1105 Schrock Rd, STE 130C\",\r\n    \"companyAddress2\": \"Columbus, Ohio 43229\",\r\n    \"companyPhone\": \"+1 (713) 815-8120\",\r\n    \"companyEmail\": \"secure_prints@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/update-company",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"update-company"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Add User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": 1,\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userStatus\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/add-user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"add-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/all-users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"all-users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/user?userName=admin",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"user"
+							],
+							"query": [
+								{
+									"key": "userName",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": 1,\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin1234\",\r\n    \"userStatus\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/update-user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"update-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UserLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/login?userName=admin&userPassword=admin1234",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"login"
+							],
+							"query": [
+								{
+									"key": "userName",
+									"value": "admin"
+								},
+								{
+									"key": "userPassword",
+									"value": "admin1234"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UserLogout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"logout"
+							]
+						}
 					},
 					"response": []
 				}

@@ -21,8 +21,10 @@ public class AppointmentInformationService {
     private final AppointmentPaymentRepository appointmentPaymentRepository;
     private int responseCode;
     private String responseMessage;
-    @Value("${secure-prints.appointment.cut-from-index}")
-    private int cutFromIndex;
+    @Value("${secure-prints.appointment.cut-from-start-index}")
+    private int cutFromStartIndex;
+    @Value("${secure-prints.appointment.cut-from-end-index}")
+    private int cutFromEndIndex;
     @Value("${secure-prints.appointment.start-hour}")
     private int startHour;
     @Value("${secure-prints.appointment.end-hour}")
@@ -360,7 +362,7 @@ public class AppointmentInformationService {
         StringBuilder timeLabel;
         StringBuilder apptTs;
         for(int hour = startHour; hour <= endHour; hour++) {
-            for(int minute = 0; minute < 60; minute = minute + 10) {
+            for(int minute = 0; minute < 60; minute = minute + 15) {
                 timeLabel = new StringBuilder(hour > 12 ? String.valueOf(hour - 12) : String.valueOf(hour));
                 apptTs = new StringBuilder(hour < 10 ? "0" + hour : String.valueOf(hour));
                 if(minute == 0) {
@@ -375,8 +377,12 @@ public class AppointmentInformationService {
             }
         }
 
-        if(dateRange.getStartTimestamp().getDayOfWeek() == DayOfWeek.FRIDAY) {
-            timeList.subList(cutFromIndex, timeList.size()).clear();
+        if(dateRange.getStartTimestamp().getDayOfWeek() == DayOfWeek.FRIDAY && cutFromEndIndex > 0) {
+            timeList.subList(cutFromEndIndex, timeList.size()).clear();
+        }
+
+        if(cutFromStartIndex > 0) {
+            timeList.subList(0, cutFromStartIndex).clear();
         }
 
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository

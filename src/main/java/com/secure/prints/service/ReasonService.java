@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 @Service
@@ -19,8 +17,8 @@ public class ReasonService {
 
     private static ReasonRepository reasonRepository = null;
     private static List<ReasonEntity> reasonList;
-    private static Map<String, String> bciReasonMap;
-    private static Map<String, String> fbiReasonMap;
+    private static List<ReasonEntity> bciReasonList;
+    private static List<ReasonEntity> fbiReasonList;
     @Value("${secure-prints.reason-file-path}")
     private String fileLocalPath;
 
@@ -60,38 +58,24 @@ public class ReasonService {
 
     /**
      * Get reason list
-     * @param serviceCode serviceCode
+     * @param listType listType
      * @return reasonList
      */
-    public static Map<String, String> getReasonList(String serviceCode) {
-        Map<String, String> reasonList = bciReasonMap;
-        if(serviceCode.equals("FBI")) {
-            reasonList = fbiReasonMap;
+    public static List<ReasonEntity> getReasonList(String listType) {
+        List<ReasonEntity> reasonList = bciReasonList;
+        if(listType.equals("FBI")) {
+            reasonList = fbiReasonList;
         }
         return reasonList;
     }
 
     /**
-     * Reload rsn_list table data into bciReasonMap and fbiReasonMap
+     * Reload rsn_list table data into bciReasonList and fbiReasonList
      */
     public static void refreshReasonList() {
-        reasonList = reasonRepository.getAllReasons();
-        bciReasonMap = new HashMap<>();
-        fbiReasonMap = new HashMap<>();
-        List<ReasonEntity> bciReasonList =
-                reasonList.stream()
-                .filter(r -> r.getReasonListType().equals("BCI"))
-                .toList();
-        List<ReasonEntity> fbiReasonList =
-                reasonList.stream()
-                        .filter(r -> r.getReasonListType().equals("FBI"))
-                        .toList();
-        for(ReasonEntity reason : bciReasonList) {
-            bciReasonMap.put(reason.getReasonCode(), reason.getReasonText());
-        }
-        for(ReasonEntity reason : fbiReasonList) {
-            fbiReasonMap.put(reason.getReasonCode(), reason.getReasonText());
-        }
+        reasonList = reasonRepository.findAll();
+        bciReasonList = reasonRepository.getAllReasonsByType("BCI");
+        fbiReasonList = reasonRepository.getAllReasonsByType("FBI");
     }
 
     /**
