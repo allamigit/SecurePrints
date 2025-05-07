@@ -51,7 +51,7 @@ public class AppointmentInformationService {
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
         AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
-        if( appointmentResponse != null) {
+        if(appointmentResponse != null) {
             responseCode = 409;
             responseMessage = "Duplicate appointment for the same service was found and not processed yet";
         } else {
@@ -60,19 +60,19 @@ public class AppointmentInformationService {
             BigDecimal serviceAmount = ServiceType.getServiceFee(serviceCode);
             String bciReasonCode = appointmentRequest.getBciReasonCode();
             String fbiReasonCode = appointmentRequest.getFbiReasonCode();
-            if (bciReasonCode == null && appointmentRequest.getBciReasonText() != null) {
+            if (bciReasonCode == null && appointmentRequest.getBciReasonDescription() != null) {
                 assert serviceCode != null;
                 bciReasonCode = serviceCode.equals(ServiceType.BCI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name()) ?
-                        ReasonService.getReasonCode(ServiceType.BCI.name(), appointmentRequest.getBciReasonText()) : null;
+                        ReasonService.getReasonCode(ServiceType.BCI.name(), appointmentRequest.getBciReasonDescription()) : null;
             }
-            if (fbiReasonCode == null && appointmentRequest.getFbiReasonText() != null) {
+            if (fbiReasonCode == null && appointmentRequest.getFbiReasonDescription() != null) {
                 assert serviceCode != null;
                 fbiReasonCode = serviceCode.equals(ServiceType.FBI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name()) ?
-                        ReasonService.getReasonCode(ServiceType.FBI.name(), appointmentRequest.getFbiReasonText()) : null;
+                        ReasonService.getReasonCode(ServiceType.FBI.name(), appointmentRequest.getFbiReasonDescription()) : null;
             }
 
             // Assign reason text values to save in appt_info table when reasonCode is NO ORC or null
-            ReasonText reasonText = this.getReasonText(bciReasonCode, appointmentRequest.getBciReasonText(), fbiReasonCode, appointmentRequest.getFbiReasonText());
+            ReasonDescription reasonDescription = this.getReasonDescription(bciReasonCode, appointmentRequest.getBciReasonDescription(), fbiReasonCode, appointmentRequest.getFbiReasonDescription());
             // Get next sequence value for appt_info table primary key
             long appointmentId = appointmentInformationRepository.getNextAppointmentId();
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
@@ -83,9 +83,9 @@ public class AppointmentInformationService {
                     .customerPhone(appointmentRequest.getCustomerPhone())
                     .serviceCode(serviceCode)
                     .bciReasonCode(bciReasonCode)
-                    .bciReasonText(reasonText.getBciReasonText())
+                    .bciReasonDescription(reasonDescription.getBciReasonDescription())
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonText(reasonText.getFbiReasonText())
+                    .fbiReasonDescription(reasonDescription.getFbiReasonDescription())
                     .appointmentTimestamp(appointmentTimestamp)
                     .serviceAmount(serviceAmount)
                     .appointmentStatusCode(AppointmentStatus.Scheduled.getStatusCode())
@@ -98,9 +98,9 @@ public class AppointmentInformationService {
                     .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
                     .serviceName(serviceName)
                     .bciReasonCode(bciReasonCode)
-                    .bciReasonText(appointmentRequest.getBciReasonText())
+                    .bciReasonDescription(appointmentRequest.getBciReasonDescription())
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonText(appointmentRequest.getFbiReasonText())
+                    .fbiReasonDescription(appointmentRequest.getFbiReasonDescription())
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.Scheduled.name())
                     .statusTimestamp(currentTimestamp)
@@ -163,9 +163,9 @@ public class AppointmentInformationService {
                     .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
                     .serviceName(ServiceType.getServiceName(serviceCode))
                     .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonText(ReasonService.getReasonText("BCI", bciReasonCode))
+                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
                     .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonText(ReasonService.getReasonText("FBI", fbiReasonCode))
+                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
                     .appointmentTimestamp(appointmentTimestamp)
                     .appointmentStatus(AppointmentStatus.Rescheduled.name())
                     .statusTimestamp(currentTimestamp)
@@ -220,9 +220,9 @@ public class AppointmentInformationService {
                     .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
                     .serviceName(ServiceType.getServiceName(serviceCode))
                     .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonText(ReasonService.getReasonText("BCI", bciReasonCode))
+                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
                     .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonText(ReasonService.getReasonText("FBI", fbiReasonCode))
+                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.Cancelled.name())
                     .statusTimestamp(currentTimestamp)
@@ -279,9 +279,9 @@ public class AppointmentInformationService {
                     .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
                     .serviceName(ServiceType.getServiceName(serviceCode))
                     .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonText(ReasonService.getReasonText("BCI", bciReasonCode))
+                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
                     .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonText(ReasonService.getReasonText("FBI", fbiReasonCode))
+                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.Completed.name())
                     .statusTimestamp(currentTimestamp)
@@ -296,6 +296,7 @@ public class AppointmentInformationService {
                     .appointmentId(String.valueOf(appointmentId))
                     .serviceCode(serviceCode)
                     .serviceAmount(appointmentInformationEntity.getServiceAmount())
+                    .bciAmount(ServiceType.getBciFee(serviceCode))
                     .paymentStatusCode(PaymentStatus.Processed.getPaymentStatusCode())
                     .paymentMethodCode(PaymentMethod.getPaymentMethodCode(paymentMethodName))
                     .paymentDate(LocalDate.now())
@@ -432,9 +433,9 @@ public class AppointmentInformationService {
                     .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
                     .serviceName(ServiceType.getServiceName(serviceCode))
                     .bciReasonCode(bciReasonCode)
-                    .bciReasonText(ReasonService.getReasonText(serviceCode, bciReasonCode))
+                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonText(ReasonService.getReasonText(serviceCode, fbiReasonCode))
+                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
                     .statusTimestamp(appointmentStatusCode == 101 ? appointmentInformationEntity.getOrderTimestamp() : appointmentInformationEntity.getResheduleTimestamp())
@@ -466,10 +467,10 @@ public class AppointmentInformationService {
      * @param fbiReasonText fbiReasonText
      * @return ReasonText
      */
-    private ReasonText getReasonText(String bciReasonCode, String bciReasonText, String fbiReasonCode, String fbiReasonText) {
-        return ReasonText.builder()
-                .bciReasonText((bciReasonCode != null && bciReasonCode.equals("NO ORC")) || (bciReasonCode == null && bciReasonText != null) ? bciReasonText : null)
-                .fbiReasonText((fbiReasonCode != null && fbiReasonCode.equals("NO ORC")) || (fbiReasonCode == null && fbiReasonText != null) ? fbiReasonText : null)
+    private ReasonDescription getReasonDescription(String bciReasonCode, String bciReasonText, String fbiReasonCode, String fbiReasonText) {
+        return ReasonDescription.builder()
+                .bciReasonDescription((bciReasonCode != null && bciReasonCode.equals("NO ORC")) || (bciReasonCode == null && bciReasonText != null) ? bciReasonText : null)
+                .fbiReasonDescription((fbiReasonCode != null && fbiReasonCode.equals("NO ORC")) || (fbiReasonCode == null && fbiReasonText != null) ? fbiReasonText : null)
                 .build();
     }
 

@@ -38,22 +38,22 @@ public class ReasonService {
      */
     public static String getReasonCode(String serviceCode, String reasonText) {
         List<ReasonEntity> reasonCode = reasonList.stream()
-                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonText().equals(reasonText))
+                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonDescription().equals(reasonText))
                 .toList();
         return !reasonCode.isEmpty() ? reasonCode.get(0).getReasonCode() : null;
     }
 
     /**
      * Get reason text
-     * @param serviceCode serviceCode
-     * @param reasonCode serviceCode
+     * @param listType listType
+     * @param reasonCode listType
      * @return reasonText
      */
-    public static String getReasonText(String serviceCode, String reasonCode) {
-        List<ReasonEntity> reasonText = reasonList.stream()
-                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonCode().equals(reasonCode))
+    public static String getReasonDescription(String listType, String reasonCode) {
+        List<ReasonEntity> reasonDescription = reasonList.stream()
+                .filter(r -> r.getReasonListType().equals(listType) && r.getReasonCode().equals(reasonCode))
                 .toList();
-        return !reasonText.isEmpty() ? reasonText.get(0).getReasonText() : null;
+        return !reasonDescription.isEmpty() ? reasonDescription.get(0).getReasonDescription() : null;
     }
 
     /**
@@ -79,7 +79,7 @@ public class ReasonService {
     }
 
     /**
-     * Import reason data into rsn_list table from TXT file
+     * Import reason data into rsn_list table from CSV/TXT file
      * @param fileName fileName
      */
     public void importReasonDataFile(String fileName) {
@@ -100,7 +100,7 @@ public class ReasonService {
                     .reasonId(id)
                     .reasonListType(lineData[0])
                     .reasonCode(lineData[1])
-                    .reasonText(lineData[2].replace(",", ", "))
+                    .reasonDescription(lineData[2].replace(",", ", "))
                     .build();
             reasonRepository.save(reasonEntity);
         }

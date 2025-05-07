@@ -2,6 +2,7 @@ package com.secure.prints.service;
 
 import com.secure.prints.database.CompanyRepository;
 import com.secure.prints.database.entity.CompanyEntity;
+import com.secure.prints.model.ApiStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,11 +31,25 @@ public class CompanyService {
 
     /**
      * Update Company Details
-     * @param companyEntity companyEntity
+     * @param companyDetails companyDetails
      */
-    public void updateCompanyDetails(CompanyEntity companyEntity) {
-        companyRepository.save(companyEntity);
-        getCompanyDetails(companyEntity.getCompanyId());
+    public ApiStatus updateCompanyDetails(CompanyEntity companyDetails) {
+        int responseCode = 409;
+        String responseMessage;
+        if(companyEntity.equals(companyDetails)) {
+            responseMessage = "There is no change to update";
+        } else {
+            companyRepository.save(companyDetails);
+            getCompanyDetails(companyDetails.getCompanyId());
+            responseCode = 200;
+            responseMessage = "Company details updated successfully";
+        }
+
+        return ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+
     }
 
 }

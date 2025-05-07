@@ -33,7 +33,7 @@ public class ReasonEntity implements Serializable {
     @Column(name = "rsn_code")
     private String reasonCode;
 
-    @Column(name = "rsn_text")
-    private String reasonText;
+    @Column(name = "rsn_desc")
+    private String reasonDescription;
 
 }

@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"testFirstName6\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonText\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonText\": \"A controlling person of an appraisal management company\",\r\n    \"appointmentTimestamp\": \"2025-05-05 15:30:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"testFirstName7\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": \"A controlling person of an appraisal management company\",\r\n    \"appointmentTimestamp\": \"2025-05-05 15:30:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -147,7 +147,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1068&paymentMethodName=Card",
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1085&paymentMethodName=Card",
 							"host": [
 								"{{url}}"
 							],
@@ -158,7 +158,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1068"
+									"value": "1085"
 								},
 								{
 									"key": "paymentMethodName",
@@ -539,7 +539,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userId\": 1,\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userName\": \"admin2\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -608,7 +608,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userId\": 1,\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin1234\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userId\": 1,\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -634,7 +634,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/login?userName=admin&userPassword=admin1234",
+							"raw": "{{url}}/secure-prints/login?userName=admin&userPassword=admin",
 							"host": [
 								"{{url}}"
 							],
@@ -649,7 +649,7 @@
 								},
 								{
 									"key": "userPassword",
-									"value": "admin1234"
+									"value": "admin"
 								}
 							]
 						}

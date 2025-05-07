@@ -12,15 +12,12 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginResponse implements Serializable {
+public class ReasonDescription implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String userFullName;
-    private String userName;
-    private String userStatus;
-    private Integer responseCode;
-    private String responseMessage;
+    private String bciReasonDescription;
+    private String fbiReasonDescription;
 
 }

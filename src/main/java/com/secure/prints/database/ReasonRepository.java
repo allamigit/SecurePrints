@@ -18,7 +18,7 @@ public interface ReasonRepository extends JpaRepository<ReasonEntity, Long> {
      * Get all reasons from table by list type (BCI or FBI)
      * @return List of reasons
      */
-    @Query(value = "SELECT r FROM ReasonEntity r WHERE r.reasonListType = :reasonListType ORDER BY r.reasonText")
+    @Query(value = "SELECT r FROM ReasonEntity r WHERE r.reasonListType = :reasonListType ORDER BY r.reasonDescription")
     List<ReasonEntity> getAllReasonsByType(@Param("reasonListType") String reasonListType);
 
     /**

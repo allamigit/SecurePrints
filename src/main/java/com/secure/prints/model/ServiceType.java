@@ -11,12 +11,13 @@ import java.math.BigDecimal;
 @Generated
 public enum ServiceType {
 
-    BCI("BCI Background Check", BigDecimal.valueOf(38)),
-    FBI("FBI Background Check", BigDecimal.valueOf(48)),
-    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68));
+    BCI("BCI Background Check", BigDecimal.valueOf(38), BigDecimal.valueOf(20)),
+    FBI("FBI Background Check", BigDecimal.valueOf(48), BigDecimal.valueOf(26)),
+    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68), BigDecimal.valueOf(45));
 
     private final String serviceName;
     private final BigDecimal serviceFee;
+    private final BigDecimal bciFee;
 
     public static String getServiceCode(String serviceName) {
         for(ServiceType serviceType : ServiceType.values()) {
@@ -40,6 +41,15 @@ public enum ServiceType {
         for(ServiceType serviceType : ServiceType.values()) {
             if(serviceType.name().equals(serviceCode)) {
                 return serviceType.getServiceFee();
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    public static BigDecimal getBciFee(String serviceCode) {
+        for(ServiceType serviceType : ServiceType.values()) {
+            if(serviceType.name().equals(serviceCode)) {
+                return serviceType.getBciFee();
             }
         }
         return BigDecimal.ZERO;

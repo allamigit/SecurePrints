@@ -1,7 +1,9 @@
 package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.CompanyEntity;
+import com.secure.prints.model.ApiStatus;
 import com.secure.prints.service.CompanyService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +33,14 @@ public class CompanyController {
 
     /**
      * Update Company Details
-     * @param companyEntity companyEntity
+     * @param companyDetails companyDetails
      */
     @PutMapping(value = "update-company", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateCompanyDetails(@RequestBody CompanyEntity companyEntity) {
-        companyService.updateCompanyDetails(companyEntity);
+    public ApiStatus updateCompanyDetails(HttpServletResponse response,
+                                          @RequestBody CompanyEntity companyDetails) {
+        ApiStatus apiStatus = companyService.updateCompanyDetails(companyDetails);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
     }
 
 }

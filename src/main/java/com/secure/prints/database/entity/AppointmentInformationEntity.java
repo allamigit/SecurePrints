@@ -49,14 +49,14 @@ public class AppointmentInformationEntity implements Serializable {
     @Column(name = "bci_rsn_code")
     private String bciReasonCode;
 
-    @Column(name = "bci_rsn_text")
-    private String bciReasonText;
+    @Column(name = "bci_rsn_desc")
+    private String bciReasonDescription;
 
     @Column(name = "fbi_rsn_code")
     private String fbiReasonCode;
 
-    @Column(name = "fbi_rsn_text")
-    private String fbiReasonText;
+    @Column(name = "fbi_rsn_desc")
+    private String fbiReasonDescription;
 
     @Column(name = "appt_ts")
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)

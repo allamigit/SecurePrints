@@ -5,7 +5,7 @@ CREATE TABLE "secure-prints".rsn_list (
 	rsn_id int4 NOT NULL,
 	svc_code varchar(10) NOT NULL,
 	rsn_code varchar(10) NOT NULL,
-	rsn_text varchar(150) NULL,
+	rsn_desc varchar(150) NULL,
 	CONSTRAINT pk_rsn_id PRIMARY KEY (rsn_id)
 );
 
@@ -13,7 +13,7 @@ CREATE TABLE "secure-prints".rsn_list (
 -- COMPANY INFORMATION TABLE
 CREATE SEQUENCE "secure-prints".com_info_seq
 	INCREMENT BY 1
-	MINVALUE 1
+	MINVALUE 0
 	MAXVALUE 10000
 	START 1
 	CACHE 1
@@ -25,14 +25,15 @@ CREATE TABLE "secure-prints".com_info (
 	com_address_2 varchar(100) NOT NULL,
 	com_phone varchar(20) NOT NULL,
 	com_email varchar(80) NOT NULL,
-	CONSTRAINT pk_com_id PRIMARY KEY (com_id)
+	CONSTRAINT pk_com_id PRIMARY KEY (com_id),
+	CONSTRAINT uk_com_name UNIQUE (com_name)
 );
 
 
 -- USER INFORMATION TABLE
 CREATE SEQUENCE "secure-prints".usr_info_seq
 	INCREMENT BY 1
-	MINVALUE 1
+	MINVALUE 0
 	MAXVALUE 10000
 	START 1
 	CACHE 1
@@ -43,7 +44,8 @@ CREATE TABLE "secure-prints".usr_info (
 	usr_name varchar(20) NOT NULL,
 	usr_paswd varchar(20) NOT NULL,
 	usr_sts boolean NOT NULL,
-	CONSTRAINT pk_usr_id PRIMARY KEY (usr_id)
+	CONSTRAINT pk_usr_id PRIMARY KEY (usr_id),
+	CONSTRAINT uk_usr_name UNIQUE (usr_name)
 );
 
 
@@ -63,9 +65,9 @@ CREATE TABLE "secure-prints".appt_info (
 	cust_phone varchar(20) NULL,
 	svc_code varchar(10) NOT NULL,
 	bci_rsn_code varchar(10) NULL,
-	bci_rsn_text varchar(150) NULL,
+	bci_rsn_desc varchar(150) NULL,
 	fbi_rsn_code varchar(10) NULL,
-	fbi_rsn_text varchar(150) NULL,
+	fbi_rsn_desc varchar(150) NULL,
 	appt_ts timestamp NOT NULL DEFAULT now(),
 	svc_amt numeric(6,2) NOT NULL,
 	appt_sts int4 NOT NULL,
@@ -82,6 +84,7 @@ CREATE TABLE "secure-prints".appt_pymt (
 	appt_id varchar(10) NOT NULL,
 	svc_code varchar(10) NOT NULL,
 	svc_amt numeric(6, 2) NOT NULL,
+	bci_amt numeric(6, 2) NOT NULL,
 	pymt_sts_code int4 NOT NULL,
 	pymt_method_code int4 NOT NULL,
 	pymt_dt date NOT NULL,

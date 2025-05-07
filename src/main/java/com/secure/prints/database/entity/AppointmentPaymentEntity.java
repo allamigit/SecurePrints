@@ -35,6 +35,9 @@ public class AppointmentPaymentEntity implements Serializable {
     @Column(name = "svc_amt")
     private BigDecimal serviceAmount;
 
+    @Column(name = "bci_amt")
+    private BigDecimal bciAmount;
+
     @Column(name = "pymt_sts_code")
     private Integer paymentStatusCode;
 
