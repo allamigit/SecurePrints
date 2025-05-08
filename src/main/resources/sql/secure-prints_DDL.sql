@@ -84,7 +84,7 @@ CREATE TABLE "secure-prints".appt_pymt (
 	appt_id varchar(10) NOT NULL,
 	svc_code varchar(10) NOT NULL,
 	svc_amt numeric(6, 2) NOT NULL,
-	bci_amt numeric(6, 2) NOT NULL,
+	bci_amt numeric(6, 2) NULL,
 	pymt_sts_code int4 NOT NULL,
 	pymt_method_code int4 NOT NULL,
 	pymt_dt date NOT NULL,

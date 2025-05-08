@@ -369,7 +369,7 @@ public class AppointmentInformationService {
         StringBuilder timeLabel;
         StringBuilder apptTs;
         for(int hour = startWorkHour; hour <= endWorkHour; hour++) {
-            System.out.println(hour);
+            // Delete appointments from middle of the list for a break time
             if((startBreakHour > 0 && endBreakHour > 0) && (hour >= startBreakHour && hour <= endBreakHour)) {
                 continue;
             }
@@ -388,10 +388,12 @@ public class AppointmentInformationService {
             }
         }
 
+        // Delete appointments from bottom of the list
         if(dateRange.getStartTimestamp().getDayOfWeek() == DayOfWeek.FRIDAY && cutFromEndIndex > 0) {
             timeList.subList(cutFromEndIndex, timeList.size()).clear();
         }
 
+        // Delete appointments from top of the list
         if(cutFromStartIndex > 0) {
             timeList.subList(0, cutFromStartIndex).clear();
         }

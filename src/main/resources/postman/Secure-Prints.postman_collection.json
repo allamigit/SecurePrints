@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"testFirstName7\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": \"A controlling person of an appraisal management company\",\r\n    \"appointmentTimestamp\": \"2025-05-05 15:30:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"testFirstName10\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": \"A controlling person of an appraisal management company\",\r\n    \"appointmentTimestamp\": \"2025-05-06 15:30:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -118,7 +118,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-05-09",
+							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-05-08",
 							"host": [
 								"{{url}}"
 							],
@@ -129,7 +129,7 @@
 							"query": [
 								{
 									"key": "selectedDate",
-									"value": "2025-05-09"
+									"value": "2025-05-08"
 								}
 							]
 						}
@@ -147,7 +147,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1085&paymentMethodName=Card",
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1086&paymentMethodName=Card&strCompleteTimestamp=2025-05-06 15:30:00",
 							"host": [
 								"{{url}}"
 							],
@@ -158,11 +158,15 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1085"
+									"value": "1086"
 								},
 								{
 									"key": "paymentMethodName",
 									"value": "Card"
+								},
+								{
+									"key": "strCompleteTimestamp",
+									"value": "2025-05-06 15:30:00"
 								}
 							]
 						}
