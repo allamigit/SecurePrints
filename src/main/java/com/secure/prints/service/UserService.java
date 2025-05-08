@@ -128,7 +128,7 @@ public class UserService {
         int responseCode = 409;
         String responseMessage;
         if(userEntity == null) {
-            responseMessage = "There is no login session";
+            responseMessage = "There is no active login session";
         } else {
             responseCode = 200;
             responseMessage = "Logged out successfully";
@@ -140,6 +140,14 @@ public class UserService {
                 .responseMessage(responseMessage)
                 .build();
         return apiStatus;
+    }
+
+    /**
+     * Checks if there is an active login session
+     * @return TRUE/FALSE
+     */
+    public static boolean isLoginSessionActive() {
+        return userEntity != null;
     }
 
 }

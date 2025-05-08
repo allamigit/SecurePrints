@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 @Generated
 public enum ServiceType {
 
-    BCI("BCI Background Check", BigDecimal.valueOf(38), BigDecimal.valueOf(20)),
+    BCI("BCI Background Check", BigDecimal.valueOf(38), BigDecimal.valueOf(22)),
     FBI("FBI Background Check", BigDecimal.valueOf(48), BigDecimal.valueOf(26)),
-    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68), BigDecimal.valueOf(45));
+    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68), BigDecimal.valueOf(46));
 
     private final String serviceName;
     private final BigDecimal serviceFee;

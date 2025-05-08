@@ -25,10 +25,14 @@ public class AppointmentInformationService {
     private int cutFromStartIndex;
     @Value("${secure-prints.appointment.cut-from-end-index}")
     private int cutFromEndIndex;
-    @Value("${secure-prints.appointment.start-hour}")
-    private int startHour;
-    @Value("${secure-prints.appointment.end-hour}")
-    private int endHour;
+    @Value("${secure-prints.appointment.start-work-hour}")
+    private int startWorkHour;
+    @Value("${secure-prints.appointment.end-work-hour}")
+    private int endWorkHour;
+    @Value("${secure-prints.appointment.start-break-hour}")
+    private int startBreakHour;
+    @Value("${secure-prints.appointment.end-break-hour}")
+    private int endBreakHour;
 
     /**
      * Constructor for AppointmentInformationService
@@ -148,7 +152,7 @@ public class AppointmentInformationService {
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found";
         } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
-            responseMessage = "Invalid appointment status to reschedule: " + AppointmentStatus.getStatusName(appointmentStatusCode);
+            responseMessage = "Invalid appointment status to reschedule. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else if(appointmentInformationEntity.getAppointmentTimestamp().toString().equals(strNewAppointmentTs)) {
             responseMessage = "The given appointment date and time are not changed";
         } else {
@@ -206,7 +210,7 @@ public class AppointmentInformationService {
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found";
         } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
-            responseMessage = "Invalid appointment status to cancel: " + AppointmentStatus.getStatusName(appointmentStatusCode);
+            responseMessage = "Invalid appointment status to cancel. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
             OffsetDateTime currentTimestamp = OffsetDateTime.now();
             appointmentInformationRepository.cancelAppointment(appointmentId, currentTimestamp);
@@ -250,8 +254,7 @@ public class AppointmentInformationService {
      * @param paymentMethodName paymentMethodName
      * @return ApiResponse
      */
-    public ApiResponse completeAppointment(long appointmentId, String paymentMethodName) {
-        //TODO implementation of completing appointment and add payment entry
+    public ApiResponse completeAppointment(long appointmentId, String paymentMethodName, String strCompleteTimestamp) {
         responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
@@ -262,12 +265,15 @@ public class AppointmentInformationService {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
         }
 
-        if(appointmentInformationEntity == null) {
+        if(!UserService.isLoginSessionActive()) {
+            responseCode = 401;
+            responseMessage = "There is no active login session";
+        } else if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found";
         } else if(this.isAppointmentStatusFinal(appointmentStatusCode)) {
-            responseMessage = "Invalid appointment status to complete: " + AppointmentStatus.getStatusName(appointmentStatusCode);
+            responseMessage = "Invalid appointment status to complete. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
-            OffsetDateTime currentTimestamp = OffsetDateTime.now();
+            OffsetDateTime currentTimestamp = TimestampUtil.getOffsetDateTime(strCompleteTimestamp);
             appointmentInformationRepository.completeAppointment(appointmentId, currentTimestamp);
             responseCode = 200;
             responseMessage = "Appointment Completed";
@@ -299,7 +305,7 @@ public class AppointmentInformationService {
                     .bciAmount(ServiceType.getBciFee(serviceCode))
                     .paymentStatusCode(PaymentStatus.Processed.getPaymentStatusCode())
                     .paymentMethodCode(PaymentMethod.getPaymentMethodCode(paymentMethodName))
-                    .paymentDate(LocalDate.now())
+                    .paymentDate(LocalDate.parse(strCompleteTimestamp.substring(0, 10)))
                     .build();
             appointmentPaymentRepository.save(appointmentPaymentEntity);
         }
@@ -362,7 +368,11 @@ public class AppointmentInformationService {
         // Create Time List
         StringBuilder timeLabel;
         StringBuilder apptTs;
-        for(int hour = startHour; hour <= endHour; hour++) {
+        for(int hour = startWorkHour; hour <= endWorkHour; hour++) {
+            System.out.println(hour);
+            if((startBreakHour > 0 && endBreakHour > 0) && (hour >= startBreakHour && hour <= endBreakHour)) {
+                continue;
+            }
             for(int minute = 0; minute < 60; minute = minute + 15) {
                 timeLabel = new StringBuilder(hour > 12 ? String.valueOf(hour - 12) : String.valueOf(hour));
                 apptTs = new StringBuilder(hour < 10 ? "0" + hour : String.valueOf(hour));
@@ -460,17 +470,17 @@ public class AppointmentInformationService {
     }
 
     /**
-     * Assign reason text values to save in appt_info table when reasonCode is NO ORC or null
+     * Assign reason description values to be saved in appt_info table when reasonCode is not equal to 'NO ORC' or 'null'
      * @param bciReasonCode bciReasonCode
-     * @param bciReasonText bciReasonText
+     * @param bciReasonDescription bciReasonDescription
      * @param fbiReasonCode fbiReasonCode
-     * @param fbiReasonText fbiReasonText
+     * @param fbiReasonDescription fbiReasonDescription
      * @return ReasonText
      */
-    private ReasonDescription getReasonDescription(String bciReasonCode, String bciReasonText, String fbiReasonCode, String fbiReasonText) {
+    private ReasonDescription getReasonDescription(String bciReasonCode, String bciReasonDescription, String fbiReasonCode, String fbiReasonDescription) {
         return ReasonDescription.builder()
-                .bciReasonDescription((bciReasonCode != null && bciReasonCode.equals("NO ORC")) || (bciReasonCode == null && bciReasonText != null) ? bciReasonText : null)
-                .fbiReasonDescription((fbiReasonCode != null && fbiReasonCode.equals("NO ORC")) || (fbiReasonCode == null && fbiReasonText != null) ? fbiReasonText : null)
+                .bciReasonDescription((bciReasonCode != null && bciReasonCode.equals("NO ORC")) || (bciReasonCode == null && bciReasonDescription != null) ? bciReasonDescription : null)
+                .fbiReasonDescription((fbiReasonCode != null && fbiReasonCode.equals("NO ORC")) || (fbiReasonCode == null && fbiReasonDescription != null) ? fbiReasonDescription : null)
                 .build();
     }
 

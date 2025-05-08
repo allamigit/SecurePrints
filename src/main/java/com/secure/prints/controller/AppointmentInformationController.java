@@ -49,7 +49,7 @@ public class AppointmentInformationController {
     public ApiResponse rescheduleAppointment(HttpServletResponse response,
                                              @RequestParam(name = "appointmentId") long appointmentId,
                                              @RequestParam(name = "appointmentTimestamp") String strAppointmentTimestamp) {
-        ApiResponse apiResponse =  appointmentInformationService.rescheduleAppointment(appointmentId, strAppointmentTimestamp);
+        ApiResponse apiResponse = appointmentInformationService.rescheduleAppointment(appointmentId, strAppointmentTimestamp);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
     }
@@ -76,8 +76,9 @@ public class AppointmentInformationController {
     @PostMapping(value = "complete-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse completeAppointment(HttpServletResponse response,
                                            @RequestParam(name = "appointmentId") long appointmentId,
-                                           @RequestParam(name = "paymentMethodName") String paymentMethodName) {
-        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId, paymentMethodName);
+                                           @RequestParam(name = "paymentMethodName") String paymentMethodName,
+                                           @RequestParam(name = "strCompleteTimestamp") String strCompleteTimestamp) {
+        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId, paymentMethodName, strCompleteTimestamp);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
     }

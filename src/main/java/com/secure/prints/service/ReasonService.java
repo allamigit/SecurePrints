@@ -19,7 +19,7 @@ public class ReasonService {
     private static List<ReasonEntity> reasonList;
     private static List<ReasonEntity> bciReasonList;
     private static List<ReasonEntity> fbiReasonList;
-    @Value("${secure-prints.reason-file-path}")
+    @Value("${secure-prints.reason-data-file-path}")
     private String fileLocalPath;
 
     /**
