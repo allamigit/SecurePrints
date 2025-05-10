@@ -29,9 +29,6 @@ public class AppointmentPaymentEntity implements Serializable {
     @Column(name = "appt_id")
     private String appointmentId;
 
-    @Column(name = "svc_code")
-    private String serviceCode;
-
     @Column(name = "svc_amt")
     private BigDecimal serviceAmount;
 

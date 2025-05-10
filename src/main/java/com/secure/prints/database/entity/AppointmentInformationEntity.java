@@ -29,7 +29,7 @@ public class AppointmentInformationEntity implements Serializable {
 
     @Id
     @Column(name = "appt_id")
-    private Long appointmentId;
+    private String appointmentId;
 
     @Column(name = "cust_first_name")
     private String customerFirstName;
@@ -61,9 +61,6 @@ public class AppointmentInformationEntity implements Serializable {
     @Column(name = "appt_ts")
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     private OffsetDateTime appointmentTimestamp;
-
-    @Column(name = "svc_amt")
-    private BigDecimal serviceAmount;
 
     @Column(name = "appt_sts_code")
     private Integer appointmentStatusCode;

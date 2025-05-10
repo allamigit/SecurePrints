@@ -13,14 +13,14 @@ import java.util.List;
 
 @Repository
 @Transactional
-public interface AppointmentInformationRepository extends JpaRepository<AppointmentInformationEntity, Long> {
+public interface AppointmentInformationRepository extends JpaRepository<AppointmentInformationEntity, String> {
 
     /**
      * Get appointment details by appointment ID
      * @param appointmentId appointmentId
      * @return AppointmentInformationEntity
      */
-    AppointmentInformationEntity findByAppointmentId(long appointmentId);
+    AppointmentInformationEntity findByAppointmentId(String appointmentId);
 
 
     /**
@@ -32,7 +32,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     @Modifying
     @Query(value = "UPDATE AppointmentInformationEntity a SET a.appointmentTimestamp = :appointmentTimestamp, " +
             "a.resheduleTimestamp = :currentTimestamp, a.appointmentStatusCode = 102 WHERE a.appointmentId = :appointmentId")
-    void rescheduleAppointment(@Param("appointmentId") long appointmentId,
+    void rescheduleAppointment(@Param("appointmentId") String appointmentId,
                                @Param("appointmentTimestamp") OffsetDateTime appointmentTimestamp,
                                @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
@@ -45,7 +45,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     @Modifying
     @Query(value = "UPDATE AppointmentInformationEntity a SET a.cancelTimestamp = :currentTimestamp, " +
             "a.appointmentStatusCode = 103 WHERE a.appointmentId = :appointmentId")
-    void cancelAppointment(@Param("appointmentId") long appointmentId,
+    void cancelAppointment(@Param("appointmentId") String appointmentId,
                            @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
     /**
@@ -56,7 +56,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     @Modifying
     @Query(value = "UPDATE AppointmentInformationEntity a SET a.completeTimestamp = :currentTimestamp, " +
             "a.appointmentStatusCode = 104 WHERE a.appointmentId = :appointmentId")
-    void completeAppointment(@Param("appointmentId") long appointmentId,
+    void completeAppointment(@Param("appointmentId") String appointmentId,
                              @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
     /**
@@ -67,7 +67,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     long getNextAppointmentId();
 
     /**
-     * Get appointment list for a specific date range
+     * Get appointment list for a specific date range for order time
      * @param startTimestamp startTimestamp
      * @param endTimestamp endTimestamp
      * @return List of appointments
@@ -77,7 +77,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
                                                                       @Param("endTimestamp") OffsetDateTime endTimestamp);
 
     /**
-     * Get appointment times list for a specific date range
+     * Get appointment list for a specific date range for appointment time
      * @param startTimestamp startTimestamp
      * @param endTimestamp endTimestamp
      * @return List of appointment times
@@ -99,7 +99,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * @param serviceCode serviceCode
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
-            "AND a.serviceCode = :serviceCode AND (a.appointmentStatusCode = 101 OR a.appointmentStatusCode = 102)")
+            "AND a.serviceCode = :serviceCode AND (a.appointmentStatusCode BETWEEN 101 AND 103)")
     AppointmentInformationEntity checkDuplicateAppointment(@Param("customerFirstName") String customerFirstName,
                                                            @Param("customerLastName") String customerLastName,
                                                            @Param("serviceCode") String serviceCode);

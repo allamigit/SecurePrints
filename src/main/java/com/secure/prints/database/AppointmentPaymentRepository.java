@@ -25,13 +25,38 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
     /**
      * Update appointment reconcile date
      * @param appointmentId appointmentId
-     * @param currentDate currentDate
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentReconcileDate = :currentDate " +
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentReconcileDate = :reconcileDate " +
             "WHERE a.appointmentId = :appointmentId")
-    void reconcilePayment(@Param("appointmentId") String appointmentId,
-                          @Param("currentDate") LocalDate currentDate);
+    void updateReconcilePayment(@Param("appointmentId") String appointmentId,
+                                @Param("reconcileDate") LocalDate reconcileDate);
+
+    /**
+     * Update payment status and date
+     * @param appointmentId appointmentId
+     * @param paymentStatusCode paymentStatusCode
+     */
+    @Modifying
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentDate = :currentDate " +
+            "WHERE a.appointmentId = :appointmentId")
+    void updatePaymentStatus(@Param("appointmentId") String appointmentId,
+                             @Param("paymentStatusCode") int paymentStatusCode,
+                             @Param("currentDate") LocalDate currentDate);
+
+    /**
+     * Update payment status, method and date
+     * @param appointmentId appointmentId
+     * @param paymentStatusCode paymentStatusCode
+     * @param paymentMethodCode paymentMethodCode
+     */
+    @Modifying
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentMethodCode = :paymentMethodCode, a.paymentDate = :currentDate " +
+            "WHERE a.appointmentId = :appointmentId")
+    void updatePaymentStatusAndMethod(@Param("appointmentId") String appointmentId,
+                                      @Param("paymentStatusCode") int paymentStatusCode,
+                                      @Param("paymentMethodCode") int paymentMethodCode,
+                                      @Param("currentDate") LocalDate currentDate);
 
     /**
      * Get not reconciled payment list for a specific date range

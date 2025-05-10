@@ -47,7 +47,7 @@ public class AppointmentInformationController {
      */
     @PatchMapping(value = "reschedule-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse rescheduleAppointment(HttpServletResponse response,
-                                             @RequestParam(name = "appointmentId") long appointmentId,
+                                             @RequestParam(name = "appointmentId") String appointmentId,
                                              @RequestParam(name = "appointmentTimestamp") String strAppointmentTimestamp) {
         ApiResponse apiResponse = appointmentInformationService.rescheduleAppointment(appointmentId, strAppointmentTimestamp);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
@@ -61,7 +61,7 @@ public class AppointmentInformationController {
      */
     @PatchMapping(value = "cancel-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse cancelAppointment(HttpServletResponse response,
-                                         @RequestParam(name = "appointmentId") long appointmentId) {
+                                         @RequestParam(name = "appointmentId") String appointmentId) {
         ApiResponse apiResponse = appointmentInformationService.cancelAppointment(appointmentId);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
@@ -75,7 +75,7 @@ public class AppointmentInformationController {
      */
     @PostMapping(value = "complete-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse completeAppointment(HttpServletResponse response,
-                                           @RequestParam(name = "appointmentId") long appointmentId,
+                                           @RequestParam(name = "appointmentId") String appointmentId,
                                            @RequestParam(name = "paymentMethodName") String paymentMethodName,
                                            @RequestParam(name = "strCompleteTimestamp") String strCompleteTimestamp) {
         ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId, paymentMethodName, strCompleteTimestamp);
@@ -89,7 +89,7 @@ public class AppointmentInformationController {
      * @return AppointmentInformationEntity
      */
     @GetMapping(value = "appointment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppointmentInformationEntity getAppointmentDetails(@RequestParam(name = "appointmentId") long appointmentId) {
+    public AppointmentInformationEntity getAppointmentDetails(@RequestParam(name = "appointmentId") String appointmentId) {
         return appointmentInformationService.getAppointmentDetails(appointmentId);
     }
 

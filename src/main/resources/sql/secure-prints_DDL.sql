@@ -58,7 +58,7 @@ CREATE SEQUENCE "secure-prints".appt_info_seq
 	CACHE 1
 	NO CYCLE;
 CREATE TABLE "secure-prints".appt_info (
-	appt_id int8 NOT NULL,
+	appt_id varchar(10) NOT NULL,
 	cust_first_name varchar(30) NOT NULL,
 	cust_last_name varchar(30) NOT NULL,
 	cust_email varchar(80) NULL,
@@ -69,8 +69,7 @@ CREATE TABLE "secure-prints".appt_info (
 	fbi_rsn_code varchar(10) NULL,
 	fbi_rsn_desc varchar(150) NULL,
 	appt_ts timestamp NOT NULL DEFAULT now(),
-	svc_amt numeric(6,2) NOT NULL,
-	appt_sts int4 NOT NULL,
+	appt_sts_code int4 NOT NULL,
 	ordr_ts timestamp NOT NULL DEFAULT now(),
 	rsch_ts timestamp NULL,
 	cncl_ts timestamp NULL,
@@ -82,11 +81,10 @@ CREATE TABLE "secure-prints".appt_info (
 -- CUSTOMER PAYMENT TABLE
 CREATE TABLE "secure-prints".appt_pymt (
 	appt_id varchar(10) NOT NULL,
-	svc_code varchar(10) NOT NULL,
 	svc_amt numeric(6, 2) NOT NULL,
-	bci_amt numeric(6, 2) NULL,
+	bci_amt numeric(6, 2) NOT NULL,
 	pymt_sts_code int4 NOT NULL,
-	pymt_method_code int4 NOT NULL,
+	pymt_method_code int4 NULL,
 	pymt_dt date NOT NULL,
 	pymt_cmt varchar(100) NULL,
 	pymt_rcncl_dt date NULL,

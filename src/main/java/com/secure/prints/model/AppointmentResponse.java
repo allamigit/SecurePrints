@@ -18,7 +18,7 @@ public class AppointmentResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Long appointmentId;
+    private String appointmentId;
     private OffsetDateTime orderTimestamp;
     private String serviceName;
     private String bciReasonCode;
