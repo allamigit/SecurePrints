@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AppointmentPaymentService {
@@ -105,16 +106,19 @@ public class AppointmentPaymentService {
         List<ExpenseType> resultList = expenseTypeList;
         String lowerKeyword = keyword.toLowerCase();
         return resultList.stream()
-                .filter(data -> {
+                .map(data -> {
                     boolean categoryMatches = data.getExpenseCategory().getCategoryName().toLowerCase().contains(lowerKeyword);
-
-                    boolean subcategoryMatches = data.getExpenseSubcategories().stream().anyMatch(sub ->
-                            sub.getSubcategoryName().toLowerCase().contains(lowerKeyword) ||
-                                    sub.getSubcategoryDescription().toLowerCase().contains(lowerKeyword)
-                    );
-
-                    return categoryMatches || subcategoryMatches;
+                    List<ExpenseSubcategory> matchingSubcategories = data.getExpenseSubcategories().stream()
+                            .filter(sub -> sub.getSubcategoryName().toLowerCase().contains(lowerKeyword)
+                                                             || sub.getSubcategoryDescription().toLowerCase().contains(lowerKeyword))
+                            .toList();
+                    if (categoryMatches || !matchingSubcategories.isEmpty()) {
+                        return new ExpenseType(data.getExpenseCategory(), matchingSubcategories);
+                    } else {
+                        return null;
+                    }
                 })
+                .filter(Objects::nonNull)
                 .toList();
     }
 
