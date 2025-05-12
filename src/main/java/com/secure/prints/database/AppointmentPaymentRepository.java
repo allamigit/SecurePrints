@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -51,12 +52,21 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
      * @param paymentMethodCode paymentMethodCode
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentMethodCode = :paymentMethodCode, a.paymentDate = :currentDate " +
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentMethodCode = :paymentMethodCode, " +
+            "a.serviceAmount = a.serviceAmount - :transactionFees, a.paymentDate = :currentDate " +
             "WHERE a.appointmentId = :appointmentId")
     void updatePaymentStatusAndMethod(@Param("appointmentId") String appointmentId,
                                       @Param("paymentStatusCode") int paymentStatusCode,
                                       @Param("paymentMethodCode") int paymentMethodCode,
+                                      @Param("transactionFees") BigDecimal transactionFees,
                                       @Param("currentDate") LocalDate currentDate);
+
+    /**
+     * Cleanup Cancelled payments from Appointment Payment table
+     */
+    @Modifying
+    @Query(value = "DELETE FROM appt_pymt WHERE pymt_sts_code = 203 AND pymt_dt <= date(now())-interval '2 days'", nativeQuery = true)
+    void cleanupCancelledPayments();
 
     /**
      * Get not reconciled payment list for a specific date range
@@ -80,7 +90,7 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
                                                                          @Param("endDate") LocalDate endDate);
 
     /**
-     * Get appointment payment list for all appointment payment table data
+     * Get appointment payment list for all Appointment Payment table data
      * @return List of appointment payments
      */
     @Query(value = "SELECT a FROM AppointmentPaymentEntity a ORDER BY a.paymentDate DESC")

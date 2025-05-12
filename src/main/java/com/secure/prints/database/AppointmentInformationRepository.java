@@ -60,6 +60,13 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
                              @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
     /**
+     * Cleanup Cancelled appointments from Appointment Information table
+     */
+    @Modifying
+    @Query(value = "DELETE FROM appt_info WHERE appt_sts_code = 103 AND cncl_ts <= date(now())-interval '2 days'", nativeQuery = true)
+    void cleanupCancelledAppointments();
+
+    /**
      * Get next value of appointment sequence
      * @return nextAppointmentId
      */
@@ -85,8 +92,19 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
                                                                        @Param("endTimestamp") OffsetDateTime endTimestamp);
+
     /**
-     * Get appointment list for all appointment table data
+     * Get active appointment list (Scheduled & Rescheduled) for a specific date range for appointment time
+     * @param startTimestamp startTimestamp
+     * @param endTimestamp endTimestamp
+     * @return List of active appointment times
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE (a.appointmentStatusCode = 101 OR a.appointmentStatusCode = 102) AND " +
+            "(a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp) ORDER BY a.appointmentTimestamp ASC")
+    List<AppointmentInformationEntity> getActiveAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
+                                                                             @Param("endTimestamp") OffsetDateTime endTimestamp);
+    /**
+     * Get appointment list for all Appointment Information table data
      * @return List of appointments
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.orderTimestamp DESC")

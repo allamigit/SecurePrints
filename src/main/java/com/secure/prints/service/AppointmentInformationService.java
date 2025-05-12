@@ -9,6 +9,7 @@ import com.secure.prints.util.TimestampUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +56,11 @@ public class AppointmentInformationService {
         AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
         if(appointmentResponse != null) {
+            LocalDate cancelDate = appointmentResponse.getStatusTimestamp().toLocalDate().plusDays(2);
             responseCode = 409;
             responseMessage = !appointmentResponse.getAppointmentStatus().equals(AppointmentStatus.Cancelled.name()) ?
-                    "Duplicate appointment for the same service was found and not processed yet" : "Appointment was Cancelled, you can use the same Appointment ID to reschedule";
+                    "Duplicate appointment for the same service was found and not processed yet." :
+                    "Duplicate appointment for the same service was Cancelled, you can use the same Appointment ID to reschedule up to (" + cancelDate + ").";
         } else {
             String serviceName = appointmentRequest.getServiceName();
             String serviceCode = ServiceType.getServiceCode(serviceName);
@@ -123,7 +126,7 @@ public class AppointmentInformationService {
                     .build();
 
             responseCode = 201;
-            responseMessage = "Appointment Scheduled";
+            responseMessage = "Appointment Scheduled.";
         }
 
         ApiStatus apiStatus = ApiStatus.builder()
@@ -158,17 +161,17 @@ public class AppointmentInformationService {
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(strAppointmentTimestamp);
         String strNewAppointmentTs = appointmentTimestamp.toString().substring(0, appointmentTimestamp.toString().length() - 6) + "Z";
         if(appointmentInformationEntity == null) {
-            responseMessage = "Appointment ID not found";
+            responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to reschedule. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else if(appointmentInformationEntity.getAppointmentTimestamp().toString().equals(strNewAppointmentTs)
                 && appointmentInformationEntity.getAppointmentStatusCode() != AppointmentStatus.Cancelled.getStatusCode()) {
-            responseMessage = "The given appointment date and time are not changed";
+            responseMessage = "The given appointment date and time are the same (no change).";
         } else {
             appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
             appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), LocalDate.now());
             responseCode = 200;
-            responseMessage = "Appointment Rescheduled";
+            responseMessage = "Appointment Rescheduled.";
             String serviceCode = appointmentInformationEntity.getServiceCode();
             String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
             String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
@@ -218,7 +221,7 @@ public class AppointmentInformationService {
         }
 
         if(appointmentInformationEntity == null) {
-            responseMessage = "Appointment ID not found";
+            responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to cancel. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
@@ -226,7 +229,8 @@ public class AppointmentInformationService {
             appointmentInformationRepository.cancelAppointment(appointmentId, currentTimestamp);
             appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Cancelled.getPaymentStatusCode(), LocalDate.now());
             responseCode = 200;
-            responseMessage = "Appointment Cancelled";
+            responseMessage = "Appointment Cancelled. You can use the same Appointment ID to reschedule within the next 2 days (until " +
+                    LocalDate.now().plusDays(2) + "), after that you have to schedule a new appointment to get a new Appointment ID.";
             String serviceCode = appointmentInformationEntity.getServiceCode();
             String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
             String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
@@ -278,18 +282,24 @@ public class AppointmentInformationService {
 
         if(!UserService.isLoginSessionActive()) {
             responseCode = 401;
-            responseMessage = "There is no active login session";
+            responseMessage = "There is no active login session.";
         } else if(appointmentInformationEntity == null) {
-            responseMessage = "Appointment ID not found";
+            responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to complete. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
             OffsetDateTime currentTimestamp = TimestampUtil.getOffsetDateTime(strCompleteTimestamp);
             appointmentInformationRepository.completeAppointment(appointmentId, currentTimestamp);
+            BigDecimal transactionFees = BigDecimal.ZERO;
+            if(paymentMethodName.equals(PaymentMethod.Card.name())) {
+                AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
+                transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+                //TODO: add transactionFees value to Expense table as expense type of 604
+            }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
-                    PaymentMethod.getPaymentMethodCode(paymentMethodName), LocalDate.now());
+                    PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees, LocalDate.now());
             responseCode = 200;
-            responseMessage = "Appointment Completed";
+            responseMessage = "Appointment Completed.";
             String serviceCode = appointmentInformationEntity.getServiceCode();
             String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
             String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
@@ -400,12 +410,8 @@ public class AppointmentInformationService {
         }
 
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository
-                .getAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+                .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         if(appointmentInformationEntityList != null) {
-            appointmentInformationEntityList = appointmentInformationEntityList.stream()
-                    .filter( a -> a.getAppointmentStatusCode() == AppointmentStatus.Scheduled.getStatusCode()
-                            || a.getAppointmentStatusCode() == AppointmentStatus.Rescheduled.getStatusCode())
-                    .toList();
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
                 String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
                         .toString().substring(0, 16).replace("T", " ") + ":00";

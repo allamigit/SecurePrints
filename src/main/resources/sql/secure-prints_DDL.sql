@@ -93,7 +93,7 @@ CREATE TABLE "secure-prints".appt_pymt (
 
 
 -- INSERT DATA
-insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '+1 (713) 815-8120', 'secure_prints@gmail.com');
+insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
 insert into usr_info values (default, 'Mawj Al-Lami', 'admin', 'admin', true);
 
