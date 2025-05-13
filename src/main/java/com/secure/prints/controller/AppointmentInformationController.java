@@ -76,9 +76,8 @@ public class AppointmentInformationController {
     @PostMapping(value = "complete-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse completeAppointment(HttpServletResponse response,
                                            @RequestParam(name = "appointmentId") String appointmentId,
-                                           @RequestParam(name = "paymentMethodName") String paymentMethodName,
-                                           @RequestParam(name = "strCompleteTimestamp") String strCompleteTimestamp) {
-        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId, paymentMethodName, strCompleteTimestamp);
+                                           @RequestParam(name = "paymentMethodName") String paymentMethodName) {
+        ApiResponse apiResponse = appointmentInformationService.completeAppointment(appointmentId, paymentMethodName);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
     }

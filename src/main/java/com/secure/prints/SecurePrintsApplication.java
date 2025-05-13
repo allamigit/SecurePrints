@@ -1,9 +1,6 @@
 package com.secure.prints;
 
-import com.secure.prints.service.AppointmentPaymentService;
-import com.secure.prints.service.CompanyService;
-import com.secure.prints.service.ReasonService;
-import com.secure.prints.service.UserService;
+import com.secure.prints.service.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -19,7 +16,7 @@ public class SecurePrintsApplication {
 		CompanyService.getCompanyDetails(1);
 		UserService.getAllUsers();
 		ReasonService.refreshReasonList();
-		AppointmentPaymentService.generateExpenseTypeList();
+		ExpenseTypeService.generateExpenseTypeList();
 	}
 
 }

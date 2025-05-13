@@ -3,6 +3,7 @@ package com.secure.prints.service;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
+import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.*;
 import com.secure.prints.database.AppointmentInformationRepository;
 import com.secure.prints.util.TimestampUtil;
@@ -19,6 +20,7 @@ public class AppointmentInformationService {
 
     private final AppointmentInformationRepository appointmentInformationRepository;
     private final AppointmentPaymentRepository appointmentPaymentRepository;
+    private final ExpenseService expenseService;
     private int responseCode;
     private String responseMessage;
     @Value("${secure-prints.appointment.cut-from-start-index}")
@@ -38,11 +40,13 @@ public class AppointmentInformationService {
      * Constructor for AppointmentInformationService
      * @param appointmentInformationRepository appointmentInformationRepository
      * @param appointmentPaymentRepository appointmentPaymentRepository
+     * @param expenseService expenseService
      */
     public AppointmentInformationService(AppointmentInformationRepository appointmentInformationRepository,
-                                         AppointmentPaymentRepository appointmentPaymentRepository) {
+                                         AppointmentPaymentRepository appointmentPaymentRepository, ExpenseService expenseService) {
         this.appointmentInformationRepository = appointmentInformationRepository;
         this.appointmentPaymentRepository = appointmentPaymentRepository;
+        this.expenseService = expenseService;
     }
 
     /**
@@ -269,7 +273,7 @@ public class AppointmentInformationService {
      * @param paymentMethodName paymentMethodName
      * @return ApiResponse
      */
-    public ApiResponse completeAppointment(String appointmentId, String paymentMethodName, String strCompleteTimestamp) {
+    public ApiResponse completeAppointment(String appointmentId, String paymentMethodName) {
         responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
@@ -288,13 +292,21 @@ public class AppointmentInformationService {
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to complete. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
-            OffsetDateTime currentTimestamp = TimestampUtil.getOffsetDateTime(strCompleteTimestamp);
+            OffsetDateTime currentTimestamp = OffsetDateTime.now();
             appointmentInformationRepository.completeAppointment(appointmentId, currentTimestamp);
             BigDecimal transactionFees = BigDecimal.ZERO;
             if(paymentMethodName.equals(PaymentMethod.Card.name())) {
                 AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
+                LocalDate currentDate = LocalDate.now();
                 transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
-                //TODO: add transactionFees value to Expense table as expense type of 604
+                // Add transactionFees value to Expense table as expense subcategory of 604
+                expenseService.addExpenseDetails(ExpenseEntity.builder()
+                                .expensePayeeName("Square (CC Reader)")
+                                .expenseReferenceNumber("ApptID-" + appointmentId)
+                                .expenseReferenceDate(currentDate)
+                                .expenseAmount(transactionFees)
+                                .expensePaymentDate(currentDate)
+                                .build(), "Bank Fees and Credit Card Processing", "Processed");
             }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
                     PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees, LocalDate.now());

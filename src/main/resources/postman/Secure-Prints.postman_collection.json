@@ -147,7 +147,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1091&paymentMethodName=Card&strCompleteTimestamp=2025-05-11 20:42:00",
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1097&paymentMethodName=Card",
 							"host": [
 								"{{url}}"
 							],
@@ -158,15 +158,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1091"
+									"value": "1097"
 								},
 								{
 									"key": "paymentMethodName",
 									"value": "Card"
-								},
-								{
-									"key": "strCompleteTimestamp",
-									"value": "2025-05-11 20:42:00"
 								}
 							]
 						}
@@ -396,7 +392,7 @@
 			]
 		},
 		{
-			"name": "AR and AP",
+			"name": "Invoice and Expense",
 			"item": [
 				{
 					"name": "Add Invoice",
@@ -418,7 +414,37 @@
 					"name": "Add Expense",
 					"request": {
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-May-2025\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/add-expense?expenseSubcategoryName=Rent or Lease&expensePaymentStatusName=Processed",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"add-expense"
+							],
+							"query": [
+								{
+									"key": "expenseSubcategoryName",
+									"value": "Rent or Lease"
+								},
+								{
+									"key": "expensePaymentStatusName",
+									"value": "Processed"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -426,7 +452,16 @@
 					"name": "Update Expense",
 					"request": {
 						"method": "PUT",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"expenseId\": 1,\r\n    \"expensePayeeName\": \"Square (CC Reader)\",\r\n    \"expenseReferenceNumber\": \"1092\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseCategoryCode\": 600,\r\n    \"expenseSubcategoryCode\": 604,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 1.92,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
 					},
 					"response": []
 				},
@@ -471,7 +506,24 @@
 					"name": "Get Expense Details",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/expense-details?expenseId=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"expense-details"
+							],
+							"query": [
+								{
+									"key": "expenseId",
+									"value": "1"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -513,6 +565,31 @@
 								{
 									"key": "keyword",
 									"value": "fees"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/get-expense-code?subcategoryName=Bank Fees and Credit Card Processing",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"get-expense-code"
+							],
+							"query": [
+								{
+									"key": "subcategoryName",
+									"value": "Bank Fees and Credit Card Processing"
 								}
 							]
 						}

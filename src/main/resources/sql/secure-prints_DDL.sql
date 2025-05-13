@@ -92,6 +92,50 @@ CREATE TABLE "secure-prints".appt_pymt (
 );
 
 
+-- INVOICE INFORMATION TABLE
+CREATE TABLE "secure-prints".inv_info (
+	inv_no varchar(15) NOT NULL,
+	inv_payee_name varchar(80) NOT NULL,
+	inv_dt date NOT NULL,
+	inv_due_dt date NOT NULL,
+	inv_amt numeric(6, 2) NOT NULL,
+	inv_pymt_sts_code int4 NOT NULL,
+	inv_pymt_dt date NULL,
+	inv_pymt_method_code int4 NULL,
+	inv_cmt varchar(100) NULL,
+	inv_doc_file_name varchar(60) NULL,
+	inv_rcncl_dt date NULL,
+	CONSTRAINT pk_inv_no PRIMARY KEY (inv_no)
+);
+
+
+-- EXPENSE INFORMATION TABLE
+CREATE SEQUENCE "secure-prints".exp_info_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 10000
+	START 1
+	CACHE 1
+	NO CYCLE;
+CREATE TABLE "secure-prints".exp_info (
+	exp_id int8 NOT NULL,
+	exp_payee_name varchar(80) NOT NULL,
+	exp_ref_no varchar(15) NOT NULL,
+	exp_ref_dt date NOT NULL,
+	exp_cat_code int4 NOT NULL,
+	exp_sub_cat_code int4 NOT NULL,
+	exp_desc varchar(100) NULL,
+	exp_amt numeric(6, 2) NOT NULL,
+	exp_pymt_sts_code int4 NOT NULL,
+	exp_pymt_dt date NULL,
+	exp_pymt_method_code int4 NULL,
+	exp_doc_file_name varchar(60) NULL,
+	exp_rcncl_dt date NULL,
+	CONSTRAINT pk_exp_id PRIMARY KEY (exp_id),
+	CONSTRAINT uk_exp_ref_no UNIQUE (exp_ref_no)
+);
+
+
 -- INSERT DATA
 insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
