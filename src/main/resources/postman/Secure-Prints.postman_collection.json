@@ -339,7 +339,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-payments?start-date=2025-04-28&end-date=2025-04-28&show-reconciled=true",
+							"raw": "{{url}}/secure-prints/all-payments?startDate=2025-04-28&endDate=2025-04-28&showReconciled=true",
 							"host": [
 								"{{url}}"
 							],
@@ -349,15 +349,15 @@
 							],
 							"query": [
 								{
-									"key": "start-date",
+									"key": "startDate",
 									"value": "2025-04-28"
 								},
 								{
-									"key": "end-date",
+									"key": "endDate",
 									"value": "2025-04-28"
 								},
 								{
-									"key": "show-reconciled",
+									"key": "showReconciled",
 									"value": "true"
 								}
 							]
@@ -417,7 +417,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-May-2025\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-May-2025\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -455,7 +455,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"expenseId\": 1,\r\n    \"expensePayeeName\": \"Square (CC Reader)\",\r\n    \"expenseReferenceNumber\": \"1092\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseCategoryCode\": 600,\r\n    \"expenseSubcategoryCode\": 604,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 1.92,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"raw": "{\r\n    \"expenseId\": 1,\r\n    \"expensePayeeName\": \"Square (CC Reader)\",\r\n    \"expenseReferenceNumber\": \"ApptID-1092\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseCategoryCode\": 600,\r\n    \"expenseSubcategoryCode\": 604,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 1.92,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -466,10 +466,60 @@
 					"response": []
 				},
 				{
+					"name": "Reconcile Expense",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/reconcile-expense?expenseId=1&expenseReconcileDate=2025-05-13",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"reconcile-expense"
+							],
+							"query": [
+								{
+									"key": "expenseId",
+									"value": "1"
+								},
+								{
+									"key": "expenseReconcileDate",
+									"value": "2025-05-13"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Refund Expense",
 					"request": {
 						"method": "POST",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/refund-expense?expenseId=2&expenseRefundDate=2025-05-14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"refund-expense"
+							],
+							"query": [
+								{
+									"key": "expenseId",
+									"value": "2"
+								},
+								{
+									"key": "expenseRefundDate",
+									"value": "2025-05-14"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -498,7 +548,32 @@
 					"name": "Get All Expenses",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/all-expenses?startDate=2025-05-11&endDate=2025-05-13&showNonReconciled=false",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"all-expenses"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-11"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-05-13"
+								},
+								{
+									"key": "showNonReconciled",
+									"value": "false"
+								}
+							]
+						}
 					},
 					"response": []
 				},

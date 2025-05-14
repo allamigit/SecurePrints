@@ -298,15 +298,18 @@ public class AppointmentInformationService {
             if(paymentMethodName.equals(PaymentMethod.Card.name())) {
                 AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
                 LocalDate currentDate = LocalDate.now();
-                transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+                transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15)).multiply(BigDecimal.valueOf(-1));
                 // Add transactionFees value to Expense table as expense subcategory of 604
                 expenseService.addExpenseDetails(ExpenseEntity.builder()
                                 .expensePayeeName("Square (CC Reader)")
                                 .expenseReferenceNumber("ApptID-" + appointmentId)
                                 .expenseReferenceDate(currentDate)
+                                .expenseCategoryCode(600)
+                                .expenseSubcategoryCode(604)
                                 .expenseAmount(transactionFees)
+                                .expensePaymentStatusCode(202)
                                 .expensePaymentDate(currentDate)
-                                .build(), "Bank Fees and Credit Card Processing", "Processed");
+                                .build());
             }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
                     PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees, LocalDate.now());
@@ -376,11 +379,11 @@ public class AppointmentInformationService {
     }
 
     /**
-     * Get all available appointments list for a specific date
+     * Generate all available appointments list for a specific date
      * @param selectedDate selectedDate
      * @return List of available appointments
      */
-    public List<AppointmentTime> getAppointmentTimes(LocalDate selectedDate) {
+    public List<AppointmentTime> generateAppointmentTimes(LocalDate selectedDate) {
         String strDate = selectedDate.toString() + " ";
         List<AppointmentTime> timeList = new ArrayList<>();
         DateRange dateRange = TimestampUtil.getOffsetDateRange(selectedDate, selectedDate);
@@ -391,6 +394,7 @@ public class AppointmentInformationService {
         // Create Time List
         StringBuilder timeLabel;
         StringBuilder apptTs;
+        endWorkHour--;
         for(int hour = startWorkHour; hour <= endWorkHour; hour++) {
             // Delete appointments from middle of the list for a break time
             if((startBreakHour > 0 && endBreakHour > 0) && (hour >= startBreakHour && hour <= endBreakHour)) {
@@ -411,14 +415,14 @@ public class AppointmentInformationService {
             }
         }
 
-        // Delete appointments from bottom of the list
-        if(dateRange.getStartTimestamp().getDayOfWeek() == DayOfWeek.FRIDAY && cutFromEndIndex > 0) {
-            timeList.subList(cutFromEndIndex, timeList.size()).clear();
-        }
-
         // Delete appointments from top of the list
         if(cutFromStartIndex > 0) {
             timeList.subList(0, cutFromStartIndex).clear();
+        }
+
+        // Delete appointments from bottom of the list
+        if(cutFromEndIndex > 0) {
+            timeList.subList(cutFromEndIndex, timeList.size()).clear();
         }
 
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository

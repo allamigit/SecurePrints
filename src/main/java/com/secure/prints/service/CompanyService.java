@@ -37,12 +37,20 @@ public class CompanyService {
         int responseCode = 409;
         String responseMessage;
         if(companyEntity.equals(companyDetails)) {
-            responseMessage = "There is no change to update";
+            responseMessage = "There is no change to update.";
         } else {
-            companyRepository.save(companyDetails);
-            getCompanyDetails(companyDetails.getCompanyId());
-            responseCode = 200;
-            responseMessage = "Company details updated successfully";
+            try {
+                companyRepository.save(companyDetails);
+                getCompanyDetails(companyDetails.getCompanyId());
+                responseCode = 200;
+                responseMessage = "Company details updated successfully.";
+            } catch (Exception e) {
+                responseCode = 400;
+                responseMessage = e.getCause().getMessage();
+                if(responseMessage.contains("unique constraint")) {
+                    responseMessage = "Duplicate company name.";
+                }
+            }
         }
 
         return ApiStatus.builder()

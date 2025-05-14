@@ -1,7 +1,6 @@
 package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.ExpenseEntity;
-import com.secure.prints.model.ApiResponse;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.ExpenseCode;
 import com.secure.prints.model.ExpenseType;
@@ -32,16 +31,12 @@ public class ExpenseController {
     /**
      * Add new expense details
      * @param expense expense
-     * @param expenseSubcategoryName expenseSubcategoryName
-     * @param expensePaymentStatusName expensePaymentStatusName
      * @return ApiStatus
      */
     @PostMapping(value = "add-expense", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiStatus addExpenseDetails(HttpServletResponse response,
-                                       @RequestBody ExpenseEntity expense,
-                                       @RequestParam(name = "expenseSubcategoryName") String expenseSubcategoryName,
-                                       @RequestParam(name = "expensePaymentStatusName") String expensePaymentStatusName) {
-        ApiStatus apiStatus = expenseService.addExpenseDetails(expense, expenseSubcategoryName, expensePaymentStatusName);
+                                       @RequestBody ExpenseEntity expense) {
+        ApiStatus apiStatus = expenseService.addExpenseDetails(expense);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }

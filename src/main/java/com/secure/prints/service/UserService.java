@@ -35,9 +35,13 @@ public class UserService {
             userRepository.save(userDetails);
             getAllUsers();
             responseCode = 200;
-            responseMessage = "User added successfully";
+            responseMessage = "User added successfully.";
         } catch (Exception e) {
+            responseCode = 400;
             responseMessage = e.getCause().getMessage();
+            if(responseMessage.contains("unique constraint")) {
+                responseMessage = "Duplicate user name.";
+            }
         }
 
         return ApiStatus.builder()
@@ -79,12 +83,20 @@ public class UserService {
                 .filter(u -> u.getUserId().equals(userDetails.getUserId()))
                 .toList();
         if(resultList.get(0).equals(userDetails)) {
-            responseMessage = "There is no change to update";
+            responseMessage = "There is no change to update.";
         } else {
-            userRepository.save(userDetails);
-            getAllUsers();
-            responseCode = 200;
-            responseMessage = "User details updated successfully";
+            try {
+                userRepository.save(userDetails);
+                getAllUsers();
+                responseCode = 200;
+                responseMessage = "User details updated successfully.";
+            } catch (Exception e) {
+                responseCode = 400;
+                responseMessage = e.getCause().getMessage();
+                if(responseMessage.contains("unique constraint")) {
+                    responseMessage = "Duplicate user name.";
+                }
+            }
         }
 
         return ApiStatus.builder()
@@ -104,14 +116,14 @@ public class UserService {
         String responseMessage;
         userEntity = getUserByUserName(userName);
         if(userEntity == null) {
-            responseMessage = "User not found";
+            responseMessage = "User not found.";
         } else if(!userEntity.getUserStatus()) {
-            responseMessage = "User is not active";
+            responseMessage = "User is not active.";
         } else if(!userEntity.getUserPassword().equals(userPassword)) {
-            responseMessage = "Incorrect password";
+            responseMessage = "Incorrect password.";
         } else {
             responseCode = 200;
-            responseMessage = "Logged in successfully";
+            responseMessage = "Logged in successfully.";
         }
 
         return ApiStatus.builder()
@@ -128,10 +140,10 @@ public class UserService {
         int responseCode = 409;
         String responseMessage;
         if(userEntity == null) {
-            responseMessage = "There is no active login session";
+            responseMessage = "There is no active login session.";
         } else {
             responseCode = 200;
-            responseMessage = "Logged out successfully";
+            responseMessage = "Logged out successfully.";
             userEntity = null;
         }
 

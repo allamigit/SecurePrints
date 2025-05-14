@@ -28,8 +28,8 @@ secure-prints:
   reason-data-file-path: C:\Users\moial\OneDrive\Desktop\SecurePrints\
   appointment:
     cut-from-start-index: 0
-    cut-from-end-index: 28
-    start-work-hour: 9
+    cut-from-end-index: 0
+    start-work-hour: 10
     end-work-hour: 16
     start-break-hour: 0
     end-break-hour: 0

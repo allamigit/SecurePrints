@@ -107,13 +107,13 @@ public class AppointmentInformationController {
     }
 
     /**
-     * Get all available appointments list for a specific date
+     * Generate all available appointments list for a specific date
      * @param selectedDate selectedDate
      * @return List of available appointments
      */
     @GetMapping(value = "times-list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AppointmentTime> getAppointmentTimes(@RequestParam(name = "selectedDate") LocalDate selectedDate) {
-        return appointmentInformationService.getAppointmentTimes(selectedDate);
+    public List<AppointmentTime> generateAppointmentTimes(@RequestParam(name = "selectedDate") LocalDate selectedDate) {
+        return appointmentInformationService.generateAppointmentTimes(selectedDate);
     }
 
 }
