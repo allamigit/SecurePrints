@@ -1,4 +1,3 @@
-Type~Code~Text
 BCI~NO ORC~ 
 BCI~109 578~Prospective Firefighter / EMT Applicants
 BCI~113 041~Ohio Treasurer of State employees
