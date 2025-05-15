@@ -127,8 +127,8 @@ public class ExpenseTypeService {
      * @param subcategoryName subcategoryName
      * @return Optional of codes value
      */
-    public static Optional<ExpenseCode> getExpenseCode(String subcategoryName) {
-        return expenseTypeList.stream()
+    public static ExpenseCode getExpenseCode(String subcategoryName) {
+        Optional<ExpenseCode> optionalResult = expenseTypeList.stream()
                 .flatMap(data -> data.getExpenseSubcategories().stream()
                         .filter(sub -> sub.getSubcategoryName().equalsIgnoreCase(subcategoryName))
                         .map(sub -> new ExpenseCode(
@@ -137,6 +137,7 @@ public class ExpenseTypeService {
                         )
                 )
                 .findFirst();
+        return optionalResult.orElse(null);
     }
 
 }

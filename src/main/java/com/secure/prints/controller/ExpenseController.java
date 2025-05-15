@@ -10,8 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "expense")
@@ -52,6 +52,63 @@ public class ExpenseController {
     }
 
     /**
+     * Get list of all expenses or expenses for a specific date range
+     * @param startDate startDate
+     * @param endDate endDate
+     * @param showNonReconciled showNonReconciled
+     * @return List of expenses
+     */
+    @GetMapping(value = "all-expenses", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ExpenseEntity> getAllExpenses(@RequestParam(name = "startDate", required = false) LocalDate startDate,
+                                              @RequestParam(name = "endDate", required = false) LocalDate endDate,
+                                              @RequestParam(name = "showNonReconciled", required = false) boolean showNonReconciled) {
+        return expenseService.getAllExpenses(startDate, endDate, showNonReconciled);
+    }
+
+    /**
+     * Update Expense Details
+     * @param expense expense
+     * @return ApiStatus
+     */
+    @PutMapping(value = "update-expense", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiStatus updateExpenseDetails(HttpServletResponse response,
+                                          @RequestBody ExpenseEntity expense) {
+        ApiStatus apiStatus = expenseService.updateExpenseDetails(expense);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
+    }
+
+    /**
+     * Reconcile Expense
+     * @param expenseId expenseId
+     * @param expenseReconcileDate expenseReconcileDate
+     * @return ApiStatus
+     */
+    @PatchMapping(value = "reconcile-expense", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiStatus reconcileExpense(HttpServletResponse response,
+                                      @RequestParam(name = "expenseId") long expenseId,
+                                      @RequestParam(name = "expenseReconcileDate") LocalDate expenseReconcileDate) {
+        ApiStatus apiStatus = expenseService.reconcileExpense(expenseId, expenseReconcileDate);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
+    }
+
+    /**
+     * Refund Expense
+     * @param expenseId expenseId
+     * @param expenseRefundDate expenseRefundDate
+     * @return ApiStatus
+     */
+    @PostMapping(value = "refund-expense", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiStatus refundExpense(HttpServletResponse response,
+                                   @RequestParam(name = "expenseId") long expenseId,
+                                   @RequestParam(name = "expenseRefundDate") LocalDate expenseRefundDate) {
+        ApiStatus apiStatus = expenseService.refundExpense(expenseId, expenseRefundDate);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
+    }
+
+    /**
      * Generate Expense Type list for categories and subcategories
      * @return List of ExpenseType
      */
@@ -76,7 +133,7 @@ public class ExpenseController {
      * @return Optional of codes value
      */
     @GetMapping(value = "get-expense-code", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static Optional<ExpenseCode> getExpenseCode(@RequestParam(name = "subcategoryName") String subcategoryName) {
+    public static ExpenseCode getExpenseCode(@RequestParam(name = "subcategoryName") String subcategoryName) {
         return ExpenseTypeService.getExpenseCode(subcategoryName);
     }
 

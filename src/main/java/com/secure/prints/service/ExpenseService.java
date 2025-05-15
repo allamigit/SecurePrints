@@ -33,8 +33,8 @@ public class ExpenseService {
     public ApiStatus addExpenseDetails(ExpenseEntity expense) {
         try {
             expense.setExpenseId(expenseRepository.getNextExpenseId());
-            if(expense.getExpenseAmount().byteValueExact() > 0) {
-                expense.setExpenseAmount(expense.getExpenseAmount().multiply(BigDecimal.valueOf(-1)));
+            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
+                expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
             if(expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseCode = 409;
@@ -46,7 +46,7 @@ public class ExpenseService {
             }
         } catch (Exception e) {
             responseCode = 400;
-            responseMessage = e.getCause().getMessage();
+            responseMessage = e.getMessage();
             if(responseMessage.contains("unique constraint")) {
                 responseMessage = "Duplicate expense reference number.";
             }
@@ -64,7 +64,7 @@ public class ExpenseService {
      * @return ExpenseEntity
      */
     public ExpenseEntity getExpenseDetails(long expenseId) {
-        return expenseRepository.findExpenseById(expenseId);
+        return expenseRepository.findByExpenseId(expenseId);
     }
 
     /**
@@ -96,10 +96,10 @@ public class ExpenseService {
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
         try {
             if((expense.getExpensePaymentStatusCode() != PaymentStatus.Refunded.getPaymentStatusCode()
-                    && expense.getExpenseAmount().byteValueExact() > 0) ||
+                    && expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) ||
                     (expense.getExpensePaymentStatusCode() == PaymentStatus.Refunded.getPaymentStatusCode()
-                            && expense.getExpenseAmount().byteValueExact() < 0)) {
-                expense.setExpenseAmount(expense.getExpenseAmount().multiply(BigDecimal.valueOf(-1)));
+                            && expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0)) {
+                expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
             if(expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseCode = 409;
@@ -111,7 +111,7 @@ public class ExpenseService {
             }
         } catch (Exception e) {
             responseCode = 400;
-            responseMessage = e.getCause().getMessage();
+            responseMessage = e.getMessage();
             if(responseMessage.contains("unique constraint")) {
                 responseMessage = "Duplicate expense reference number.";
             }
@@ -130,8 +130,8 @@ public class ExpenseService {
      * @return ApiStatus
      */
     public ApiStatus reconcileExpense(long expenseId, LocalDate expenseReconcileDate) {
-        ExpenseEntity expense = expenseRepository.findExpenseById(expenseId);
-        if(expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
+        ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
+        if(expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
             responseCode = 409;
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {
@@ -153,15 +153,34 @@ public class ExpenseService {
      * @return ApiStatus
      */
     public ApiStatus refundExpense(long expenseId, LocalDate expenseRefundDate) {
-        ExpenseEntity expense = expenseRepository.findExpenseById(expenseId);
-        expense.setExpenseId(expenseRepository.getNextExpenseId());
-        expense.setExpenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R");
-        expense.setExpenseAmount(expense.getExpenseAmount().multiply(BigDecimal.valueOf(-1)));
-        expense.setExpensePaymentDate(expenseRefundDate);
-        expense.setExpenseDescription("Refund transaction.");
+        ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
+        if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
+            responseCode = 409;
+            responseMessage = "Refund date must be at the same or after payment date.";
+        } else {
+            ExpenseEntity newExpense = ExpenseEntity.builder()
+                    .expenseId(expenseRepository.getNextExpenseId())
+                    .expensePayeeName(expense.getExpensePayeeName())
+                    .expenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R")
+                    .expenseReferenceDate(expense.getExpenseReferenceDate())
+                    .expenseCategoryCode(expense.getExpenseCategoryCode())
+                    .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
+                    .expenseDescription("Refund expense transaction.")
+                    .expenseAmount(expense.getExpenseAmount().negate())
+                    .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
+                    .expensePaymentDate(expenseRefundDate)
+                    .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
+                    .expenseDocumentFileName(expense.getExpenseDocumentFileName())
+                    .expenseReconcileDate(expense.getExpenseReconcileDate())
+                    .build();
+            expenseRepository.save(newExpense);
+            responseCode = 200;
+            responseMessage = "Refund expense transaction successful.";
+        }
+
         return ApiStatus.builder()
-                .responseCode(200)
-                .responseMessage("Refund Successful.")
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
                 .build();
     }
 

@@ -298,7 +298,7 @@ public class AppointmentInformationService {
             if(paymentMethodName.equals(PaymentMethod.Card.name())) {
                 AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
                 LocalDate currentDate = LocalDate.now();
-                transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15)).multiply(BigDecimal.valueOf(-1));
+                transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
                 // Add transactionFees value to Expense table as expense subcategory of 604
                 expenseService.addExpenseDetails(ExpenseEntity.builder()
                                 .expensePayeeName("Square (CC Reader)")

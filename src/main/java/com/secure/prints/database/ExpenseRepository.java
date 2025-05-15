@@ -27,7 +27,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @param expenseId expenseId
      * @return ExpenseEntity
      */
-    ExpenseEntity findExpenseById(long expenseId);
+    ExpenseEntity findByExpenseId(@Param("expenseId") long expenseId);
 
     /**
      * Reconcile Expense
@@ -59,7 +59,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @return List of expenses
      */
     @Query(value = "SELECT e FROM ExpenseEntity e WHERE e.expenseReconcileDate is null AND " +
-            "(e.expenseReferenceDate BETWEEN :startDate AND :endDate) ORDER BY e.expenseReferenceDate DESC")
+            "e.expenseReferenceDate BETWEEN :startDate AND :endDate ORDER BY e.expenseReferenceDate DESC")
     List<ExpenseEntity> getNonReconciledExpensesForDateRange(@Param("startDate") LocalDate startDate,
                                                              @Param("endDate") LocalDate endDate);
 

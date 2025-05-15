@@ -38,7 +38,7 @@ public class UserService {
             responseMessage = "User added successfully.";
         } catch (Exception e) {
             responseCode = 400;
-            responseMessage = e.getCause().getMessage();
+            responseMessage = e.getMessage();
             if(responseMessage.contains("unique constraint")) {
                 responseMessage = "Duplicate user name.";
             }
@@ -92,7 +92,7 @@ public class UserService {
                 responseMessage = "User details updated successfully.";
             } catch (Exception e) {
                 responseCode = 400;
-                responseMessage = e.getCause().getMessage();
+                responseMessage = e.getMessage();
                 if(responseMessage.contains("unique constraint")) {
                     responseMessage = "Duplicate user name.";
                 }

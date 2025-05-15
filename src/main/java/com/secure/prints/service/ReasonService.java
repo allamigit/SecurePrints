@@ -2,6 +2,7 @@ package com.secure.prints.service;
 
 import com.secure.prints.database.ReasonRepository;
 import com.secure.prints.database.entity.ReasonEntity;
+import com.secure.prints.model.ApiStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -71,29 +72,36 @@ public class ReasonService {
 
     /**
      * Reload rsn_list table data into bciReasonList and fbiReasonList
+     * @return apiStatus
      */
-    public static void refreshReasonList() {
+    public static ApiStatus refreshReasonList() {
         reasonList = reasonRepository.findAll();
         bciReasonList = reasonRepository.getAllReasonsByType("BCI");
         fbiReasonList = reasonRepository.getAllReasonsByType("FBI");
+
+        return ApiStatus.builder()
+                .responseCode(200)
+                .responseMessage("Reason list was successfully refreshed and reloaded (" + reasonList.size() + ") reasons.")
+                .build();
     }
 
     /**
      * Import reason data into rsn_list table from CSV/TXT file
      * @param fileName fileName
+     * @return ApiStatus
      */
-    public void importReasonDataFile(String fileName) {
+    public ApiStatus importReasonDataFile(String fileName) {
         Path filePath = Paths.get(fileLocalPath, fileName);
         List<String> fileLines = null;
         try (Stream<String> lines = Files.lines(filePath)) {
             fileLines = lines.toList();
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
+        catch (IOException e) {
+            e.printStackTrace();
         }
 
         reasonRepository.removeAllReasonData();
-        for(int id = 1; id< fileLines.size(); id++) {
+        for(int id = 0; id < fileLines.size(); id++) {
             String[] eachLine = fileLines.get(id).split(", ");
             String[] lineData = eachLine[0].split("~");
             ReasonEntity reasonEntity = ReasonEntity.builder()
@@ -104,6 +112,11 @@ public class ReasonService {
                     .build();
             reasonRepository.save(reasonEntity);
         }
+
+        return ApiStatus.builder()
+                .responseCode(200)
+                .responseMessage("Reason data file was successfully imported and saved (" + fileLines.size() + ") lines.")
+                .build();
     }
     
 }

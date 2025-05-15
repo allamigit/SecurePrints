@@ -46,7 +46,7 @@ public class CompanyService {
                 responseMessage = "Company details updated successfully.";
             } catch (Exception e) {
                 responseCode = 400;
-                responseMessage = e.getCause().getMessage();
+                responseMessage = e.getMessage();
                 if(responseMessage.contains("unique constraint")) {
                     responseMessage = "Duplicate company name.";
                 }
