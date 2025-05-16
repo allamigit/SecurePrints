@@ -32,7 +32,6 @@ public class ExpenseService {
      */
     public ApiStatus addExpenseDetails(ExpenseEntity expense) {
         try {
-            expense.setExpenseId(expenseRepository.getNextExpenseId());
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
@@ -40,6 +39,8 @@ public class ExpenseService {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
+                expense.setExpenseId(expenseRepository.getNextExpenseId());
+                expense.setExpenseUpdate(true);
                 expenseRepository.save(expense);
                 responseCode = 200;
                 responseMessage = "Expense Added.";
@@ -95,10 +96,7 @@ public class ExpenseService {
      */
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
         try {
-            if((expense.getExpensePaymentStatusCode() != PaymentStatus.Refunded.getPaymentStatusCode()
-                    && expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) ||
-                    (expense.getExpensePaymentStatusCode() == PaymentStatus.Refunded.getPaymentStatusCode()
-                            && expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0)) {
+            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
             if(expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
@@ -158,6 +156,8 @@ public class ExpenseService {
             responseCode = 409;
             responseMessage = "Refund date must be at the same or after payment date.";
         } else {
+            expense.setExpenseUpdate(false);
+            expenseRepository.save(expense);
             ExpenseEntity newExpense = ExpenseEntity.builder()
                     .expenseId(expenseRepository.getNextExpenseId())
                     .expensePayeeName(expense.getExpensePayeeName())
@@ -172,6 +172,7 @@ public class ExpenseService {
                     .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
                     .expenseDocumentFileName(expense.getExpenseDocumentFileName())
                     .expenseReconcileDate(expense.getExpenseReconcileDate())
+                    .expenseUpdate(false)
                     .build();
             expenseRepository.save(newExpense);
             responseCode = 200;

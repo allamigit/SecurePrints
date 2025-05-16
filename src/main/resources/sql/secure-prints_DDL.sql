@@ -88,6 +88,7 @@ CREATE TABLE "secure-prints".appt_pymt (
 	pymt_dt date NOT NULL,
 	pymt_cmt varchar(100) NULL,
 	pymt_rcncl_dt date NULL,
+	pymt_updt boolean NOT NULL,
 	CONSTRAINT pk_pymt_appt_id PRIMARY KEY (appt_id)
 );
 
@@ -131,6 +132,7 @@ CREATE TABLE "secure-prints".exp_info (
 	exp_pymt_method_code int4 NULL,
 	exp_doc_file_name varchar(60) NULL,
 	exp_rcncl_dt date NULL,
+	exp_updt boolean NOT NULL,
 	CONSTRAINT pk_exp_id PRIMARY KEY (exp_id),
 	CONSTRAINT uk_exp_ref_no UNIQUE (exp_ref_no)
 );

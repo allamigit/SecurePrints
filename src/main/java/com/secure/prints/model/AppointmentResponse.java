@@ -28,9 +28,5 @@ public class AppointmentResponse implements Serializable {
     private OffsetDateTime appointmentTimestamp;
     private String appointmentStatus;
     private OffsetDateTime statusTimestamp;
-    private String customerFirstName;
-    private String customerLastName;
-    private String customerEmail;
-    private String customerPhone;
 
 }

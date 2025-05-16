@@ -65,4 +65,7 @@ public class ExpenseEntity implements Serializable {
     @Column(name = "exp_rcncl_dt")
     private LocalDate expenseReconcileDate;
 
+    @Column(name = "exp_updt")
+    private Boolean expenseUpdate;
+
 }

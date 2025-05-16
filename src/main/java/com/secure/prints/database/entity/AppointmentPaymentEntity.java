@@ -50,4 +50,7 @@ public class AppointmentPaymentEntity implements Serializable {
     @Column(name = "pymt_rcncl_dt")
     private LocalDate paymentReconcileDate;
 
+    @Column(name = "pymt_updt")
+    private Boolean paymentUpdate;
+
 }

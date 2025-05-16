@@ -108,7 +108,8 @@ public class AppointmentInformationService {
                     .serviceAmount(ServiceType.getServiceFee(serviceCode))
                     .bciAmount(ServiceType.getBciFee(serviceCode))
                     .paymentStatusCode(PaymentStatus.Pending.getPaymentStatusCode())
-                    .paymentDate(LocalDate.now())
+                    .paymentDate(LocalDate.from(appointmentTimestamp))
+                    .paymentUpdate(true)
                     .build();
             appointmentPaymentRepository.save(appointmentPaymentEntity);
 
@@ -123,10 +124,6 @@ public class AppointmentInformationService {
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.Scheduled.name())
                     .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentRequest.getCustomerFirstName())
-                    .customerLastName(appointmentRequest.getCustomerLastName())
-                    .customerEmail(appointmentRequest.getCustomerEmail())
-                    .customerPhone(appointmentRequest.getCustomerPhone())
                     .build();
 
             responseCode = 201;
@@ -190,10 +187,6 @@ public class AppointmentInformationService {
                     .appointmentTimestamp(appointmentTimestamp)
                     .appointmentStatus(AppointmentStatus.Rescheduled.name())
                     .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
                     .build();
         }
 
@@ -249,10 +242,6 @@ public class AppointmentInformationService {
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.Cancelled.name())
                     .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
                     .build();
         }
 
@@ -309,6 +298,7 @@ public class AppointmentInformationService {
                                 .expenseAmount(transactionFees)
                                 .expensePaymentStatusCode(202)
                                 .expensePaymentDate(currentDate)
+                                .expenseUpdate(true)
                                 .build());
             }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
@@ -329,10 +319,6 @@ public class AppointmentInformationService {
                     .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
                     .appointmentStatus(AppointmentStatus.Completed.name())
                     .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
                     .build();
         }
 
@@ -479,10 +465,6 @@ public class AppointmentInformationService {
                     .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
                     .statusTimestamp(appointmentStatusCode == 101 ? appointmentInformationEntity.getOrderTimestamp() :
                             appointmentStatusCode == 102 ? appointmentInformationEntity.getResheduleTimestamp() : appointmentInformationEntity.getCancelTimestamp())
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
                     .build();
         }
 
