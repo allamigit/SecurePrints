@@ -7,674 +7,6 @@
 	},
 	"item": [
 		{
-			"name": "Customer",
-			"item": [
-				{
-					"name": "Schedule an Appointment",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"testFirstName5\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": \"A controlling person of an appraisal management company2\",\r\n    \"appointmentTimestamp\": \"2025-05-20 13:30:00\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/secure-prints/schedule-appointment",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"schedule-appointment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Reschedule Appointment",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/reschedule-appointment?appointmentId=1093&appointmentTimestamp=2025-05-14 10:45:00",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"reschedule-appointment"
-							],
-							"query": [
-								{
-									"key": "appointmentId",
-									"value": "1093"
-								},
-								{
-									"key": "appointmentTimestamp",
-									"value": "2025-05-14 10:45:00"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Cancel Appointment",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/cancel-appointment?appointmentId=1092",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"cancel-appointment"
-							],
-							"query": [
-								{
-									"key": "appointmentId",
-									"value": "1092"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Reason List",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/reason-list?listType=BCI",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"reason-list"
-							],
-							"query": [
-								{
-									"key": "listType",
-									"value": "BCI"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Appointment Times List",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-05-16",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"times-list"
-							],
-							"query": [
-								{
-									"key": "selectedDate",
-									"value": "2025-05-16"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Admin",
-			"item": [
-				{
-					"name": "Complete Appointment",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1107&paymentMethodName=Cash",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"complete-appointment"
-							],
-							"query": [
-								{
-									"key": "appointmentId",
-									"value": "1107"
-								},
-								{
-									"key": "paymentMethodName",
-									"value": "Cash"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Refund Payment",
-					"request": {
-						"method": "POST",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "Update Payment",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/secure-prints/update-payment",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"update-payment"
-							],
-							"query": [
-								{
-									"key": "appointment-id",
-									"value": "1062",
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Reconcile Payment",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/reconcile-payment?appointment-id=1062",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"reconcile-payment"
-							],
-							"query": [
-								{
-									"key": "appointment-id",
-									"value": "1062"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Import Reason List",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/import-reason-data-file?fileName=ReasonList.txt",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"import-reason-data-file"
-							],
-							"query": [
-								{
-									"key": "fileName",
-									"value": "ReasonList.txt"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Refresh Reason List",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/refresh-reason-list",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"refresh-reason-list"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Appointments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-05-14&endDate=2025-05-15&showByAppointmentDate=true",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"all-appointments"
-							],
-							"query": [
-								{
-									"key": "startDate",
-									"value": "2025-05-14"
-								},
-								{
-									"key": "endDate",
-									"value": "2025-05-15"
-								},
-								{
-									"key": "showByAppointmentDate",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Appointment Details",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/appointment?appointmentId=1107",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"appointment"
-							],
-							"query": [
-								{
-									"key": "appointmentId",
-									"value": "1107"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Payments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/all-payments?startDate=2025-04-28&endDate=2025-04-28&showNonReconciled=false",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"all-payments"
-							],
-							"query": [
-								{
-									"key": "startDate",
-									"value": "2025-04-28"
-								},
-								{
-									"key": "endDate",
-									"value": "2025-04-28"
-								},
-								{
-									"key": "showNonReconciled",
-									"value": "false"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Payment Details",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/payment?appointment-id=1072",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"payment"
-							],
-							"query": [
-								{
-									"key": "appointment-id",
-									"value": "1072"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Invoice and Expense",
-			"item": [
-				{
-					"name": "Add Invoice",
-					"request": {
-						"method": "POST",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "Update Invoice",
-					"request": {
-						"method": "PUT",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "Add Expense",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-June-2025\",\r\n    \"expenseReferenceDate\": \"2025-06-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-06-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/add-expense",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"add-expense"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Expense",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"expenseId\": 9,\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-May-2025\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 2600.00,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": \"2025-05-12\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/update-expense",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"update-expense"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Reconcile Expense",
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/reconcile-expense?expenseId=9&expenseReconcileDate=2025-05-12",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"reconcile-expense"
-							],
-							"query": [
-								{
-									"key": "expenseId",
-									"value": "9"
-								},
-								{
-									"key": "expenseReconcileDate",
-									"value": "2025-05-12"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Refund Expense",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/refund-expense?expenseId=19&expenseRefundDate=2025-05-14",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"refund-expense"
-							],
-							"query": [
-								{
-									"key": "expenseId",
-									"value": "19"
-								},
-								{
-									"key": "expenseRefundDate",
-									"value": "2025-05-14"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Reports",
-			"item": [
-				{
-					"name": "Get All Invoices",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "Get Invoice Details",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "Get All Expenses",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/all-expenses?startDate=2025-05-12&endDate=2025-05-12&showNonReconciled=false",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"all-expenses"
-							],
-							"query": [
-								{
-									"key": "startDate",
-									"value": "2025-05-12"
-								},
-								{
-									"key": "endDate",
-									"value": "2025-05-12"
-								},
-								{
-									"key": "showNonReconciled",
-									"value": "false"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Expense Details",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/expense-details?expenseId=9",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"expense-details"
-							],
-							"query": [
-								{
-									"key": "expenseId",
-									"value": "9"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Expense Type List",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/expense-type-list",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"expense-type-list"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search Expense Type List",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/search-expense-type-list?keyword=fees",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"search-expense-type-list"
-							],
-							"query": [
-								{
-									"key": "keyword",
-									"value": "fees"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Expense Code",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url}}/secure-prints/expense/get-expense-code?subcategoryName=Bank Fees and Credit Card Processing",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"secure-prints",
-								"expense",
-								"get-expense-code"
-							],
-							"query": [
-								{
-									"key": "subcategoryName",
-									"value": "Bank Fees and Credit Card Processing"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Company",
 			"item": [
 				{
@@ -876,6 +208,710 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Schedule an Appointment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"customerFirstName\": \"testFirstName5\",\r\n    \"customerLastName\": \"testLastName\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": \"A controlling person of an appraisal management company2\",\r\n    \"appointmentTimestamp\": \"2025-05-20 13:30:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/schedule-appointment",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"schedule-appointment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reschedule Appointment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/reschedule-appointment?appointmentId=1093&appointmentTimestamp=2025-05-14 10:45:00",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"reschedule-appointment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1093"
+								},
+								{
+									"key": "appointmentTimestamp",
+									"value": "2025-05-14 10:45:00"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Appointment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/cancel-appointment?appointmentId=1092",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"cancel-appointment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1092"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reason List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/reason-list?listType=BCI",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"reason-list"
+							],
+							"query": [
+								{
+									"key": "listType",
+									"value": "BCI"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Appointment Times List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-05-19",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"times-list"
+							],
+							"query": [
+								{
+									"key": "selectedDate",
+									"value": "2025-05-19"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Complete Appointment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1107&paymentMethodName=Cash",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"complete-appointment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1107"
+								},
+								{
+									"key": "paymentMethodName",
+									"value": "Cash"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Appointments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-05-14&endDate=2025-05-15&showByAppointmentDate=true",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"all-appointments"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-14"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-05-15"
+								},
+								{
+									"key": "showByAppointmentDate",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Appointment Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/appointment?appointmentId=1107",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"appointment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1107"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Import Reason List",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/import-reason-data-file?fileName=ReasonList.txt",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"import-reason-data-file"
+							],
+							"query": [
+								{
+									"key": "fileName",
+									"value": "ReasonList.txt"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Reason List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/refresh-reason-list",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"refresh-reason-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Payment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"appointmentId\": \"1111\",\r\n    \"serviceAmount\": 68.00,\r\n    \"bciAmount\": 46.00,\r\n    \"paymentStatusCode\": 202,\r\n    \"paymentMethodCode\": null,\r\n    \"paymentDate\": \"2025-05-20\",\r\n    \"paymentComment\": null,\r\n    \"paymentReconcileDate\": null,\r\n    \"paymentUpdate\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/payment/update-payment",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"payment",
+								"update-payment"
+							],
+							"query": [
+								{
+									"key": "appointment-id",
+									"value": "1062",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reconcile Payment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/payment/reconcile-payment?appointmentId=1110&paymentReconcileDate=2025-05-20",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"payment",
+								"reconcile-payment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1110"
+								},
+								{
+									"key": "paymentReconcileDate",
+									"value": "2025-05-20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refund Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/payment/refund-payment?appointmentId=1110&paymentRefundDate=2025-05-20",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"payment",
+								"refund-payment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1110"
+								},
+								{
+									"key": "paymentRefundDate",
+									"value": "2025-05-20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Payments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-05-20&endDate=2025-05-20&showNonReconciled=false",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"payment",
+								"all-payments"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-20"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-05-20"
+								},
+								{
+									"key": "showNonReconciled",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/payment/payment-details?appointmentId=1107",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"payment",
+								"payment-details"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1107"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoice and Expense",
+			"item": [
+				{
+					"name": "Add Invoice",
+					"request": {
+						"method": "POST",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update Invoice",
+					"request": {
+						"method": "PUT",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Reconcile Invoice",
+					"request": {
+						"method": "PATCH",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoices",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoice Details",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Add Expense",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-June-2025\",\r\n    \"expenseReferenceDate\": \"2025-06-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-06-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/add-expense",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"add-expense"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Expense",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"expenseId\": 9,\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-May-2025\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 2600.00,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": \"2025-05-12\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/update-expense",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"update-expense"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reconcile Expense",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/reconcile-expense?expenseId=9&expenseReconcileDate=2025-05-12",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"reconcile-expense"
+							],
+							"query": [
+								{
+									"key": "expenseId",
+									"value": "9"
+								},
+								{
+									"key": "expenseReconcileDate",
+									"value": "2025-05-12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refund Expense",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/refund-expense?expenseId=19&expenseRefundDate=2025-05-14",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"refund-expense"
+							],
+							"query": [
+								{
+									"key": "expenseId",
+									"value": "19"
+								},
+								{
+									"key": "expenseRefundDate",
+									"value": "2025-05-14"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Expenses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/all-expenses?startDate=2025-05-12&endDate=2025-05-14&showNonReconciled=false",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"all-expenses"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-12"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-05-14"
+								},
+								{
+									"key": "showNonReconciled",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/expense-details?expenseId=9",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"expense-details"
+							],
+							"query": [
+								{
+									"key": "expenseId",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Expense Type List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/expense-type-list",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"expense-type-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Expense Type List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/search-expense-type-list?keyword=fees",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"search-expense-type-list"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "fees"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/get-expense-code?subcategoryName=Bank Fees and Credit Card Processing",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"get-expense-code"
+							],
+							"query": [
+								{
+									"key": "subcategoryName",
+									"value": "Bank Fees and Credit Card Processing"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": []
 		}
 	],
 	"event": [
@@ -904,13 +940,13 @@
 		{
 			"key": "url",
 			"value": "http://localhost:8080",
-			"type": "string",
-			"disabled": true
+			"type": "string"
 		},
 		{
 			"key": "url",
-			"value": "http://3.145.67.96:8080",
-			"type": "string"
+			"value": "http://18.119.142.19:8080",
+			"type": "string",
+			"disabled": true
 		}
 	]
 }

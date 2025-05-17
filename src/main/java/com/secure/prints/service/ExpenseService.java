@@ -166,12 +166,11 @@ public class ExpenseService {
                     .expenseCategoryCode(expense.getExpenseCategoryCode())
                     .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
                     .expenseDescription("Refund expense transaction.")
-                    .expenseAmount(expense.getExpenseAmount().negate())
+                    .expenseAmount(expense.getExpenseAmount().abs())
                     .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                     .expensePaymentDate(expenseRefundDate)
                     .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
                     .expenseDocumentFileName(expense.getExpenseDocumentFileName())
-                    .expenseReconcileDate(expense.getExpenseReconcileDate())
                     .expenseUpdate(false)
                     .build();
             expenseRepository.save(newExpense);

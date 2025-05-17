@@ -28,10 +28,10 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
      * @param appointmentId appointmentId
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentReconcileDate = :reconcileDate " +
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentReconcileDate = :paymentReconcileDate " +
             "WHERE a.appointmentId = :appointmentId")
     void reconcilePayment(@Param("appointmentId") String appointmentId,
-                          @Param("reconcileDate") LocalDate reconcileDate);
+                          @Param("paymentReconcileDate") LocalDate paymentReconcileDate);
 
     /**
      * Update payment status and date
@@ -72,7 +72,7 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
      * Get non-reconciled payment list for a specific date range
      * @param startDate startDate
      * @param endDate endDate
-     * @return List of not reconciled payments
+     * @return List of appointment payments
      */
     @Query(value = "SELECT a FROM AppointmentPaymentEntity a WHERE a.paymentReconcileDate is null AND " +
             "a.paymentDate BETWEEN :startDate AND :endDate ORDER BY a.paymentDate DESC")

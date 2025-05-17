@@ -1,7 +1,7 @@
 
 
 -- REASON LIST TABLE
-CREATE TABLE "secure-prints".rsn_list (
+CREATE TABLE rsn_list (
 	rsn_id int4 NOT NULL,
 	svc_code varchar(10) NOT NULL,
 	rsn_code varchar(10) NOT NULL,
@@ -11,14 +11,14 @@ CREATE TABLE "secure-prints".rsn_list (
 
 
 -- COMPANY INFORMATION TABLE
-CREATE SEQUENCE "secure-prints".com_info_seq
+CREATE SEQUENCE com_info_seq
 	INCREMENT BY 1
 	MINVALUE 0
 	MAXVALUE 10000
 	START 1
 	CACHE 1
 	NO CYCLE;
-CREATE TABLE "secure-prints".com_info (
+CREATE TABLE com_info (
 	com_id int4 NOT NULL DEFAULT nextval('com_info_seq'),
 	com_name varchar(60) NOT NULL,
 	com_address_1 varchar(100) NOT NULL,
@@ -31,14 +31,14 @@ CREATE TABLE "secure-prints".com_info (
 
 
 -- USER INFORMATION TABLE
-CREATE SEQUENCE "secure-prints".usr_info_seq
+CREATE SEQUENCE usr_info_seq
 	INCREMENT BY 1
 	MINVALUE 0
 	MAXVALUE 10000
 	START 1
 	CACHE 1
 	NO CYCLE;
-CREATE TABLE "secure-prints".usr_info (
+CREATE TABLE usr_info (
 	usr_id int4 NOT NULL DEFAULT nextval('usr_info_seq'),
 	usr_full_name varchar(60) NOT NULL,
 	usr_name varchar(20) NOT NULL,
@@ -50,14 +50,14 @@ CREATE TABLE "secure-prints".usr_info (
 
 
 -- CUSTOMER APPOINTMENT INFORMATION TABLE
-CREATE SEQUENCE "secure-prints".appt_info_seq
+CREATE SEQUENCE appt_info_seq
 	INCREMENT BY 1
 	MINVALUE 1000
 	MAXVALUE 1000000
 	START 1001
 	CACHE 1
 	NO CYCLE;
-CREATE TABLE "secure-prints".appt_info (
+CREATE TABLE appt_info (
 	appt_id varchar(10) NOT NULL,
 	cust_first_name varchar(30) NOT NULL,
 	cust_last_name varchar(30) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE "secure-prints".appt_info (
 
 
 -- CUSTOMER PAYMENT TABLE
-CREATE TABLE "secure-prints".appt_pymt (
+CREATE TABLE appt_pymt (
 	appt_id varchar(10) NOT NULL,
 	svc_amt numeric(6, 2) NOT NULL,
 	bci_amt numeric(6, 2) NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE "secure-prints".appt_pymt (
 
 
 -- INVOICE INFORMATION TABLE
-CREATE TABLE "secure-prints".inv_info (
+CREATE TABLE inv_info (
 	inv_no varchar(15) NOT NULL,
 	inv_payee_name varchar(80) NOT NULL,
 	inv_dt date NOT NULL,
@@ -111,14 +111,14 @@ CREATE TABLE "secure-prints".inv_info (
 
 
 -- EXPENSE INFORMATION TABLE
-CREATE SEQUENCE "secure-prints".exp_info_seq
+CREATE SEQUENCE exp_info_seq
 	INCREMENT BY 1
 	MINVALUE 0
 	MAXVALUE 10000
 	START 1
 	CACHE 1
 	NO CYCLE;
-CREATE TABLE "secure-prints".exp_info (
+CREATE TABLE exp_info (
 	exp_id int8 NOT NULL,
 	exp_payee_name varchar(80) NOT NULL,
 	exp_ref_no varchar(15) NOT NULL,
