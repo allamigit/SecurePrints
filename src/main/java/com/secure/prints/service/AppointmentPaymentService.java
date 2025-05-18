@@ -5,11 +5,13 @@ import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.PaymentStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional
 public class AppointmentPaymentService {
 
     private final AppointmentPaymentRepository appointmentPaymentRepository;

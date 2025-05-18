@@ -56,4 +56,34 @@ public class TimestampUtil {
                || timestamp.getDayOfWeek() == DayOfWeek.SUNDAY;
     }
 
+    /**
+     * Format local date as 'MMM dd, yyyy'
+     * @param date date
+     * @return Formatted local date
+     */
+    public static String formatDate(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy");
+        return date.format(formatter);
+    }
+
+    /**
+     * Format offset timestamp as 'EEEE, MMM dd, yyyy @ h:mm a'
+     * @param timestamp timestamp
+     * @return Formatted offset timestamp
+     */
+    public static String formatDateTime(OffsetDateTime timestamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy @ h:mm a");
+        return timestamp.format(formatter);
+    }
+
+    /**
+     * Format offset timestamp as 'MM/dd/yyyy - h:mm a'
+     * @param timestamp timestamp
+     * @return Formatted offset timestamp
+     */
+    public static String formatTimestamp(OffsetDateTime timestamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy - h:mm a");
+        return timestamp.format(formatter);
+    }
+
 }

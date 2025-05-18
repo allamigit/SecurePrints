@@ -4,10 +4,12 @@ import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class UserService {
 
     private static UserRepository userRepository;
