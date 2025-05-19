@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
@@ -29,8 +30,9 @@ public class UserService {
      * @param userDetails userDetails
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus addUser(UserEntity userDetails) {
-        int responseCode = 409;
+        int responseCode;
         String responseMessage;
         try {
             userDetails.setUserId(userRepository.getNextUserId());
@@ -56,6 +58,7 @@ public class UserService {
      * Get all users
      * @return list of all users
      */
+    @RequiresLogin
     public static List<UserEntity> getAllUsers() {
         usersList = userRepository.findAll();
         return usersList;
@@ -70,14 +73,14 @@ public class UserService {
         List<UserEntity> resultList = usersList.stream()
                 .filter(u -> u.getUserName().equals(userName))
                 .toList();
-        userEntity = !resultList.isEmpty() ? resultList.get(0) : null;
-        return userEntity;
+        return !resultList.isEmpty() ? resultList.get(0) : null;
     }
 
     /**
      * Update User Details
      * @param userDetails userDetails
      */
+    @RequiresLogin
     public ApiStatus updateUserDetails(UserEntity userDetails) {
         int responseCode = 409;
         String responseMessage;
@@ -149,11 +152,10 @@ public class UserService {
             userEntity = null;
         }
 
-        ApiStatus apiStatus = ApiStatus.builder()
+        return ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
                 .build();
-        return apiStatus;
     }
 
     /**

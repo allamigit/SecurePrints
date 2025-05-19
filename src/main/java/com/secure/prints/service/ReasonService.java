@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.ReasonRepository;
 import com.secure.prints.database.entity.ReasonEntity;
 import com.secure.prints.model.ApiStatus;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
@@ -76,6 +78,7 @@ public class ReasonService {
      * Reload rsn_list table data into bciReasonList and fbiReasonList
      * @return apiStatus
      */
+    @RequiresLogin
     public static ApiStatus refreshReasonList() {
         reasonList = reasonRepository.findAll();
         bciReasonList = reasonRepository.getAllReasonsByType("BCI");
@@ -92,27 +95,30 @@ public class ReasonService {
      * @param fileName fileName
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus importReasonDataFile(String fileName) {
         Path filePath = Paths.get(fileLocalPath, fileName);
-        List<String> fileLines = null;
+        List<String> fileLines;
         try (Stream<String> lines = Files.lines(filePath)) {
             fileLines = lines.toList();
+            reasonRepository.removeAllReasonData();
+            for(int id = 0; id < Objects.requireNonNull(fileLines).size(); id++) {
+                String[] eachLine = fileLines.get(id).split(", ");
+                String[] lineData = eachLine[0].split("~");
+                ReasonEntity reasonEntity = ReasonEntity.builder()
+                        .reasonId(id + 1)
+                        .reasonListType(lineData[0])
+                        .reasonCode(lineData[1])
+                        .reasonDescription(lineData[2].replace(",", ", "))
+                        .build();
+                reasonRepository.save(reasonEntity);
+            }
         }
         catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        reasonRepository.removeAllReasonData();
-        for(int id = 0; id < fileLines.size(); id++) {
-            String[] eachLine = fileLines.get(id).split(", ");
-            String[] lineData = eachLine[0].split("~");
-            ReasonEntity reasonEntity = ReasonEntity.builder()
-                    .reasonId(id)
-                    .reasonListType(lineData[0])
-                    .reasonCode(lineData[1])
-                    .reasonDescription(lineData[2].replace(",", ", "))
+            return ApiStatus.builder()
+                    .responseCode(409)
+                    .responseMessage("Reason data file failed to import. " + e.getMessage())
                     .build();
-            reasonRepository.save(reasonEntity);
         }
 
         return ApiStatus.builder()

@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.ApiStatus;
@@ -31,6 +32,7 @@ public class AppointmentPaymentService {
      * @param appointmentId appointmentId
      * @return AppointmentPaymentEntity
      */
+    @RequiresLogin
     public AppointmentPaymentEntity getPaymentDetails(String appointmentId) {
         return appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
     }
@@ -42,6 +44,7 @@ public class AppointmentPaymentService {
      * @param showNonReconciled showNonReconciled
      * @return List of payments
      */
+    @RequiresLogin
     public List<AppointmentPaymentEntity> getAllPayments(LocalDate startDate, LocalDate endDate, boolean showNonReconciled) {
         List<AppointmentPaymentEntity> resultList = null;
         if(startDate != null && endDate != null) {
@@ -61,6 +64,7 @@ public class AppointmentPaymentService {
      * @param appointmentPayment appointmentPayment
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus updatePaymentDetails(AppointmentPaymentEntity appointmentPayment) {
         try {
             appointmentPayment.setServiceAmount(appointmentPayment.getServiceAmount().abs());
@@ -85,6 +89,7 @@ public class AppointmentPaymentService {
      * @param paymentReconcileDate paymentReconcileDate
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus reconcilePayment(String appointmentId, LocalDate paymentReconcileDate) {
         responseCode = 409;
         AppointmentPaymentEntity appointmentPayment = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
@@ -110,6 +115,7 @@ public class AppointmentPaymentService {
      * @param paymentRefundDate paymentRefundDate
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus refundPayment(String appointmentId, LocalDate paymentRefundDate) {
         responseCode = 409;
         AppointmentPaymentEntity appointmentPayment = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);

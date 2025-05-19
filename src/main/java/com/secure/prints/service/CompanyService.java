@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.CompanyRepository;
 import com.secure.prints.database.entity.CompanyEntity;
 import com.secure.prints.model.ApiStatus;
@@ -18,7 +19,7 @@ public class CompanyService {
      * @param companyRepository companyRepository
      */
     public CompanyService(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
+        CompanyService.companyRepository = companyRepository;
     }
 
     /**
@@ -26,6 +27,7 @@ public class CompanyService {
      * @param companyId companyId
      * @return CompanyEntity
      */
+    @RequiresLogin
     public static CompanyEntity getCompanyDetails(int companyId) {
         companyEntity = companyRepository.findCompanyById(companyId);
         return companyEntity;
@@ -35,6 +37,7 @@ public class CompanyService {
      * Update Company Details
      * @param companyDetails companyDetails
      */
+    @RequiresLogin
     public ApiStatus updateCompanyDetails(CompanyEntity companyDetails) {
         int responseCode = 409;
         String responseMessage;

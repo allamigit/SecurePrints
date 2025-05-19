@@ -85,11 +85,14 @@ public class AppointmentInformationController {
     /**
      * Get appointment details
      * @param appointmentId appointmentId
-     * @return AppointmentInformationEntity
+     * @return ApiResponse
      */
     @GetMapping(value = "appointment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public AppointmentInformationEntity getAppointmentDetails(@RequestParam(name = "appointmentId") String appointmentId) {
-        return appointmentInformationService.getAppointmentDetails(appointmentId);
+    public ApiResponse getAppointmentDetails(HttpServletResponse response,
+                                             @RequestParam(name = "appointmentId") String appointmentId) {
+        ApiResponse apiResponse = appointmentInformationService.getAppointmentDetails(appointmentId);
+        response.setStatus(apiResponse.getApiStatus().getResponseCode());
+        return apiResponse;
     }
 
     /**

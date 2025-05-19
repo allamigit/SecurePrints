@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.model.ExpenseCategory;
 import com.secure.prints.model.ExpenseCode;
 import com.secure.prints.model.ExpenseSubcategory;
@@ -22,6 +23,7 @@ public class ExpenseTypeService {
      * Generate Expense Type list for categories and subcategories
      * @return List of ExpenseType
      */
+    @RequiresLogin
     public static List<ExpenseType> generateExpenseTypeList() {
         ExpenseCategory expenseCategory1 = new ExpenseCategory(400, "Operating Expenses");
         ExpenseCategory expenseCategory2 = new ExpenseCategory(500, "Non-Operating Expenses");
@@ -104,6 +106,7 @@ public class ExpenseTypeService {
      * @param keyword keyword
      * @return Filtered list for keyword
      */
+    @RequiresLogin
     public static List<ExpenseType> searchExpenseTypeList(String keyword) {
         List<ExpenseType> resultList = expenseTypeList;
         String lowerKeyword = keyword.toLowerCase();
@@ -129,6 +132,7 @@ public class ExpenseTypeService {
      * @param subcategoryName subcategoryName
      * @return Optional of codes value
      */
+    @RequiresLogin
     public static ExpenseCode getExpenseCode(String subcategoryName) {
         Optional<ExpenseCode> optionalResult = expenseTypeList.stream()
                 .flatMap(data -> data.getExpenseSubcategories().stream()

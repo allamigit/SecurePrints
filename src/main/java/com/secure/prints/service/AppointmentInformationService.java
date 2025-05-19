@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
@@ -137,11 +138,10 @@ public class AppointmentInformationService {
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
                 .build();
-        ApiResponse apiResponse = ApiResponse.builder()
+        return ApiResponse.builder()
                 .apiStatus(apiStatus)
                 .apiResponse(appointmentResponse)
                 .build();
-        return apiResponse;
     }
 
     /**
@@ -155,7 +155,7 @@ public class AppointmentInformationService {
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponse();
         int appointmentStatusCode = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
@@ -214,7 +214,7 @@ public class AppointmentInformationService {
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponse();
         int appointmentStatusCode = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
@@ -265,22 +265,20 @@ public class AppointmentInformationService {
      * @param paymentMethodName paymentMethodName
      * @return ApiResponse
      */
+    @RequiresLogin
     public ApiResponse completeAppointment(String appointmentId, String paymentMethodName) {
         responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponse();
         int appointmentStatusCode = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
         }
 
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
-        if(!UserService.isLoginSessionActive()) {
-            responseCode = 401;
-            responseMessage = "There is no active login session.";
-        } else if(appointmentInformationEntity == null) {
+        if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to complete. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
@@ -341,10 +339,17 @@ public class AppointmentInformationService {
     /**
      * Get appointment details by appointment ID
      * @param appointmentId appointmentId
-     * @return AppointmentInformationEntity
+     * @return ApiResponse
      */
-    public AppointmentInformationEntity getAppointmentDetails(String appointmentId) {
-        return appointmentInformationRepository.findByAppointmentId(appointmentId);
+    @RequiresLogin
+    public ApiResponse getAppointmentDetails(String appointmentId) {
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findByAppointmentId(appointmentId);
+        responseCode = appointment != null ? 200 : 409;
+        responseMessage = appointment != null ? "Appointment details retrieved." : "Appointment ID not found.";
+        return ApiResponse.builder()
+                .apiStatus(new ApiStatus(responseCode, responseMessage))
+                .apiResponse(appointment)
+                .build();
     }
 
     /**
@@ -354,6 +359,7 @@ public class AppointmentInformationService {
      * @param showByAppointmentDate showByAppointmentDate
      * @return List of appointments
      */
+    @RequiresLogin
     public List<AppointmentInformationEntity> getAllAppointments(LocalDate startDate, LocalDate endDate, boolean showByAppointmentDate) {
         List<AppointmentInformationEntity> resultList = null;
         if(startDate != null && endDate != null) {

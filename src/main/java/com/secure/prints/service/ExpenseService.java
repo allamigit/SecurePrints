@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.ApiStatus;
@@ -32,6 +33,7 @@ public class ExpenseService {
      * @param expense expense
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus addExpenseDetails(ExpenseEntity expense) {
         try {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -66,6 +68,7 @@ public class ExpenseService {
      * @param expenseId expenseId
      * @return ExpenseEntity
      */
+    @RequiresLogin
     public ExpenseEntity getExpenseDetails(long expenseId) {
         return expenseRepository.findByExpenseId(expenseId);
     }
@@ -77,6 +80,7 @@ public class ExpenseService {
      * @param showNonReconciled showNonReconciled
      * @return List of expenses
      */
+    @RequiresLogin
     public List<ExpenseEntity> getAllExpenses(LocalDate startDate, LocalDate endDate, boolean showNonReconciled) {
         List<ExpenseEntity> resultList = null;
         if(startDate != null && endDate != null) {
@@ -96,6 +100,7 @@ public class ExpenseService {
      * @param expense expense
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
         try {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -129,6 +134,7 @@ public class ExpenseService {
      * @param expenseReconcileDate expenseReconcileDate
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus reconcileExpense(long expenseId, LocalDate expenseReconcileDate) {
         ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
         if(expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
@@ -152,6 +158,7 @@ public class ExpenseService {
      * @param expenseRefundDate expenseRefundDate
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus refundExpense(long expenseId, LocalDate expenseRefundDate) {
         ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
         if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
