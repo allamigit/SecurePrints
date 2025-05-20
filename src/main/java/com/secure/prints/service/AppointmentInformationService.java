@@ -8,9 +8,12 @@ import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.*;
 import com.secure.prints.database.AppointmentInformationRepository;
 import com.secure.prints.util.TimestampUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -384,7 +387,8 @@ public class AppointmentInformationService {
         String strDate = selectedDate.toString() + " ";
         List<AppointmentTime> timeList = new ArrayList<>();
         DateRange dateRange = TimestampUtil.getOffsetDateRange(selectedDate, selectedDate);
-        if(!UserService.isLoginSessionActive() && TimestampUtil.isValidTimestamp(dateRange.getEndTimestamp())) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if(!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(dateRange.getEndTimestamp())) {
             return timeList;
         }
 
@@ -424,7 +428,7 @@ public class AppointmentInformationService {
 
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository
                 .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
-        if(UserService.isLoginSessionActive() || appointmentInformationEntityList != null) {
+        if(UserService.isUserLoggedIn(request) || appointmentInformationEntityList != null) {
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
                 String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
                         .toString().substring(0, 16).replace("T", " ") + ":00";
@@ -435,7 +439,7 @@ public class AppointmentInformationService {
                         break;
                     }
                     String strApptTs = timeList.get(i).getAppointmentTimestamp();
-                    if(!UserService.isLoginSessionActive() && (strApptTs.equals(strTimestamp) || TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
+                    if(!UserService.isUserLoggedIn(request) && (strApptTs.equals(strTimestamp) || TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
                         timeList.remove(i);
                         listSize--;
                         i--;

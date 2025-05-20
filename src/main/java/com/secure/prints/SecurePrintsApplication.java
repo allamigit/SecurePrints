@@ -14,7 +14,6 @@ public class SecurePrintsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SecurePrintsApplication.class, args);
 		CompanyService.getCompanyDetails(1);
-		UserService.getAllUsers();
 		ReasonService.refreshReasonList();
 		ExpenseTypeService.generateExpenseTypeList();
 	}

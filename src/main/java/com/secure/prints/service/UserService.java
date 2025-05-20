@@ -4,6 +4,8 @@ import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +16,7 @@ import java.util.List;
 public class UserService {
 
     private static UserRepository userRepository;
-    private static List<UserEntity> usersList;
-    private static UserEntity userEntity;
+    private static final String USER_SESSION_KEY = "loggedInUser";
 
     /**
      * Constructor for UserService
@@ -59,21 +60,18 @@ public class UserService {
      * @return list of all users
      */
     @RequiresLogin
-    public static List<UserEntity> getAllUsers() {
-        usersList = userRepository.findAll();
-        return usersList;
+    public List<UserEntity> getAllUsers() {
+       return userRepository.findAll();
     }
 
     /**
      * Get User Details
-     * @param userName userName
+     * @param userId userId
      * @return UserEntity
      */
-    public static UserEntity getUserByUserName(String userName) {
-        List<UserEntity> resultList = usersList.stream()
-                .filter(u -> u.getUserName().equals(userName))
-                .toList();
-        return !resultList.isEmpty() ? resultList.get(0) : null;
+    @RequiresLogin
+    public UserEntity getUserDetails(int userId) {
+        return userRepository.findByUserId(userId);
     }
 
     /**
@@ -84,23 +82,15 @@ public class UserService {
     public ApiStatus updateUserDetails(UserEntity userDetails) {
         int responseCode = 409;
         String responseMessage;
-        List<UserEntity> resultList = usersList.stream()
-                .filter(u -> u.getUserId().equals(userDetails.getUserId()))
-                .toList();
-        if(resultList.get(0).equals(userDetails)) {
-            responseMessage = "There is no change to update.";
-        } else {
-            try {
-                userRepository.save(userDetails);
-                getAllUsers();
-                responseCode = 200;
-                responseMessage = "User details updated successfully.";
-            } catch (Exception e) {
-                responseCode = 400;
-                responseMessage = e.getMessage();
-                if(responseMessage.contains("unique constraint")) {
-                    responseMessage = "Duplicate user name.";
-                }
+        try {
+            userRepository.save(userDetails);
+            responseCode = 200;
+            responseMessage = "User details updated successfully.";
+        } catch (Exception e) {
+            responseCode = 400;
+            responseMessage = e.getMessage();
+            if(responseMessage.contains("unique constraint")) {
+                responseMessage = "Duplicate user name.";
             }
         }
 
@@ -116,10 +106,10 @@ public class UserService {
      * @param userPassword userPassword
      * @return ApiStatus
      */
-    public static ApiStatus userLogin(String userName, String userPassword) {
+    public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
         int responseCode = 401;
         String responseMessage;
-        userEntity = getUserByUserName(userName);
+        UserEntity userEntity = userRepository.userLogin(userName, userPassword);
         if(userEntity == null) {
             responseMessage = "User not found.";
         } else if(!userEntity.getUserStatus()) {
@@ -127,8 +117,10 @@ public class UserService {
         } else if(!userEntity.getUserPassword().equals(userPassword)) {
             responseMessage = "Incorrect password.";
         } else {
+            HttpSession session = request.getSession(true);
+            session.setAttribute(USER_SESSION_KEY, userEntity.getUserName());
             responseCode = 200;
-            responseMessage = "Logged in successfully.";
+            responseMessage = userEntity.getUserFullName() + ", logged in as: " + userEntity.getUserName();
         }
 
         return ApiStatus.builder()
@@ -141,15 +133,16 @@ public class UserService {
      * User Logout
      * @return ApiStatus
      */
-    public static ApiStatus userLogout() {
+    public static ApiStatus userLogout(HttpServletRequest request) {
         int responseCode = 409;
         String responseMessage;
-        if(userEntity == null) {
+        HttpSession session = request.getSession(false);
+        if(session == null) {
             responseMessage = "There is no active login session.";
         } else {
             responseCode = 200;
-            responseMessage = "Logged out successfully.";
-            userEntity = null;
+            responseMessage = session.getAttribute(USER_SESSION_KEY) + ", logged out successfully.";
+            session.invalidate();
         }
 
         return ApiStatus.builder()
@@ -159,11 +152,12 @@ public class UserService {
     }
 
     /**
-     * Checks if there is an active login session
+     * Checks if the user is logged in
      * @return TRUE/FALSE
      */
-    public static boolean isLoginSessionActive() {
-        return userEntity != null;
+    public static boolean isUserLoggedIn(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return session != null && session.getAttribute(USER_SESSION_KEY) != null;
     }
 
 }

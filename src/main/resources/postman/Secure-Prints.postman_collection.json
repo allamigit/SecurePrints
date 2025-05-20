@@ -162,7 +162,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user?userName=admin",
+							"raw": "{{url}}/secure-prints/user?userId=1",
 							"host": [
 								"{{url}}"
 							],
@@ -172,8 +172,8 @@
 							],
 							"query": [
 								{
-									"key": "userName",
-									"value": "admin"
+									"key": "userId",
+									"value": "1"
 								}
 							]
 						}

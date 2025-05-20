@@ -3,6 +3,7 @@ package com.secure.prints.controller;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -41,18 +42,18 @@ public class UserController {
      * @return list of all users
      */
     @GetMapping(value = "all-users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static List<UserEntity> getAllUsers() {
-        return UserService.getAllUsers();
+    public List<UserEntity> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     /**
      * Get User Details
-     * @param userName userName
+     * @param userId userId
      * @return UserEntity
      */
     @GetMapping(value = "user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static UserEntity getUserByUserName(@RequestParam(name = "userName") String userName) {
-        return UserService.getUserByUserName(userName);
+    public UserEntity getUserDetails(@RequestParam(name = "userId") int userId) {
+        return userService.getUserDetails(userId);
     }
 
     /**
@@ -74,10 +75,10 @@ public class UserController {
      * @return UserLoginResponse
      */
     @PostMapping(value = "login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static ApiStatus userLogin(HttpServletResponse response,
+    public static ApiStatus userLogin(HttpServletRequest request, HttpServletResponse response,
                                       @RequestParam(name = "userName") String userName,
                                       @RequestParam(name = "userPassword") String userPassword) {
-        ApiStatus apiStatus = UserService.userLogin(userName, userPassword);
+        ApiStatus apiStatus = UserService.userLogin(request, userName, userPassword);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }
@@ -87,8 +88,8 @@ public class UserController {
      * @return UserLoginResponse
      */
     @PostMapping(value = "logout", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static ApiStatus userLogout(HttpServletResponse response) {
-        ApiStatus apiStatus = UserService.userLogout();
+    public static ApiStatus userLogout(HttpServletRequest request, HttpServletResponse response) {
+        ApiStatus apiStatus = UserService.userLogout(request);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }
