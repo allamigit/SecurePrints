@@ -27,7 +27,6 @@ public class CompanyService {
      * @param companyId companyId
      * @return CompanyEntity
      */
-    @RequiresLogin
     public static CompanyEntity getCompanyDetails(int companyId) {
         companyEntity = companyRepository.findCompanyById(companyId);
         return companyEntity;

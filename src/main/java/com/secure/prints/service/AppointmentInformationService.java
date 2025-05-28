@@ -63,6 +63,10 @@ public class AppointmentInformationService {
     public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if(UserService.isUserLoggedIn(request) && appointmentTimestamp.toLocalDate().isBefore(currentTimestamp.toLocalDate())) {
+            currentTimestamp = appointmentTimestamp;
+        }
         AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
         if(appointmentResponse != null) {

@@ -30,6 +30,14 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     ExpenseEntity findByExpenseId(@Param("expenseId") long expenseId);
 
     /**
+     * Get Expense Details by expenseReferenceNumber
+     * @param expenseReferenceNumber expenseReferenceNumber
+     * @return ExpenseEntity
+     */
+    @Query(value = "SELECT e FROM ExpenseEntity e WHERE e.expenseReferenceNumber = :expenseReferenceNumber")
+    ExpenseEntity findByExpenseReferenceNumber(@Param("expenseReferenceNumber") String expenseReferenceNumber);
+
+    /**
      * Reconcile Expense
      * @param expenseId expenseId
      * @param expenseReconcileDate expenseReconcileDate
