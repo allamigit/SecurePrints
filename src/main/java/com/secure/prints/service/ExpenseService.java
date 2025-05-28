@@ -211,7 +211,7 @@ public class ExpenseService {
                 .expenseReferenceDate(expense.getExpenseReferenceDate())
                 .expenseCategoryCode(expense.getExpenseCategoryCode())
                 .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
-                .expenseDescription("Refund expense transaction.")
+                .expenseDescription("Refund CC Reader fee to customer.")
                 .expenseAmount(expense.getExpenseAmount())
                 .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                 .expensePaymentDate(paymentRefundDate)
