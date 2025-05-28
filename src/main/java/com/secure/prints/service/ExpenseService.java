@@ -160,9 +160,11 @@ public class ExpenseService {
      */
     @RequiresLogin
     public ApiStatus refundExpense(long expenseId, LocalDate expenseRefundDate) {
+        responseCode = 409;
         ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
-        if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
-            responseCode = 409;
+        if(expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+            responseMessage = "Invalid payment status to refund. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
+        } else if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
             responseMessage = "Refund date must be at the same or after payment date.";
         } else {
             expense.setExpenseUpdate(false);
