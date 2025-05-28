@@ -193,4 +193,34 @@ public class ExpenseService {
                 .build();
     }
 
+    /**
+     * Refund CC Reader Fee
+     * @param expenseReferenceNumber expenseReferenceNumber
+     * @param paymentRefundDate paymentRefundDate
+     * @return expenseAmount
+     */
+    @RequiresLogin
+    public BigDecimal refundFee(String expenseReferenceNumber, LocalDate paymentRefundDate) {
+        ExpenseEntity expense = expenseRepository.findByExpenseReferenceNumber(expenseReferenceNumber);
+        expense.setExpenseUpdate(false);
+        expenseRepository.save(expense);
+        ExpenseEntity newExpense = ExpenseEntity.builder()
+                .expenseId(expenseRepository.getNextExpenseId())
+                .expensePayeeName(expense.getExpensePayeeName())
+                .expenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R")
+                .expenseReferenceDate(expense.getExpenseReferenceDate())
+                .expenseCategoryCode(expense.getExpenseCategoryCode())
+                .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
+                .expenseDescription("Refund expense transaction.")
+                .expenseAmount(expense.getExpenseAmount())
+                .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
+                .expensePaymentDate(paymentRefundDate)
+                .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
+                .expenseDocumentFileName(expense.getExpenseDocumentFileName())
+                .expenseUpdate(false)
+                .build();
+        expenseRepository.save(newExpense);
+        return expense.getExpenseAmount();
+    }
+
 }

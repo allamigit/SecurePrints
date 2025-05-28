@@ -4,7 +4,6 @@ import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
-import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.PaymentMethod;
 import com.secure.prints.model.PaymentStatus;
@@ -20,7 +19,6 @@ import java.util.List;
 public class AppointmentPaymentService {
 
     private final AppointmentPaymentRepository appointmentPaymentRepository;
-    private final ExpenseRepository expenseRepository;
     private final ExpenseService expenseService;
     private int responseCode;
     private String responseMessage;
@@ -28,14 +26,10 @@ public class AppointmentPaymentService {
     /**
      * Constructor for AppointmentPaymentService
      * @param appointmentPaymentRepository appointmentPaymentRepository
-     * @param expenseRepository expenseRepository
      * @param expenseService expenseService
      */
-    public AppointmentPaymentService(AppointmentPaymentRepository appointmentPaymentRepository,
-                                     ExpenseRepository expenseRepository,
-                                     ExpenseService expenseService) {
+    public AppointmentPaymentService(AppointmentPaymentRepository appointmentPaymentRepository, ExpenseService expenseService) {
         this.appointmentPaymentRepository = appointmentPaymentRepository;
-        this.expenseRepository = expenseRepository;
         this.expenseService = expenseService;
     }
 
@@ -151,9 +145,8 @@ public class AppointmentPaymentService {
             appointmentPaymentRepository.save(newAppointmentPayment);
             BigDecimal refundAmount = appointmentPayment.getServiceAmount();
             if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
-                ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber("ApptID-" + appointmentId);
-                expenseService.refundExpense(expenseEntity.getExpenseId(), paymentRefundDate);
-                refundAmount = refundAmount.add(expenseEntity.getExpenseAmount().abs());
+                BigDecimal expenseAmount = expenseService.refundFee("ApptID-" + appointmentId, paymentRefundDate);
+                refundAmount = refundAmount.add(expenseAmount.abs());
             }
             responseCode = 200;
             responseMessage = "Refund payment transaction successful for ($ " + refundAmount.toString() + ").";
