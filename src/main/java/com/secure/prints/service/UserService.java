@@ -80,7 +80,7 @@ public class UserService {
      */
     @RequiresLogin
     public ApiStatus updateUserDetails(UserEntity userDetails) {
-        int responseCode = 409;
+        int responseCode;
         String responseMessage;
         try {
             userRepository.save(userDetails);
@@ -90,6 +90,7 @@ public class UserService {
             responseCode = 400;
             responseMessage = e.getMessage();
             if(responseMessage.contains("unique constraint")) {
+                responseCode = 409;
                 responseMessage = "Duplicate user name.";
             }
         }

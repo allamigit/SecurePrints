@@ -113,8 +113,8 @@ public class ExpenseController {
      * @return List of ExpenseType
      */
     @GetMapping(value = "expense-type-list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static List<ExpenseType> generateExpenseTypeList() {
-        return ExpenseTypeService.generateExpenseTypeList();
+    public List<ExpenseType> generateExpenseTypeList() {
+        return ExpenseTypeService.expenseTypeList;
     }
 
     /**
@@ -123,7 +123,7 @@ public class ExpenseController {
      * @return Filtered list for keyword
      */
     @GetMapping(value = "search-expense-type-list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static List<ExpenseType> searchExpenseTypeList(@RequestParam(name = "keyword") String keyword) {
+    public List<ExpenseType> searchExpenseTypeList(@RequestParam(name = "keyword") String keyword) {
         return ExpenseTypeService.searchExpenseTypeList(keyword);
     }
 
@@ -133,7 +133,7 @@ public class ExpenseController {
      * @return Optional of codes value
      */
     @GetMapping(value = "get-expense-code", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static ExpenseCode getExpenseCode(@RequestParam(name = "subcategoryName") String subcategoryName) {
+    public ExpenseCode getExpenseCode(@RequestParam(name = "subcategoryName") String subcategoryName) {
         return ExpenseTypeService.getExpenseCode(subcategoryName);
     }
 

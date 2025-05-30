@@ -27,8 +27,8 @@ public class CompanyController {
      * @return CompanyEntity
      */
     @GetMapping(value = "company", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static CompanyEntity getCompanyDetails(@RequestParam(name = "companyId") int companyId) {
-        return CompanyService.getCompanyDetails(companyId);
+    public CompanyEntity getCompanyDetails(@RequestParam(name = "companyId") int companyId) {
+        return CompanyService.companyEntity;
     }
 
     /**

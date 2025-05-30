@@ -17,7 +17,7 @@ import java.util.Optional;
 @Transactional
 public class ExpenseTypeService {
 
-    private static List<ExpenseType> expenseTypeList;
+    public static List<ExpenseType> expenseTypeList;
 
     /**
      * Generate Expense Type list for categories and subcategories

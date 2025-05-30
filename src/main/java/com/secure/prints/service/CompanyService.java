@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CompanyService {
 
     private static CompanyRepository companyRepository = null;
-    private static CompanyEntity companyEntity;
+    public static CompanyEntity companyEntity;
 
     /**
      * Constructor for CompanyService
