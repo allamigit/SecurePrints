@@ -47,6 +47,7 @@ CREATE TABLE usr_info (
 	CONSTRAINT pk_usr_id PRIMARY KEY (usr_id),
 	CONSTRAINT uk_usr_name UNIQUE (usr_name)
 );
+CREATE INDEX idx_usr_name ON usr_info(usr_name);
 
 
 -- CUSTOMER APPOINTMENT INFORMATION TABLE
@@ -64,9 +65,9 @@ CREATE TABLE appt_info (
 	cust_email varchar(80) NULL,
 	cust_phone varchar(20) NULL,
 	svc_code varchar(10) NOT NULL,
-	bci_rsn_code varchar(10) NULL,
+	bci_rsn_code varchar(20) NULL,
 	bci_rsn_desc varchar(150) NULL,
-	fbi_rsn_code varchar(10) NULL,
+	fbi_rsn_code varchar(20) NULL,
 	fbi_rsn_desc varchar(150) NULL,
 	appt_ts timestamp NOT NULL DEFAULT now(),
 	appt_sts_code int4 NOT NULL,
@@ -136,6 +137,7 @@ CREATE TABLE exp_info (
 	CONSTRAINT pk_exp_id PRIMARY KEY (exp_id),
 	CONSTRAINT uk_exp_ref_no UNIQUE (exp_ref_no)
 );
+CREATE INDEX idx_exp_ref_no ON exp_info(exp_ref_no);
 
 
 -- INSERT DATA
