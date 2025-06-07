@@ -26,10 +26,10 @@ public class CleanupService {
     /**
      * Cleanup Cancelled appointments and payments every day at midnight
      */
-    @Scheduled(cron = "0 0 0 * * *")
-    public void cleanup() {
-        appointmentInformationRepository.cleanupCancelledAppointments();
-        appointmentPaymentRepository.cleanupCancelledPayments();
-    }
+//    @Scheduled(cron = "0 0 0 * * *")
+//    public void cleanup() {
+//        appointmentInformationRepository.cleanupCancelledAppointments();
+//        appointmentPaymentRepository.cleanupCancelledPayments();
+//    }
 
 }
