@@ -83,7 +83,7 @@ public class AppointmentInformationController {
     }
 
     /**
-     * Get appointment details
+     * Get appointment details by appointment ID
      * @param appointmentId appointmentId
      * @return ApiResponse
      */
@@ -93,6 +93,16 @@ public class AppointmentInformationController {
         ApiResponse apiResponse = appointmentInformationService.getAppointmentDetails(appointmentId);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;
+    }
+
+    /**
+     * Find appointment details by appointment ID
+     * @param appointmentId appointmentId
+     * @return ApiResponse
+     */
+    @GetMapping(value = "find-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean findAppointment(@RequestParam(name = "appointmentId") String appointmentId) {
+        return appointmentInformationService.findAppointment(appointmentId);
     }
 
     /**
