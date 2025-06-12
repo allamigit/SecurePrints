@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class CompanyController {
 
     private final CompanyService companyService;

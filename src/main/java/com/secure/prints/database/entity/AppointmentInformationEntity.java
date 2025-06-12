@@ -1,9 +1,7 @@
 package com.secure.prints.database.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.secure.prints.config.EncryptionConverter;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,15 +29,19 @@ public class AppointmentInformationEntity implements Serializable {
     private String appointmentId;
 
     @Column(name = "cust_first_name")
+    @Convert(converter = EncryptionConverter.class)
     private String customerFirstName;
 
     @Column(name = "cust_last_name")
+    @Convert(converter = EncryptionConverter.class)
     private String customerLastName;
 
     @Column(name = "cust_email")
+    @Convert(converter = EncryptionConverter.class)
     private String customerEmail;
 
     @Column(name = "cust_phone")
+    @Convert(converter = EncryptionConverter.class)
     private String customerPhone;
 
     @Column(name = "svc_code")

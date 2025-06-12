@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AppointmentInformationController {
 
     private final AppointmentInformationService appointmentInformationService;
@@ -98,7 +97,7 @@ public class AppointmentInformationController {
     /**
      * Find appointment details by appointment ID
      * @param appointmentId appointmentId
-     * @return ApiResponse
+     * @return TRUE = Not Found / FALSE = Found
      */
     @GetMapping(value = "find-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean findAppointment(@RequestParam(name = "appointmentId") String appointmentId) {

@@ -42,7 +42,7 @@ CREATE TABLE usr_info (
 	usr_id int4 NOT NULL DEFAULT nextval('usr_info_seq'),
 	usr_full_name varchar(60) NOT NULL,
 	usr_name varchar(20) NOT NULL,
-	usr_paswd varchar(20) NOT NULL,
+	usr_paswd text NOT NULL,
 	usr_sts boolean NOT NULL,
 	CONSTRAINT pk_usr_id PRIMARY KEY (usr_id),
 	CONSTRAINT uk_usr_name UNIQUE (usr_name)
@@ -63,7 +63,7 @@ CREATE TABLE appt_info (
 	cust_first_name varchar(30) NOT NULL,
 	cust_last_name varchar(30) NOT NULL,
 	cust_email varchar(80) NULL,
-	cust_phone varchar(20) NULL,
+	cust_phone varchar(30) NULL,
 	svc_code varchar(10) NOT NULL,
 	bci_rsn_code varchar(20) NULL,
 	bci_rsn_desc varchar(150) NULL,

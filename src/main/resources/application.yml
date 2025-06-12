@@ -26,6 +26,8 @@ spring:
 
 secure-prints:
   reason-data-file-path: C:\Users\moial\OneDrive\Desktop\SecurePrints\
+  encryption:
+    secret-key: mySuperSecretKey12345678
   appointment:
     cut-from-start-index: 0
     cut-from-end-index: 0

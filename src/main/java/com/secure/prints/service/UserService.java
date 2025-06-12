@@ -6,6 +6,8 @@ import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ public class UserService {
         String responseMessage;
         try {
             userDetails.setUserId(userRepository.getNextUserId());
+            userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
             userRepository.save(userDetails);
             getAllUsers();
             responseCode = 200;
@@ -83,6 +86,7 @@ public class UserService {
         int responseCode;
         String responseMessage;
         try {
+            userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
             userRepository.save(userDetails);
             responseCode = 200;
             responseMessage = "User details updated successfully.";
@@ -110,12 +114,12 @@ public class UserService {
     public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
         int responseCode = 401;
         String responseMessage;
-        UserEntity userEntity = userRepository.userLogin(userName, userPassword);
+        UserEntity userEntity = userRepository.userLogin(userName);
         if(userEntity == null) {
             responseMessage = "User not found.";
         } else if(!userEntity.getUserStatus()) {
             responseMessage = "User is not active.";
-        } else if(!userEntity.getUserPassword().equals(userPassword)) {
+        } else if(!validatePassword(userPassword, userEntity.getUserPassword())) {
             responseMessage = "Incorrect password.";
         } else {
             HttpSession session = request.getSession(true);
@@ -159,6 +163,27 @@ public class UserService {
     public static boolean isUserLoggedIn(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         return session != null && session.getAttribute(USER_SESSION_KEY) != null;
+    }
+
+    /**
+     * Password Encryptor
+     * @param rawPassword rawPassword
+     * @return Encrypted Password
+     */
+    private static String encryptPassword(String rawPassword) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.encode(rawPassword);
+    }
+
+    /**
+     * Validate entered password with DB password
+     * @param rawPassword rawPassword
+     * @param encryptedPassword encryptedPassword
+     * @return TRUE = Match / FALSE = Mismatch
+     */
+    private static boolean validatePassword(String rawPassword, String encryptedPassword) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.matches(rawPassword, encryptedPassword);
     }
 
 }

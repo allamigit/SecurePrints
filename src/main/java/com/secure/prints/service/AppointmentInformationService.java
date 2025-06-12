@@ -158,6 +158,7 @@ public class AppointmentInformationService {
      * @return ApiResponse
      */
     public ApiResponse rescheduleAppointment(String appointmentId, String strAppointmentTimestamp) {
+        responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
@@ -171,10 +172,8 @@ public class AppointmentInformationService {
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(strAppointmentTimestamp);
         String strNewAppointmentTs = appointmentTimestamp.toString().substring(0, appointmentTimestamp.toString().length() - 6) + "Z";
         if(appointmentInformationEntity == null) {
-            responseCode = 409;
             responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
-            responseCode = 409;
             responseMessage = "Invalid appointment status to reschedule. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else if(appointmentInformationEntity.getAppointmentTimestamp().toString().equals(strNewAppointmentTs)
                 && appointmentInformationEntity.getAppointmentStatusCode() != AppointmentStatus.Cancelled.getStatusCode()) {
@@ -221,6 +220,7 @@ public class AppointmentInformationService {
      * @return ApiResponse
      */
     public ApiResponse cancelAppointment(String appointmentId) {
+        responseCode = 409;
         ApiStatus apiStatus;
         AppointmentResponse appointmentResponse = null;
         ApiResponse apiResponse;
@@ -232,10 +232,8 @@ public class AppointmentInformationService {
 
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         if(appointmentInformationEntity == null) {
-            responseCode = 409;
             responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
-            responseCode = 409;
             responseMessage = "Invalid appointment status to cancel. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
             appointmentInformationRepository.cancelAppointment(appointmentId, currentTimestamp);
@@ -372,11 +370,11 @@ public class AppointmentInformationService {
     /**
      * Find appointment by appointment ID
      * @param appointmentId appointmentId
-     * @return ApiStatus
+     * @return TRUE = Not Found / FALSE = Found
      */
     public boolean findAppointment(String appointmentId) {
         AppointmentInformationEntity appointment = appointmentInformationRepository.findByAppointmentId(appointmentId);
-        return appointment == null || this.isAppointmentStatusCancelledOrCompleted(appointment.getAppointmentStatusCode());
+        return !(appointment == null || this.isAppointmentStatusCancelledOrCompleted(appointment.getAppointmentStatusCode()));
     }
 
     /**

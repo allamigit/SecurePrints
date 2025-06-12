@@ -30,11 +30,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     /**
      * Login User
      * @param userName userName
-     * @param userPassword userPassword
      * @return UserEntity
      */
-    @Query(value = "SELECT u FROM UserEntity u WHERE u.userName = :userName AND u.userPassword = :userPassword")
-    UserEntity userLogin(@Param("userName") String userName,
-                         @Param("userPassword") String userPassword);
+    @Query(value = "SELECT u FROM UserEntity u WHERE u.userName = :userName")
+    UserEntity userLogin(@Param("userName") String userName);
 
 }

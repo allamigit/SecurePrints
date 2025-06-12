@@ -71,12 +71,13 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/login?userName=admin&userPassword=admin",
+							"raw": "{{url}}/secure-prints/user/login?userName=admin&userPassword=admin",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
+								"user",
 								"login"
 							],
 							"query": [
@@ -99,12 +100,13 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/logout",
+							"raw": "{{url}}/secure-prints/user/logout",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
+								"user",
 								"logout"
 							]
 						}
@@ -118,7 +120,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userName\": \"admin3\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userName\": \"admin2\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -126,12 +128,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/secure-prints/add-user",
+							"raw": "{{url}}/secure-prints/user/add-user",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
+								"user",
 								"add-user"
 							]
 						}
@@ -144,12 +147,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-users",
+							"raw": "{{url}}/secure-prints/user/all-users",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
+								"user",
 								"all-users"
 							]
 						}
@@ -162,18 +166,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user?userId=1",
+							"raw": "{{url}}/secure-prints/user/user?userId=11",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
+								"user",
 								"user"
 							],
 							"query": [
 								{
 									"key": "userId",
-									"value": "1"
+									"value": "11"
 								}
 							]
 						}
@@ -195,12 +200,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/secure-prints/update-user",
+							"raw": "{{url}}/secure-prints/user/update-user",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
+								"user",
 								"update-user"
 							]
 						}
@@ -219,7 +225,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"testFirstName15\",\r\n    \"customerLastName\": \"testLastName15\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants22\",\r\n    \"appointmentTimestamp\": \"2025-06-06 13:45:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"testFirstName17\",\r\n    \"customerLastName\": \"testLastName17\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-12 13:45:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -245,7 +251,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/reschedule-appointment?appointmentId=1182&appointmentTimestamp=2025-06-06 10:45:00",
+							"raw": "{{url}}/secure-prints/reschedule-appointment?appointmentId=1200&appointmentTimestamp=2025-06-16 10:45:00",
 							"host": [
 								"{{url}}"
 							],
@@ -256,11 +262,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1182"
+									"value": "1200"
 								},
 								{
 									"key": "appointmentTimestamp",
-									"value": "2025-06-06 10:45:00"
+									"value": "2025-06-16 10:45:00"
 								}
 							]
 						}
@@ -273,7 +279,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/cancel-appointment?appointmentId=1179",
+							"raw": "{{url}}/secure-prints/cancel-appointment?appointmentId=1200",
 							"host": [
 								"{{url}}"
 							],
@@ -284,7 +290,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1179"
+									"value": "1200"
 								}
 							]
 						}
@@ -321,7 +327,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-06-10",
+							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-06-12",
 							"host": [
 								"{{url}}"
 							],
@@ -332,7 +338,31 @@
 							"query": [
 								{
 									"key": "selectedDate",
-									"value": "2025-06-10"
+									"value": "2025-06-12"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find Appointment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/find-appointment?appointmentId=1203",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"find-appointment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1203"
 								}
 							]
 						}
@@ -378,7 +408,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-05-14&endDate=2025-05-15&showByAppointmentDate=true",
+							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-06-10&endDate=2025-06-18&showByAppointmentDate=true",
 							"host": [
 								"{{url}}"
 							],
@@ -389,11 +419,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-05-14"
+									"value": "2025-06-10"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-05-15"
+									"value": "2025-06-18"
 								},
 								{
 									"key": "showByAppointmentDate",
@@ -410,7 +440,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/appointment?appointmentId=1116",
+							"raw": "{{url}}/secure-prints/appointment?appointmentId=1206",
 							"host": [
 								"{{url}}"
 							],
@@ -421,7 +451,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1116"
+									"value": "1206"
 								}
 							]
 						}
