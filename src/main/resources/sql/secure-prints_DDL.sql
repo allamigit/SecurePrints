@@ -120,7 +120,7 @@ CREATE SEQUENCE exp_info_seq
 	CACHE 1
 	NO CYCLE;
 CREATE TABLE exp_info (
-	exp_id int8 NOT NULL,
+	exp_id int8 NOT NULL DEFAULT nextval('exp_info_seq'),
 	exp_payee_name varchar(80) NOT NULL,
 	exp_ref_no varchar(15) NOT NULL,
 	exp_ref_dt date NOT NULL,
@@ -143,5 +143,5 @@ CREATE INDEX idx_exp_ref_no ON exp_info(exp_ref_no);
 -- INSERT DATA
 insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
-insert into usr_info values (default, 'Mawj Al-Lami', 'admin', 'admin', true);
+insert into usr_info values (default, 'Mawj Al-Lami', 'admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', true);
 

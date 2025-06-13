@@ -43,10 +43,9 @@ public class ExpenseService {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
-                expense.setExpenseId(expenseRepository.getNextExpenseId());
                 expense.setExpenseUpdate(true);
                 expenseRepository.save(expense);
-                responseCode = 200;
+                responseCode = 201;
                 responseMessage = "Expense Added.";
             }
         } catch (Exception e) {
@@ -170,7 +169,6 @@ public class ExpenseService {
             expense.setExpenseUpdate(false);
             expenseRepository.save(expense);
             ExpenseEntity newExpense = ExpenseEntity.builder()
-                    .expenseId(expenseRepository.getNextExpenseId())
                     .expensePayeeName(expense.getExpensePayeeName())
                     .expenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R")
                     .expenseReferenceDate(expense.getExpenseReferenceDate())
@@ -207,7 +205,6 @@ public class ExpenseService {
         expense.setExpenseUpdate(false);
         expenseRepository.save(expense);
         ExpenseEntity newExpense = ExpenseEntity.builder()
-                .expenseId(expenseRepository.getNextExpenseId())
                 .expensePayeeName(expense.getExpensePayeeName())
                 .expenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R")
                 .expenseReferenceDate(expense.getExpenseReferenceDate())

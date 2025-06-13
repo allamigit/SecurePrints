@@ -2,6 +2,7 @@ package com.secure.prints.database;
 
 import com.secure.prints.database.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,13 +13,6 @@ import java.util.List;
 @Repository
 @Transactional
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
-
-    /**
-     * Get next value of user sequence
-     * @return nextUserId
-     */
-    @Query(value = "SELECT nextval('usr_info_seq')")
-    int getNextUserId();
 
     /**
      * Get User Details
@@ -34,5 +28,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
      */
     @Query(value = "SELECT u FROM UserEntity u WHERE u.userName = :userName")
     UserEntity userLogin(@Param("userName") String userName);
+
+    /**
+     * Change User Password
+     * @param userName userName
+     * @param userPassword userPassword
+     */
+    @Modifying
+    @Query(value = "UPDATE UserEntity u SET u.userPassword = :userPassword WHERE u.userName = :userName")
+    void changeUserPassword(@Param("userName") String userName,
+                            @Param("userPassword") String userPassword);
 
 }

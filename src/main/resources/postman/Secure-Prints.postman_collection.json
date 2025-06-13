@@ -71,7 +71,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/login?userName=admin&userPassword=admin",
+							"raw": "{{url}}/secure-prints/user/login?userName=admin2&userPassword=admin2",
 							"host": [
 								"{{url}}"
 							],
@@ -83,11 +83,11 @@
 							"query": [
 								{
 									"key": "userName",
-									"value": "admin"
+									"value": "admin2"
 								},
 								{
 									"key": "userPassword",
-									"value": "admin"
+									"value": "admin2"
 								}
 							]
 						}
@@ -120,7 +120,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userName\": \"admin2\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userFullName\": \"User3\",\r\n    \"userName\": \"admin3\",\r\n    \"userPassword\": \"admin3\",\r\n    \"userStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -136,6 +136,39 @@
 								"secure-prints",
 								"user",
 								"add-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change User Password",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/user/change-password?userName=admin2&oldPassword=admin00&newPassword=admin00",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"user",
+								"change-password"
+							],
+							"query": [
+								{
+									"key": "userName",
+									"value": "admin2"
+								},
+								{
+									"key": "oldPassword",
+									"value": "admin00"
+								},
+								{
+									"key": "newPassword",
+									"value": "admin00"
+								}
 							]
 						}
 					},
@@ -166,7 +199,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/user?userId=11",
+							"raw": "{{url}}/secure-prints/user/user?userId=2",
 							"host": [
 								"{{url}}"
 							],
@@ -178,7 +211,7 @@
 							"query": [
 								{
 									"key": "userId",
-									"value": "11"
+									"value": "2"
 								}
 							]
 						}
@@ -703,7 +736,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-June-2025\",\r\n    \"expenseReferenceDate\": \"2025-06-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-06-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-July-2025\",\r\n    \"expenseReferenceDate\": \"2025-07-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-07-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

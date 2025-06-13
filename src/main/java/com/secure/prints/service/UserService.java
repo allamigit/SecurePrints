@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
@@ -38,11 +40,10 @@ public class UserService {
         int responseCode;
         String responseMessage;
         try {
-            userDetails.setUserId(userRepository.getNextUserId());
             userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
             userRepository.save(userDetails);
             getAllUsers();
-            responseCode = 200;
+            responseCode = 201;
             responseMessage = "User added successfully.";
         } catch (Exception e) {
             responseCode = 400;
@@ -99,6 +100,35 @@ public class UserService {
             }
         }
 
+        return ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+    }
+
+    /**
+     * Change User Password
+     * @param oldPassword oldPassword
+     * @param newPassword newPassword
+     * @return ApiStatus
+     */
+    @RequiresLogin
+    public ApiStatus changeUserPassword(String oldPassword, String newPassword) {
+        int responseCode = 409;
+        String responseMessage;
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession(false);
+        String userName = session.getAttribute(USER_SESSION_KEY).toString();
+        UserEntity userEntity = userRepository.userLogin(userName);
+        if(!validatePassword(oldPassword, userEntity.getUserPassword())) {
+            responseMessage = "Incorrect current password.";
+        } else if(oldPassword.equals(newPassword)) {
+            responseMessage = "The new password is the same of current password.";
+        } else {
+            userRepository.changeUserPassword(userName, encryptPassword(newPassword));
+            responseCode = 200;
+            responseMessage = "Password Changed.";
+        }
         return ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)

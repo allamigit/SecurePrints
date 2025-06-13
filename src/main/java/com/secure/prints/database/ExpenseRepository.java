@@ -16,13 +16,6 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
 
     /**
-     * Get next value of expense sequence
-     * @return nextExpenseId
-     */
-    @Query(value = "SELECT nextval('exp_info_seq')")
-    long getNextExpenseId();
-
-    /**
      * Get Expense Details
      * @param expenseId expenseId
      * @return ExpenseEntity
