@@ -16,18 +16,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     /**
      * Get User Details
-     * @param userId userId
-     * @return UserEntity
-     */
-    UserEntity findByUserId(int userId);
-
-    /**
-     * Login User
      * @param userName userName
      * @return UserEntity
      */
-    @Query(value = "SELECT u FROM UserEntity u WHERE u.userName = :userName")
-    UserEntity userLogin(@Param("userName") String userName);
+    UserEntity findByUserName(String userName);
 
     /**
      * Change User Password

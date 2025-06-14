@@ -21,18 +21,14 @@ public class UserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "usr_id")
-    private Integer userId;
-
-    @Column(name = "usr_full_name")
-    private String userFullName;
-
     @Column(name = "usr_name")
     private String userName;
 
     @Column(name = "usr_paswd")
     private String userPassword;
+
+    @Column(name = "usr_full_name")
+    private String userFullName;
 
     @Column(name = "usr_sts")
     private Boolean userStatus;

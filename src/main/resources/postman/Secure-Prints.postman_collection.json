@@ -71,7 +71,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/login?userName=admin2&userPassword=admin2",
+							"raw": "{{url}}/secure-prints/user/login?userName=admin&userPassword=admin",
 							"host": [
 								"{{url}}"
 							],
@@ -83,11 +83,11 @@
 							"query": [
 								{
 									"key": "userName",
-									"value": "admin2"
+									"value": "admin"
 								},
 								{
 									"key": "userPassword",
-									"value": "admin2"
+									"value": "admin"
 								}
 							]
 						}
@@ -120,7 +120,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userFullName\": \"User3\",\r\n    \"userName\": \"admin3\",\r\n    \"userPassword\": \"admin3\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userName\": \"admin2\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -199,7 +199,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/user?userId=2",
+							"raw": "{{url}}/secure-prints/user/user?userName=admin",
 							"host": [
 								"{{url}}"
 							],
@@ -210,8 +210,8 @@
 							],
 							"query": [
 								{
-									"key": "userId",
-									"value": "2"
+									"key": "userName",
+									"value": "admin"
 								}
 							]
 						}
@@ -258,7 +258,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"testFirstName17\",\r\n    \"customerLastName\": \"testLastName17\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-12 13:45:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"Mohammad Ibraheem\",\r\n    \"customerLastName\": \"Al-Lami\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-16 13:45:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -31,23 +31,13 @@ CREATE TABLE com_info (
 
 
 -- USER INFORMATION TABLE
-CREATE SEQUENCE usr_info_seq
-	INCREMENT BY 1
-	MINVALUE 0
-	MAXVALUE 10000
-	START 1
-	CACHE 1
-	NO CYCLE;
 CREATE TABLE usr_info (
-	usr_id int4 NOT NULL DEFAULT nextval('usr_info_seq'),
-	usr_full_name varchar(60) NOT NULL,
 	usr_name varchar(20) NOT NULL,
 	usr_paswd text NOT NULL,
+	usr_full_name varchar(60) NOT NULL,
 	usr_sts boolean NOT NULL,
-	CONSTRAINT pk_usr_id PRIMARY KEY (usr_id),
-	CONSTRAINT uk_usr_name UNIQUE (usr_name)
+	CONSTRAINT pk_usr_name PRIMARY KEY (usr_name)
 );
-CREATE INDEX idx_usr_name ON usr_info(usr_name);
 
 
 -- CUSTOMER APPOINTMENT INFORMATION TABLE
@@ -60,9 +50,9 @@ CREATE SEQUENCE appt_info_seq
 	NO CYCLE;
 CREATE TABLE appt_info (
 	appt_id varchar(10) NOT NULL,
-	cust_first_name varchar(30) NOT NULL,
-	cust_last_name varchar(30) NOT NULL,
-	cust_email varchar(80) NULL,
+	cust_first_name text NOT NULL,
+	cust_last_name text NOT NULL,
+	cust_email text NULL,
 	cust_phone varchar(30) NULL,
 	svc_code varchar(10) NOT NULL,
 	bci_rsn_code varchar(20) NULL,
@@ -143,5 +133,6 @@ CREATE INDEX idx_exp_ref_no ON exp_info(exp_ref_no);
 -- INSERT DATA
 insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
-insert into usr_info values (default, 'Mawj Al-Lami', 'admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', true);
+insert into usr_info values ('admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', 'Mawj Al-Lami', true);
+insert into usr_info values ('admin2', '$2a$10$kJdaPbXbet.a6z4tKT270uOMCU9zVO7LnQnJB0lbFQ41qtjOcnb2W', 'Mohammad Al-Lami', true);
 

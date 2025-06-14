@@ -70,12 +70,11 @@ public class UserService {
 
     /**
      * Get User Details
-     * @param userId userId
+     * @param userName userName
      * @return UserEntity
      */
-    @RequiresLogin
-    public UserEntity getUserDetails(int userId) {
-        return userRepository.findByUserId(userId);
+    public UserEntity getUserDetails(String userName) {
+        return userRepository.findByUserName(userName);
     }
 
     /**
@@ -119,7 +118,7 @@ public class UserService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpSession session = request.getSession(false);
         String userName = session.getAttribute(USER_SESSION_KEY).toString();
-        UserEntity userEntity = userRepository.userLogin(userName);
+        UserEntity userEntity = this.getUserDetails(userName);
         if(!validatePassword(oldPassword, userEntity.getUserPassword())) {
             responseMessage = "Incorrect current password.";
         } else if(oldPassword.equals(newPassword)) {
@@ -144,7 +143,7 @@ public class UserService {
     public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
         int responseCode = 401;
         String responseMessage;
-        UserEntity userEntity = userRepository.userLogin(userName);
+        UserEntity userEntity = userRepository.findByUserName(userName);
         if(userEntity == null) {
             responseMessage = "User not found.";
         } else if(!userEntity.getUserStatus()) {

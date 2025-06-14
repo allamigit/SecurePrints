@@ -49,12 +49,12 @@ public class UserController {
 
     /**
      * Get User Details
-     * @param userId userId
+     * @param userName userName
      * @return UserEntity
      */
     @GetMapping(value = "user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserEntity getUserDetails(@RequestParam(name = "userId") int userId) {
-        return userService.getUserDetails(userId);
+    public UserEntity getUserDetails(@RequestParam(name = "userName") String userName) {
+        return userService.getUserDetails(userName);
     }
 
     /**
