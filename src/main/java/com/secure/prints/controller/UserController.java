@@ -110,4 +110,13 @@ public class UserController {
         return apiStatus;
     }
 
+    /**
+     * Checks if the user is logged in
+     * @return TRUE/FALSE
+     */
+    @GetMapping(value = "logged-in", produces = MediaType.APPLICATION_JSON_VALUE)
+    public static boolean isUserLoggedIn(HttpServletRequest request) {
+        return UserService.isUserLoggedIn(request);
+    }
+
 }
