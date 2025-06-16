@@ -394,7 +394,9 @@ public class AppointmentInformationService {
             } else {
                 resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
             }
-        } else if(startDate == null && endDate == null) {
+        } else if(startDate == null && endDate == null && showByAppointmentDate) {
+            resultList = appointmentInformationRepository.getAllAppointmentTimes();
+        } else {
             resultList = appointmentInformationRepository.getAllAppointments();
         }
         return resultList;
