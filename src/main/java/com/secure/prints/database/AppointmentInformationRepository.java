@@ -74,24 +74,21 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     long getNextAppointmentId();
 
     /**
-     * Get appointment list for a specific date range for order time
+     * Get appointment list for a specific date range for appointment time
      * @param startTimestamp startTimestamp
      * @param endTimestamp endTimestamp
      * @return List of appointments
      */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.orderTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.orderTimestamp DESC")
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.orderTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getAllAppointmentsForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
                                                                       @Param("endTimestamp") OffsetDateTime endTimestamp);
 
     /**
-     * Get appointment list for a specific date range for appointment time
-     * @param startTimestamp startTimestamp
-     * @param endTimestamp endTimestamp
-     * @return List of appointment times
+     * Get appointment list for all Appointment Information table data ordered by appointment time
+     * @return List of appointments
      */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
-    List<AppointmentInformationEntity> getAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
-                                                                       @Param("endTimestamp") OffsetDateTime endTimestamp);
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.appointmentTimestamp ASC")
+    List<AppointmentInformationEntity> getAllAppointments();
 
     /**
      * Get active appointment list (Scheduled & Rescheduled) for a specific date range for appointment time
@@ -103,20 +100,6 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
             "(a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp) ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getActiveAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
                                                                              @Param("endTimestamp") OffsetDateTime endTimestamp);
-    /**
-     * Get appointment list for all Appointment Information table data ordered by appointment time
-     * @return List of appointments
-     */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.appointmentTimestamp ASC")
-    List<AppointmentInformationEntity> getAllAppointmentTimes();
-
-    /**
-     * Get appointment list for all Appointment Information table data ordered by order time
-     * @return List of appointments
-     */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.orderTimestamp DESC")
-    List<AppointmentInformationEntity> getAllAppointments();
-
     /**
      * Check appointment if it is duplicate
      * @param customerFirstName customerFirstName

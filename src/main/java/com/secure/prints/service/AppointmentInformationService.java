@@ -321,24 +321,25 @@ public class AppointmentInformationService {
                     PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees, LocalDate.now());
             responseCode = 200;
             responseMessage = "Appointment Completed.";
-            String serviceCode = appointmentInformationEntity.getServiceCode();
-            String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
-            String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
-            String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
-            String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
-            appointmentResponse = AppointmentResponse.builder()
-                    .appointmentId(appointmentId)
-                    .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
-                    .serviceName(ServiceType.getServiceName(serviceCode))
-                    .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonDescription(bciReasonDescription)
-                    .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonDescription(fbiReasonDescription)
-                    .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
-                    .appointmentStatus(AppointmentStatus.Completed.name())
-                    .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
-                    .build();
         }
+
+        String serviceCode = appointmentInformationEntity.getServiceCode();
+        String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
+        String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
+        String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
+        String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+        appointmentResponse = AppointmentResponse.builder()
+                .appointmentId(appointmentId)
+                .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
+                .serviceName(ServiceType.getServiceName(serviceCode))
+                .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
+                .bciReasonDescription(bciReasonDescription)
+                .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
+                .fbiReasonDescription(fbiReasonDescription)
+                .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
+                .appointmentStatus(AppointmentStatus.Completed.name())
+                .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
+                .build();
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
@@ -381,22 +382,15 @@ public class AppointmentInformationService {
      * Get list of all appointments or appointments for a specific date range
      * @param startDate startDate
      * @param endDate endDate
-     * @param showByAppointmentDate showByAppointmentDate
      * @return List of appointments
      */
     @RequiresLogin
-    public List<AppointmentInformationEntity> getAllAppointments(LocalDate startDate, LocalDate endDate, boolean showByAppointmentDate) {
+    public List<AppointmentInformationEntity> getAllAppointments(LocalDate startDate, LocalDate endDate) {
         List<AppointmentInformationEntity> resultList = null;
         if(startDate != null && endDate != null) {
             DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
-            if(showByAppointmentDate) {
-                resultList = appointmentInformationRepository.getAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
-            } else {
-                resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
-            }
-        } else if(startDate == null && endDate == null && showByAppointmentDate) {
-            resultList = appointmentInformationRepository.getAllAppointmentTimes();
-        } else {
+            resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+        } else if(startDate == null && endDate == null) {
             resultList = appointmentInformationRepository.getAllAppointments();
         }
         return resultList;

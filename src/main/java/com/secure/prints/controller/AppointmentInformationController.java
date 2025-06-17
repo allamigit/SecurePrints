@@ -108,14 +108,12 @@ public class AppointmentInformationController {
      * Get list of all appointments or appointments for a specific date range
      * @param startDate startDate
      * @param endDate endDate
-     * @param showByAppointmentDate showByAppointmentDate
      * @return List of appointments
      */
     @GetMapping(value = "all-appointments", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AppointmentInformationEntity> getAllAppointments(@RequestParam(name = "startDate", required = false) LocalDate startDate,
-                                                                 @RequestParam(name = "endDate", required = false) LocalDate endDate,
-                                                                 @RequestParam(name = "showByAppointmentDate", required = false) boolean showByAppointmentDate) {
-        return appointmentInformationService.getAllAppointments(startDate, endDate, showByAppointmentDate);
+                                                                 @RequestParam(name = "endDate", required = false) LocalDate endDate) {
+        return appointmentInformationService.getAllAppointments(startDate, endDate);
     }
 
     /**
