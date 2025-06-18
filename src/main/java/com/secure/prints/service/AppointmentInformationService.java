@@ -385,15 +385,50 @@ public class AppointmentInformationService {
      * @return List of appointments
      */
     @RequiresLogin
-    public List<AppointmentInformationEntity> getAllAppointments(LocalDate startDate, LocalDate endDate) {
-        List<AppointmentInformationEntity> resultList = null;
+    public Appointment getAllAppointments(LocalDate startDate, LocalDate endDate) {
+        List<AppointmentInformationEntity> appointmentList = new ArrayList<>();
+        List<AppointmentResponse> responseList = new ArrayList<>();
+
+        // Get Appointment Entity list
         if(startDate != null && endDate != null) {
             DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
-            resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+            appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         } else if(startDate == null && endDate == null) {
-            resultList = appointmentInformationRepository.getAllAppointments();
+            appointmentList = appointmentInformationRepository.getAllAppointments();
         }
-        return resultList;
+
+        // Generate Appointment Response list
+        assert appointmentList != null;
+        if(!appointmentList.isEmpty()) {
+            appointmentList.forEach(appointment -> {
+                String bciReasonCode = appointment.getBciReasonCode();
+                String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointment.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
+                String fbiReasonCode = appointment.getFbiReasonCode();
+                String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointment.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+                int appointmentStatusCode = appointment.getAppointmentStatusCode();
+                OffsetDateTime  statusTimestamp = OffsetDateTime.now();
+                switch(appointmentStatusCode) {
+                    case 101: statusTimestamp = appointment.getOrderTimestamp(); break;
+                    case 102: statusTimestamp = appointment.getResheduleTimestamp(); break;
+                    case 103: statusTimestamp = appointment.getCancelTimestamp(); break;
+                    case 104: statusTimestamp = appointment.getCompleteTimestamp();
+                };
+                AppointmentResponse appointmentResponse = AppointmentResponse.builder()
+                        .appointmentId(appointment.getAppointmentId())
+                        .orderTimestamp(TimestampUtil.formatTimestamp(appointment.getOrderTimestamp()))
+                        .serviceName(ServiceType.getServiceName(appointment.getServiceCode()))
+                        .bciReasonCode(appointment.getBciReasonCode())
+                        .bciReasonDescription(bciReasonDescription)
+                        .fbiReasonCode(appointment.getFbiReasonCode())
+                        .fbiReasonDescription(fbiReasonDescription)
+                        .appointmentTimestamp(TimestampUtil.formatDateTime(appointment.getAppointmentTimestamp()))
+                        .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
+                        .statusTimestamp(TimestampUtil.formatTimestamp(statusTimestamp))
+                        .build();
+                responseList.add(appointmentResponse);
+            });
+        }
+        return new Appointment(appointmentList, responseList);
     }
 
     /**

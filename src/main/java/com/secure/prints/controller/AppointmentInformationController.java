@@ -2,6 +2,7 @@ package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.model.ApiResponse;
+import com.secure.prints.model.Appointment;
 import com.secure.prints.model.AppointmentRequest;
 import com.secure.prints.model.AppointmentTime;
 import com.secure.prints.service.AppointmentInformationService;
@@ -111,8 +112,8 @@ public class AppointmentInformationController {
      * @return List of appointments
      */
     @GetMapping(value = "all-appointments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AppointmentInformationEntity> getAllAppointments(@RequestParam(name = "startDate", required = false) LocalDate startDate,
-                                                                 @RequestParam(name = "endDate", required = false) LocalDate endDate) {
+    public Appointment getAllAppointments(@RequestParam(name = "startDate", required = false) LocalDate startDate,
+                                          @RequestParam(name = "endDate", required = false) LocalDate endDate) {
         return appointmentInformationService.getAllAppointments(startDate, endDate);
     }
 

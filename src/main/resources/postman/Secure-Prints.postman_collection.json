@@ -147,7 +147,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/change-password?userName=admin2&oldPassword=admin00&newPassword=admin00",
+							"raw": "{{url}}/secure-prints/user/change-password?oldPassword=admin2&newPassword=admin22",
 							"host": [
 								"{{url}}"
 							],
@@ -158,16 +158,12 @@
 							],
 							"query": [
 								{
-									"key": "userName",
+									"key": "oldPassword",
 									"value": "admin2"
 								},
 								{
-									"key": "oldPassword",
-									"value": "admin00"
-								},
-								{
 									"key": "newPassword",
-									"value": "admin00"
+									"value": "admin22"
 								}
 							]
 						}
@@ -219,6 +215,25 @@
 					"response": []
 				},
 				{
+					"name": "Is User Logged In",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/user/logged-in",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"user",
+								"logged-in"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update User",
 					"request": {
 						"method": "PUT",
@@ -258,7 +273,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"Mohammad Ibraheem\",\r\n    \"customerLastName\": \"Al-Lami\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-16 13:45:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"Test1\",\r\n    \"customerLastName\": \"Test1\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-16 13:45:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -441,7 +456,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-06-10&endDate=2025-06-18&showByAppointmentDate=true",
+							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-06-10&endDate=2025-06-20",
 							"host": [
 								"{{url}}"
 							],
@@ -456,11 +471,7 @@
 								},
 								{
 									"key": "endDate",
-									"value": "2025-06-18"
-								},
-								{
-									"key": "showByAppointmentDate",
-									"value": "true"
+									"value": "2025-06-20"
 								}
 							]
 						}
