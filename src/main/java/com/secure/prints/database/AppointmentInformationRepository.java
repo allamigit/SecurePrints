@@ -79,7 +79,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * @param endTimestamp endTimestamp
      * @return List of appointments
      */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.orderTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getAllAppointmentsForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
                                                                       @Param("endTimestamp") OffsetDateTime endTimestamp);
 
