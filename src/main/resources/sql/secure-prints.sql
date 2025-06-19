@@ -29,4 +29,4 @@ select * from appt_pymt where pymt_sts_code = 203 and pymt_dt <= date(now())-int
 
 --truncate table rsn_list;
 
--- drop table appt_pymt;
+-- drop table usr_info;

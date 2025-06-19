@@ -428,7 +428,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1182&paymentMethodName=Cash",
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1204&paymentMethodName=Cash",
 							"host": [
 								"{{url}}"
 							],
@@ -439,7 +439,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1182"
+									"value": "1204"
 								},
 								{
 									"key": "paymentMethodName",
@@ -456,7 +456,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-06-10&endDate=2025-06-20",
+							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-06-16&endDate=2025-06-27",
 							"host": [
 								"{{url}}"
 							],
@@ -467,11 +467,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-06-10"
+									"value": "2025-06-16"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-06-20"
+									"value": "2025-06-27"
 								}
 							]
 						}
