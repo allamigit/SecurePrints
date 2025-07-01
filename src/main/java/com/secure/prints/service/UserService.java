@@ -190,7 +190,7 @@ public class UserService {
      * @return TRUE/FALSE
      */
     public static boolean isUserLoggedIn(HttpServletRequest request) {
-        HttpSession session = request.getSession(true);
+        HttpSession session = request.getSession(false);
         return session != null && session.getAttribute(USER_SESSION_KEY) != null;
     }
 

@@ -491,7 +491,7 @@ public class AppointmentInformationService {
                         break;
                     }
                     String strApptTs = timeList.get(i).getAppointmentTimestamp();
-                    if(!UserService.isUserLoggedIn(request) && (strApptTs.equals(strTimestamp) || TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
+                    if(strApptTs.equals(strTimestamp) || (!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
                         timeList.remove(i);
                         listSize--;
                         i--;

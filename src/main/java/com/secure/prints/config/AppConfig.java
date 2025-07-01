@@ -40,8 +40,9 @@ public class AppConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200")
-                        .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
+                        .allowedOrigins("http://localhost:4200", "https://secure-prints.com", "https://www.secure-prints.com")
+                        .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE")
+                        .allowedHeaders("*")
                         .allowCredentials(true);
             }
         };
