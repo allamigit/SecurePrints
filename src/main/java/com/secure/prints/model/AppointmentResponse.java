@@ -27,5 +27,6 @@ public class AppointmentResponse implements Serializable {
     private String appointmentTimestamp;
     private String appointmentStatus;
     private String statusTimestamp;
+    private boolean canComplete;
 
 }

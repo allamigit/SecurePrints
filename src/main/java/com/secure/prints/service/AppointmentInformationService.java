@@ -413,6 +413,9 @@ public class AppointmentInformationService {
                     case 103: statusTimestamp = appointment.getCancelTimestamp(); break;
                     case 104: statusTimestamp = appointment.getCompleteTimestamp();
                 };
+                OffsetDateTime currentTimestamp = OffsetDateTime.now();
+                String apptStrTimestamp = appointment.getAppointmentTimestamp().toString();
+                String offsetStrTimestamp = apptStrTimestamp.substring(0, 10) + " " + apptStrTimestamp.substring(11, 16) + ":00";
                 AppointmentResponse appointmentResponse = AppointmentResponse.builder()
                         .appointmentId(appointment.getAppointmentId())
                         .orderTimestamp(TimestampUtil.formatTimestamp(appointment.getOrderTimestamp()))
@@ -424,6 +427,7 @@ public class AppointmentInformationService {
                         .appointmentTimestamp(TimestampUtil.formatDateTime(appointment.getAppointmentTimestamp()))
                         .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
                         .statusTimestamp(TimestampUtil.formatTimestamp(statusTimestamp))
+                        .canComplete(currentTimestamp.isAfter(TimestampUtil.getOffsetDateTime(offsetStrTimestamp)))
                         .build();
                 responseList.add(appointmentResponse);
             });
