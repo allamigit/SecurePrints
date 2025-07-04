@@ -1,0 +1,324 @@
+Create EC2 Instance
+-------------------
+Configure the Instance
+Amazon Machine Image (AMI):
+Choose Amazon Linux 2 or Ubuntu 22.04 LTS
+
+Instance type:
+t2.micro (free tier eligible) or larger as needed
+
+Key pair (login):
+Select existing or create a new key pair – download the .pem file
+
+Network settings:
+
+Enable Auto-assign Public IP
+
+Security group: Create new or select existing:
+
+Add rules:
+
+SSH (port 22) – your IP
+
+HTTP (port 80) – 0.0.0.0/0
+
+Custom TCP (port 8080) – 0.0.0.0/0 (for Spring Boot app)
+
+HTTPS TCP (port 443) - 0.0.0.0/0
+
+
+Connect to EC2
+--------------
+chmod 400 secure-prints-ec2-key-pair.pem
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+
+
+Install Java
+------------
+sudo yum update -y
+sudo amazon-linux-extras enable corretto17
+sudo yum install java-17-amazon-corretto -y
+java -version
+
+
+Upload JAR File
+---------------
+exit
+chmod 400 secure-prints-ec2-key-pair.pem
+scp -i secure-prints-ec2-key-pair.pem secure-prints-0.0.1-SNAPSHOT.jar ec2-user@18.119.142.19:/home/ec2-user/
+
+
+Confirm Upload to EC2
+---------------------
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+ls -l secure-prints-0.0.1-SNAPSHOT.jar
+
+
+Run JAR File
+------------
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+java -jar secure-prints-0.0.1-SNAPSHOT.jar
+
+nohup java -Duser.timezone=America/New_York -jar secure-prints-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+
+tail -f app.log
+
+pkill -f secure-prints-0.0.1-SNAPSHOT.jar
+
+Open a browser: http://18.119.142.19:8080
+
+==========================================================
+
+Create/Edit Systemd File
+========================
+sudo nano /etc/systemd/system/secure-prints.service
+
+---------------
+[Unit]
+Description=Spring Boot Application
+After=network.target
+
+[Service]
+User=ec2-user
+ExecStart=/usr/bin/java -Duser.timezone=America/New_York -jar /home/ec2-user/secure-prints-0.0.1-SNAPSHOT.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=SPRING_PROFILES_ACTIVE=
+
+Environment=DB_HOST=postgresql-db.c2ywefhxo11e.us-east-2.rds.amazonaws.com
+Environment=DB_PORT=5432
+Environment=DB_NAME=postgresql_dev
+Environment=DB_SCHEMA=secure-prints-dev
+Environment=DB_USERNAME=postgresql_dev
+Environment=DB_PASSWORD=M01041972i
+
+[Install]
+WantedBy=multi-user.target
+---------------
+Would you like help configuring AWS Secrets Manager or SSM for your EC2 instance and Spring Boot
+
+Press CTRL + O to write out.
+
+Press ENTER to confirm.
+
+Press CTRL + X to exit.
+
+
+Enable and Start the Service
+============================
+sudo systemctl daemon-reexec			# After update systemd file
+sudo systemctl daemon-reload                    # Reload systemd to recognize the new service
+sudo systemctl restart secure-prints            # Restart the app after update systemd file
+
+sudo systemctl start secure-prints              # Start the app now
+sudo systemctl enable secure-prints             # Start it automatically on boot
+
+
+Verify
+======
+sudo systemctl status secure-prints
+journalctl -u secure-prints -f
+
+
+Stop Service
+============
+sudo systemctl stop secure-prints
+
+
+Disable it from Starting on Boot
+================================
+sudo systemctl disable secure-prints
+
+
+********
+ANGULAR
+********
+ng build --configuration=production
+
+Copy Files to EC2
+-----------------
+scp -i secure-prints-ec2-key-pair.pem -r dist/secure-prints ec2-user@18.119.142.19:/home/ec2-user/angular-app
+
+
+Install Angular (Nginx on EC2)
+------------------------------
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+sudo yum update -y
+sudo amazon-linux-extras install nginx1 -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+
+Build Angular Project
+---------------------
+ng build --configuration production
+
+
+Move Angular Files to Nginx Web Root
+------------------------------------
+scp -i secure-prints-ec2-key-pair.pem -r dist/secure-prints/browser/* ec2-user@18.119.142.19:/tmp/angular-dist/
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+sudo mkdir -p /usr/share/nginx/html
+sudo cp -r /tmp/angular-dist/* /usr/share/nginx/html/
+sudo chown -R nginx:nginx /usr/share/nginx/html
+sudo chmod -R 755 /usr/share/nginx/html
+sudo nginx -t
+sudo systemctl restart nginx
+sudo systemctl status nginx
+sudo journalctl -u nginx
+
+
+Fix Permissions
+---------------
+sudo chmod -R 755 /usr/share/nginx/html
+sudo chown -R nginx:nginx /usr/share/nginx/html
+
+
+Install Certbot from EPEL (no plugin needed)
+--------------------------------------------
+sudo yum install -y epel-release
+sudo yum install -y certbot
+sudo mkdir -p /usr/share/nginx/html/.well-known/acme-challenge
+sudo chown -R nginx:nginx /usr/share/nginx/html
+
+
+Configure Nginx (Optional for SPA Routing)
+------------------------------------------
+sudo nano /etc/nginx/nginx.conf
+
+Under server { ... } block
+
+server_name  secure-prints.com www.secure-prints.com
+
+location /.well-known/acme-challenge/ {
+    root      /usr/share/nginx/html;
+    index     index.html index.htm;
+    try_files $uri $uri/ /index.html;
+}
+
+location /secure-prints/ {
+    proxy_pass http://localhost:8080/secure-prints/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+
+
+Restart Nginx
+-------------
+sudo nginx -t
+sudo systemctl restart nginx
+
+
+Obtain the SSL certificate
+--------------------------
+sudo certbot certonly --webroot -w /usr/share/nginx/html -d secure-prints.com -d www.secure-prints.com
+
+
+Check for errors
+----------------
+sudo systemctl status nginx
+sudo journalctl -u nginx
+
+
+Install Certbot on EC2
+----------------------
+sudo amazon-linux-extras install epel
+
+sudo amazon-linux-extras enable epel
+sudo yum install -y epel-release
+sudo yum install -y certbot python3-certbot-nginx
+certbot --version
+http://secure-prints.com/secure-prints/company?companyId=1
+
+Request SSL Certificate
+-----------------------
+sudo /usr/local/bin/certbot --nginx -d secure-prints.com -d www.secure-prints.com
+
+
+Check SSL expiry date
+---------------------
+openssl s_client -connect secure-prints.com:443 | openssl x509 -noout -dates
+sudo certbot renew --dry-run
+
+Auto-renewal
+------------
+sudo nano /etc/crontab
+XXXXsudo crontab -e
+0 3 * * * /usr/bin/certbot renew --quiet --deploy-hook "systemctl reload nginx"
+sudo crontab -l
+sudo systemctl status nginx
+
+
+Check Backend
+-------------
+sudo lsof -i :8080
+
+
+*******************************
+Upload Updated Java Project 
+*******************************
+chmod 400 secure-prints-ec2-key-pair.pem
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+sudo systemctl stop secure-prints
+exit
+scp -i secure-prints-ec2-key-pair.pem secure-prints-0.0.1-SNAPSHOT.jar ec2-user@18.119.142.19:/home/ec2-user/
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+sudo systemctl daemon-reload
+sudo systemctl start secure-prints
+sudo systemctl status secure-prints
+journalctl -u secure-prints -f
+*******************************
+
+http://18.119.142.19
+
+*******************************
+Manually install Certbot and NGINX plugin via Snap (Recommended by Certbot)
+
+Remove old certbot version
+--------------------------
+sudo yum remove certbot
+
+
+Install Snapd (if not installed)
+--------------------------------
+sudo yum install -y snapd
+sudo systemctl enable --now snapd.socket   XXXX
+sudo ln -s /var/lib/snapd/snap /snap
+
+
+Install Certbot via Snap
+------------------------
+sudo snap install core
+sudo snap refresh core
+sudo snap install --classic certbot
+
+
+Link certbot to system path
+---------------------------
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+
+Now run Certbot with NGINX plugin
+---------------------------------
+sudo certbot --nginx -d secure-prints.com -d www.secure-prints.com
+
+
+XXXX
+Install pip and dependencies
+----------------------------
+sudo yum install -y python3 python3-pip
+
+
+Install Certbot with NGINX plugin via pip
+-----------------------------------------
+sudo pip3 install certbot certbot-nginx
+
+
+

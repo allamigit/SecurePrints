@@ -171,6 +171,35 @@
 					"response": []
 				},
 				{
+					"name": "Reset User Password",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/user/reset-password?userName=admin2&newPassword=admin2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"user",
+								"reset-password"
+							],
+							"query": [
+								{
+									"key": "userName",
+									"value": "admin2"
+								},
+								{
+									"key": "newPassword",
+									"value": "admin2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get All Users",
 					"request": {
 						"method": "GET",
@@ -240,7 +269,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userId\": 1,\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userStatus\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -273,7 +302,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"Test1\",\r\n    \"customerLastName\": \"Test1\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-16 13:45:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"Test2\",\r\n    \"customerLastName\": \"Test2\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-25 13:45:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -399,7 +428,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/find-appointment?appointmentId=1203",
+							"raw": "{{url}}/secure-prints/find-appointment?appointmentId=1216",
 							"host": [
 								"{{url}}"
 							],
@@ -410,7 +439,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1203"
+									"value": "1216"
 								}
 							]
 						}
@@ -428,7 +457,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1204&paymentMethodName=Cash",
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1228&paymentMethodName=Card",
 							"host": [
 								"{{url}}"
 							],
@@ -439,11 +468,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1204"
+									"value": "1228"
 								},
 								{
 									"key": "paymentMethodName",
-									"value": "Cash"
+									"value": "Card"
 								}
 							]
 						}
@@ -456,7 +485,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-06-16&endDate=2025-06-27",
+							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-07-01&endDate=2025-07-01",
 							"host": [
 								"{{url}}"
 							],
@@ -467,11 +496,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-06-16"
+									"value": "2025-07-01"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-06-27"
+									"value": "2025-07-01"
 								}
 							]
 						}
@@ -775,7 +804,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"expenseId\": 9,\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-May-2025\",\r\n    \"expenseReferenceDate\": \"2025-05-12\",\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": 2600.00,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-05-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": \"2025-05-12\"\r\n}",
+							"raw": "{\r\n    \"expenseId\": 2,\r\n    \"expensePayeeName\": \"Square (CC Reader)\",\r\n    \"expenseReferenceNumber\": \"ApptID-1228\",\r\n    \"expenseReferenceDate\": \"2025-07-04\",\r\n    \"expenseCategoryCode\": 600,\r\n    \"expenseSubcategoryCode\": 604,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": -1.00,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-07-04\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null,\r\n    \"expenseUpdate\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1018,7 +1047,7 @@
 		},
 		{
 			"key": "url",
-			"value": "http://18.119.142.19:8080",
+			"value": "https://secure-prints.com",
 			"type": "string",
 			"disabled": true
 		}

@@ -62,6 +62,17 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
                                       @Param("currentDate") LocalDate currentDate);
 
     /**
+     * Adjust service amount
+     * @param appointmentId appointmentId
+     * @param differenceAmount differenceAmount
+     */
+    @Modifying
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.serviceAmount = a.serviceAmount + :differenceAmount " +
+            "WHERE a.appointmentId = :appointmentId")
+    void adjustServiceAmount(@Param("appointmentId") String appointmentId,
+                             @Param("differenceAmount") BigDecimal differenceAmount);
+
+    /**
      * Cleanup Cancelled payments from Appointment Payment table
      */
     @Modifying

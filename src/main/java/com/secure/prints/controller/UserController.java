@@ -85,6 +85,21 @@ public class UserController {
     }
 
     /**
+     * Reset User Password
+     * @param userName userName
+     * @param newPassword newPassword
+     * @return ApiStatus
+     */
+    @PatchMapping(value = "reset-password", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiStatus resetUserPassword(HttpServletResponse response,
+                                        @RequestParam(name = "userName") String userName,
+                                        @RequestParam(name = "newPassword") String newPassword) {
+        ApiStatus apiStatus = userService.resetUserPassword(userName, newPassword);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
+    }
+
+    /**
      * User Login
      * @param userName userName
      * @param userPassword userPassword

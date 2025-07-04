@@ -97,7 +97,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * @return List of active appointment times
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE (a.appointmentStatusCode = 101 OR a.appointmentStatusCode = 102) AND " +
-            "(a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp) ORDER BY a.appointmentTimestamp ASC")
+            "a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getActiveAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
                                                                              @Param("endTimestamp") OffsetDateTime endTimestamp);
     /**
@@ -107,7 +107,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * @param serviceCode serviceCode
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
-            "AND a.serviceCode = :serviceCode AND (a.appointmentStatusCode BETWEEN 101 AND 103)")
+            "AND a.serviceCode = :serviceCode AND a.appointmentStatusCode BETWEEN 101 AND 102")
     AppointmentInformationEntity checkDuplicateAppointment(@Param("customerFirstName") String customerFirstName,
                                                            @Param("customerLastName") String customerLastName,
                                                            @Param("serviceCode") String serviceCode);

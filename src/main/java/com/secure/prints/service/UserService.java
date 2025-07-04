@@ -40,6 +40,7 @@ public class UserService {
         int responseCode;
         String responseMessage;
         try {
+            userDetails.setUserName(userDetails.getUserName().toLowerCase());
             userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
             userRepository.save(userDetails);
             getAllUsers();
@@ -74,7 +75,7 @@ public class UserService {
      * @return UserEntity
      */
     public UserEntity getUserDetails(String userName) {
-        return userRepository.findByUserName(userName);
+        return userRepository.findByUserName(userName.toLowerCase());
     }
 
     /**
@@ -86,6 +87,7 @@ public class UserService {
         int responseCode;
         String responseMessage;
         try {
+            userDetails.setUserName(userDetails.getUserName().toLowerCase());
             userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
             userRepository.save(userDetails);
             responseCode = 200;
@@ -135,6 +137,32 @@ public class UserService {
     }
 
     /**
+     * Reset User Password
+     * @param userName userName
+     * @param newPassword newPassword
+     * @return ApiStatus
+     */
+    @RequiresLogin
+    public ApiStatus resetUserPassword(String userName, String newPassword) {
+        int responseCode = 409;
+        String responseMessage;
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession(false);
+        String currentUserName = session.getAttribute(USER_SESSION_KEY).toString();
+        if(currentUserName.equals(userName)) {
+            responseMessage = "Reset password is only allowed for other users.";
+        } else {
+            userRepository.changeUserPassword(userName, encryptPassword(newPassword));
+            responseCode = 200;
+            responseMessage = "Success reset password for: " + userName;
+        }
+        return ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+    }
+
+    /**
      * User Login
      * @param userName userName
      * @param userPassword userPassword
@@ -143,7 +171,7 @@ public class UserService {
     public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
         int responseCode = 401;
         String responseMessage;
-        UserEntity userEntity = userRepository.findByUserName(userName);
+        UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
         if(userEntity == null) {
             responseMessage = "User not found.";
         } else if(!userEntity.getUserStatus()) {

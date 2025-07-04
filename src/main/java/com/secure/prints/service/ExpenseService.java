@@ -1,6 +1,7 @@
 package com.secure.prints.service;
 
 import com.secure.prints.config.RequiresLogin;
+import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.ApiStatus;
@@ -17,15 +18,18 @@ import java.util.List;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
+    private final AppointmentPaymentRepository appointmentPaymentRepository;
     private int responseCode;
     private String responseMessage;
 
     /**
      * Constructor for ExpenseService
      * @param expenseRepository expenseRepository
+     * @param appointmentPaymentRepository appointmentPaymentRepository
      */
-    public ExpenseService(ExpenseRepository expenseRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, AppointmentPaymentRepository appointmentPaymentRepository) {
         this.expenseRepository = expenseRepository;
+        this.appointmentPaymentRepository = appointmentPaymentRepository;
     }
 
     /**
@@ -109,6 +113,14 @@ public class ExpenseService {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
+                BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount().abs();
+                BigDecimal newExpenseAmount = expense.getExpenseAmount().abs();
+                String expenseReferenceNumber = expense.getExpenseReferenceNumber();
+                String appointmentId = expenseReferenceNumber.substring(expenseReferenceNumber.indexOf("-") + 1);
+                if(expenseReferenceNumber.startsWith("ApptID") && !newExpenseAmount.equals(oldExpenseAmount)) {
+                    BigDecimal differenceAmount = oldExpenseAmount.subtract(newExpenseAmount);
+                    appointmentPaymentRepository.adjustServiceAmount(appointmentId, differenceAmount);
+                }
                 expenseRepository.save(expense);
                 responseCode = 200;
                 responseMessage = "Expense Updated.";
