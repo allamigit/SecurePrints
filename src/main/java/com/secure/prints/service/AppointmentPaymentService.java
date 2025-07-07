@@ -130,7 +130,14 @@ public class AppointmentPaymentService {
         } else if(paymentRefundDate.isBefore(appointmentPayment.getPaymentDate())) {
             responseMessage = "Refund date must be at the same or after payment date.";
         } else {
+            BigDecimal refundAmount = appointmentPayment.getServiceAmount();
+            if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
+                BigDecimal expenseAmount = expenseService.refundFee("ApptID-" + appointmentId, paymentRefundDate);
+                refundAmount = refundAmount.add(expenseAmount.abs());
+            }
+
             appointmentPayment.setPaymentUpdate(false);
+            appointmentPayment.setPaymentComment("Refund payment transaction ($" + refundAmount.toString() + ").");
             appointmentPaymentRepository.save(appointmentPayment);
             AppointmentPaymentEntity newAppointmentPayment = AppointmentPaymentEntity.builder()
                     .appointmentId(appointmentId + "-R")
@@ -139,17 +146,12 @@ public class AppointmentPaymentService {
                     .paymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                     .paymentMethodCode(appointmentPayment.getPaymentMethodCode())
                     .paymentDate(paymentRefundDate)
-                    .paymentComment("Refund payment transaction.")
+                    .paymentComment("Refund payment transaction ($" + refundAmount.toString() + ").")
                     .paymentUpdate(false)
                     .build();
             appointmentPaymentRepository.save(newAppointmentPayment);
-            BigDecimal refundAmount = appointmentPayment.getServiceAmount();
-            if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
-                BigDecimal expenseAmount = expenseService.refundFee("ApptID-" + appointmentId, paymentRefundDate);
-                refundAmount = refundAmount.add(expenseAmount.abs());
-            }
             responseCode = 200;
-            responseMessage = "Refund payment transaction successful for ($ " + refundAmount.toString() + ").";
+            responseMessage = "Refund payment transaction successful for ($" + refundAmount.toString() + ").";
         }
 
         return ApiStatus.builder()

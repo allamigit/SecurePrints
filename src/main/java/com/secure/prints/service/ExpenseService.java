@@ -117,7 +117,7 @@ public class ExpenseService {
                 BigDecimal newExpenseAmount = expense.getExpenseAmount().abs();
                 String expenseReferenceNumber = expense.getExpenseReferenceNumber();
                 String appointmentId = expenseReferenceNumber.substring(expenseReferenceNumber.indexOf("-") + 1);
-                if(expenseReferenceNumber.startsWith("ApptID") && !newExpenseAmount.equals(oldExpenseAmount)) {
+                if(expenseReferenceNumber.startsWith("ApptID-") && !newExpenseAmount.equals(oldExpenseAmount)) {
                     BigDecimal differenceAmount = oldExpenseAmount.subtract(newExpenseAmount);
                     appointmentPaymentRepository.adjustServiceAmount(appointmentId, differenceAmount);
                 }

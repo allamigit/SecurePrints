@@ -51,13 +51,13 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     /**
      * Update appointment status as Completed
      * @param appointmentId appointmentId
-     * @param currentTimestamp currentTimestamp
+     * @param completeTimestamp completeTimestamp
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentInformationEntity a SET a.completeTimestamp = :currentTimestamp, " +
+    @Query(value = "UPDATE AppointmentInformationEntity a SET a.completeTimestamp = :completeTimestamp, " +
             "a.appointmentStatusCode = 104 WHERE a.appointmentId = :appointmentId")
     void completeAppointment(@Param("appointmentId") String appointmentId,
-                             @Param("currentTimestamp") OffsetDateTime currentTimestamp);
+                             @Param("completeTimestamp") OffsetDateTime completeTimestamp);
 
     /**
      * Cleanup Cancelled appointments from Appointment Information table

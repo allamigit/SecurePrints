@@ -180,7 +180,7 @@ public class AppointmentInformationService {
             responseMessage = "The given appointment date and time are the same in our records (no change has been done).";
         } else {
             appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
-            appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), LocalDate.now());
+            appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), appointmentTimestamp.toLocalDate());
             responseCode = 200;
             responseMessage = "Appointment Rescheduled.";
         }
@@ -290,6 +290,7 @@ public class AppointmentInformationService {
         }
 
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
+        OffsetDateTime completeTimestamp = null;
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
@@ -297,28 +298,29 @@ public class AppointmentInformationService {
         } else if(currentTimestamp.isBefore(appointmentInformationEntity.getAppointmentTimestamp())) {
             responseMessage = "Change appointment status to 'Completed' is not allowed before appointment date.";
         } else {
-            appointmentInformationRepository.completeAppointment(appointmentId, currentTimestamp);
+            completeTimestamp = appointmentInformationEntity.getAppointmentTimestamp().plusMinutes(15);
+            appointmentInformationRepository.completeAppointment(appointmentId, completeTimestamp);
             BigDecimal transactionFees = BigDecimal.ZERO;
+            LocalDate completeDate = completeTimestamp.toLocalDate();
             if(paymentMethodName.equals(PaymentMethod.Card.name())) {
                 AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
-                LocalDate currentDate = LocalDate.now();
                 transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
 
                 // Add transactionFees value to Expense table as expense subcategory of 604
                 expenseService.addExpenseDetails(ExpenseEntity.builder()
                                 .expensePayeeName("Square (CC Reader)")
                                 .expenseReferenceNumber("ApptID-" + appointmentId)
-                                .expenseReferenceDate(currentDate)
+                                .expenseReferenceDate(completeDate)
                                 .expenseCategoryCode(600)
                                 .expenseSubcategoryCode(604)
                                 .expenseAmount(transactionFees)
                                 .expensePaymentStatusCode(202)
-                                .expensePaymentDate(currentDate)
+                                .expensePaymentDate(completeDate)
                                 .expenseUpdate(true)
                                 .build());
             }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
-                    PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees, LocalDate.now());
+                    PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees);
             responseCode = 200;
             responseMessage = "Appointment Completed.";
         }
@@ -328,6 +330,7 @@ public class AppointmentInformationService {
         String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
         String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
         String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+        assert completeTimestamp != null;
         appointmentResponse = AppointmentResponse.builder()
                 .appointmentId(appointmentId)
                 .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
@@ -338,7 +341,7 @@ public class AppointmentInformationService {
                 .fbiReasonDescription(fbiReasonDescription)
                 .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
                 .appointmentStatus(AppointmentStatus.Completed.name())
-                .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
+                .statusTimestamp(TimestampUtil.formatTimestamp(completeTimestamp))
                 .build();
 
         apiStatus = ApiStatus.builder()

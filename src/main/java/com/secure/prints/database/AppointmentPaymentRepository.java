@@ -37,29 +37,29 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
      * Update payment status and date
      * @param appointmentId appointmentId
      * @param paymentStatusCode paymentStatusCode
+     * @param paymentDate paymentDate
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentDate = :currentDate " +
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentDate = :paymentDate " +
             "WHERE a.appointmentId = :appointmentId")
     void updatePaymentStatus(@Param("appointmentId") String appointmentId,
                              @Param("paymentStatusCode") int paymentStatusCode,
-                             @Param("currentDate") LocalDate currentDate);
+                             @Param("paymentDate") LocalDate paymentDate);
 
     /**
-     * Update payment status, method and date
+     * Update payment status and method
      * @param appointmentId appointmentId
      * @param paymentStatusCode paymentStatusCode
      * @param paymentMethodCode paymentMethodCode
+     * @param transactionFees transactionFees
      */
     @Modifying
     @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentMethodCode = :paymentMethodCode, " +
-            "a.serviceAmount = a.serviceAmount - :transactionFees, a.paymentDate = :currentDate " +
-            "WHERE a.appointmentId = :appointmentId")
+            "a.serviceAmount = a.serviceAmount - :transactionFees WHERE a.appointmentId = :appointmentId")
     void updatePaymentStatusAndMethod(@Param("appointmentId") String appointmentId,
                                       @Param("paymentStatusCode") int paymentStatusCode,
                                       @Param("paymentMethodCode") int paymentMethodCode,
-                                      @Param("transactionFees") BigDecimal transactionFees,
-                                      @Param("currentDate") LocalDate currentDate);
+                                      @Param("transactionFees") BigDecimal transactionFees);
 
     /**
      * Adjust service amount
