@@ -99,12 +99,14 @@ public class AppointmentPaymentService {
     public ApiStatus reconcilePayment(String appointmentId, LocalDate paymentReconcileDate) {
         responseCode = 409;
         AppointmentPaymentEntity appointmentPayment = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
-        if(appointmentPayment.getPaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+        if(appointmentPayment.getPaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()
+            && appointmentPayment.getPaymentStatusCode() != PaymentStatus.Refunded.getPaymentStatusCode()) {
             responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(appointmentPayment.getPaymentStatusCode());
         } else if(paymentReconcileDate.isBefore(appointmentPayment.getPaymentDate())) {
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {
-            appointmentPaymentRepository.reconcilePayment(appointmentId, paymentReconcileDate);
+            appointmentPaymentRepository.reconcilePayment(appointmentId, paymentReconcileDate,
+                    appointmentPayment.getPaymentComment() == null || appointmentPayment.getPaymentReconcileDate() != null);
             responseCode = 200;
             responseMessage = "Payment Reconciled.";
         }
@@ -136,8 +138,9 @@ public class AppointmentPaymentService {
                 refundAmount = refundAmount.add(expenseAmount.abs());
             }
 
-            appointmentPayment.setPaymentUpdate(false);
-            appointmentPayment.setPaymentComment("Refund payment transaction ($" + refundAmount.toString() + ").");
+            String refundMessage = "Refund payment transaction ($" + refundAmount.toString() + ").";
+            appointmentPayment.setPaymentUpdate(appointmentPayment.getPaymentComment() != null || appointmentPayment.getPaymentReconcileDate() == null);
+            appointmentPayment.setPaymentComment(refundMessage);
             appointmentPaymentRepository.save(appointmentPayment);
             AppointmentPaymentEntity newAppointmentPayment = AppointmentPaymentEntity.builder()
                     .appointmentId(appointmentId + "-R")
@@ -146,12 +149,12 @@ public class AppointmentPaymentService {
                     .paymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                     .paymentMethodCode(appointmentPayment.getPaymentMethodCode())
                     .paymentDate(paymentRefundDate)
-                    .paymentComment("Refund payment transaction ($" + refundAmount.toString() + ").")
-                    .paymentUpdate(false)
+                    .paymentComment(refundMessage)
+                    .paymentUpdate(appointmentPayment.getPaymentComment().startsWith("Refund") || appointmentPayment.getPaymentReconcileDate() != null)
                     .build();
             appointmentPaymentRepository.save(newAppointmentPayment);
             responseCode = 200;
-            responseMessage = "Refund payment transaction successful for ($" + refundAmount.toString() + ").";
+            responseMessage = "Refund payment transaction successful for ($" + refundAmount + ").";
         }
 
         return ApiStatus.builder()

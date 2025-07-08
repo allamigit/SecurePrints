@@ -36,9 +36,11 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @param expenseReconcileDate expenseReconcileDate
      */
     @Modifying
-    @Query(value = "UPDATE ExpenseEntity e SET e.expenseReconcileDate = :expenseReconcileDate WHERE e.expenseId = :expenseId")
+    @Query(value = "UPDATE ExpenseEntity e SET e.expenseReconcileDate = :expenseReconcileDate, e.expenseUpdate = :expenseUpdate " +
+            "WHERE e.expenseId = :expenseId")
     void reconcileExpense(@Param("expenseId") long expenseId,
-                          @Param("expenseReconcileDate") LocalDate expenseReconcileDate);
+                          @Param("expenseReconcileDate") LocalDate expenseReconcileDate,
+                          @Param("expenseUpdate") boolean expenseUpdate);
 
     /**
      * Get expenses list for all Expense Information table data

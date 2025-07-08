@@ -152,7 +152,7 @@ public class ExpenseService {
             responseCode = 409;
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {
-            expenseRepository.reconcileExpense(expenseId, expenseReconcileDate);
+            expenseRepository.reconcileExpense(expenseId, expenseReconcileDate, expense.getExpenseReconcileDate() == null);
             responseCode = 200;
             responseMessage = "Expense Reconciled.";
         }
@@ -178,7 +178,7 @@ public class ExpenseService {
         } else if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
             responseMessage = "Refund date must be at the same or after payment date.";
         } else {
-            expense.setExpenseUpdate(false);
+            expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);
             expenseRepository.save(expense);
             ExpenseEntity newExpense = ExpenseEntity.builder()
                     .expensePayeeName(expense.getExpensePayeeName())
@@ -192,7 +192,7 @@ public class ExpenseService {
                     .expensePaymentDate(expenseRefundDate)
                     .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
                     .expenseDocumentFileName(expense.getExpenseDocumentFileName())
-                    .expenseUpdate(false)
+                    .expenseUpdate(expense.getExpenseReconcileDate() == null)
                     .build();
             expenseRepository.save(newExpense);
             responseCode = 200;
@@ -214,7 +214,7 @@ public class ExpenseService {
     @RequiresLogin
     public BigDecimal refundFee(String expenseReferenceNumber, LocalDate paymentRefundDate) {
         ExpenseEntity expense = expenseRepository.findByExpenseReferenceNumber(expenseReferenceNumber);
-        expense.setExpenseUpdate(false);
+        expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);
         expenseRepository.save(expense);
         ExpenseEntity newExpense = ExpenseEntity.builder()
                 .expensePayeeName(expense.getExpensePayeeName())
@@ -228,7 +228,7 @@ public class ExpenseService {
                 .expensePaymentDate(paymentRefundDate)
                 .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
                 .expenseDocumentFileName(expense.getExpenseDocumentFileName())
-                .expenseUpdate(false)
+                .expenseUpdate(expense.getExpenseReconcileDate() == null)
                 .build();
         expenseRepository.save(newExpense);
         return expense.getExpenseAmount();
