@@ -98,11 +98,23 @@ public class AppointmentInformationController {
     /**
      * Find appointment details by appointment ID
      * @param appointmentId appointmentId
-     * @return TRUE = Not Found / FALSE = Found
+     * @return TRUE = Found / FALSE = Not Found
      */
-    @GetMapping(value = "find-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean findAppointment(@RequestParam(name = "appointmentId") String appointmentId) {
-        return appointmentInformationService.findAppointment(appointmentId);
+    @GetMapping(value = "find-appointment-id", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean findAppointmentById(@RequestParam(name = "appointmentId") String appointmentId) {
+        return appointmentInformationService.findAppointmentById(appointmentId);
+    }
+
+    /**
+     * Find appointment by customer first and last name
+     * @param customerFirstName customerFirstName
+     * @param customerLastName customerLastName
+     * @return TRUE = Found / FALSE = Not Found
+     */
+    @GetMapping(value = "find-appointment-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean findAppointmentByCustomerName(@RequestParam(name = "customerFirstName") String customerFirstName,
+                                                 @RequestParam(name = "customerLastName") String customerLastName) {
+        return appointmentInformationService.findAppointmentByCustomerName(customerFirstName, customerLastName);
     }
 
     /**

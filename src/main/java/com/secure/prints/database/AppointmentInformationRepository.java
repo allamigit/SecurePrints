@@ -105,11 +105,23 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * @param customerFirstName customerFirstName
      * @param customerLastName customerLastName
      * @param serviceCode serviceCode
+     * @return TRUE/FALSE
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
             "AND a.serviceCode = :serviceCode AND a.appointmentStatusCode BETWEEN 101 AND 102")
     AppointmentInformationEntity checkDuplicateAppointment(@Param("customerFirstName") String customerFirstName,
                                                            @Param("customerLastName") String customerLastName,
                                                            @Param("serviceCode") String serviceCode);
+
+    /**
+     * Find appointment by customer first and last name
+     * @param customerFirstName customerFirstName
+     * @param customerLastName customerLastName
+     * @return TRUE/FALSE
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
+            "AND a.appointmentStatusCode BETWEEN 101 AND 102")
+    AppointmentInformationEntity findAppointmentByCustomerName(@Param("customerFirstName") String customerFirstName,
+                                                               @Param("customerLastName") String customerLastName);
 
 }

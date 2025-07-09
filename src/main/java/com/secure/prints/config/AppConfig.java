@@ -30,6 +30,11 @@ public class AppConfig {
     }
 
     @Bean
+    public EncryptionConverter encryptionConverter() {
+        return new EncryptionConverter();
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
