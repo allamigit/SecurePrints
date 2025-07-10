@@ -109,11 +109,11 @@ public class AppointmentInformationController {
      * Find appointment by customer first and last name
      * @param customerFirstName customerFirstName
      * @param customerLastName customerLastName
-     * @return TRUE = Found / FALSE = Not Found
+     * @return appointmentId
      */
     @GetMapping(value = "find-appointment-name", produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean findAppointmentByCustomerName(@RequestParam(name = "customerFirstName") String customerFirstName,
-                                                 @RequestParam(name = "customerLastName") String customerLastName) {
+    public String findAppointmentByCustomerName(@RequestParam(name = "customerFirstName") String customerFirstName,
+                                                @RequestParam(name = "customerLastName") String customerLastName) {
         return appointmentInformationService.findAppointmentByCustomerName(customerFirstName, customerLastName);
     }
 

@@ -9,13 +9,11 @@ import com.secure.prints.model.*;
 import com.secure.prints.database.AppointmentInformationRepository;
 import com.secure.prints.util.TimestampUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import com.secure.prints.config.EncryptionConverter;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -29,7 +27,6 @@ public class AppointmentInformationService {
     private final AppointmentInformationRepository appointmentInformationRepository;
     private final AppointmentPaymentRepository appointmentPaymentRepository;
     private final ExpenseService expenseService;
-    private final EncryptionConverter encryptionConverter;
     private int responseCode;
     private String responseMessage;
     @Value("${secure-prints.appointment.cut-from-start-index}")
@@ -50,16 +47,13 @@ public class AppointmentInformationService {
      * @param appointmentInformationRepository appointmentInformationRepository
      * @param appointmentPaymentRepository appointmentPaymentRepository
      * @param expenseService expenseService
-     * @param encryptionConverter encryptionConverter
      */
     public AppointmentInformationService(AppointmentInformationRepository appointmentInformationRepository,
                                          AppointmentPaymentRepository appointmentPaymentRepository,
-                                         ExpenseService expenseService,
-                                         EncryptionConverter encryptionConverter) {
+                                         ExpenseService expenseService) {
         this.appointmentInformationRepository = appointmentInformationRepository;
         this.appointmentPaymentRepository = appointmentPaymentRepository;
         this.expenseService = expenseService;
-        this.encryptionConverter = encryptionConverter;
     }
 
     /**
@@ -392,15 +386,11 @@ public class AppointmentInformationService {
      * Find appointment by customer first and last name
      * @param customerFirstName customerFirstName
      * @param customerLastName customerLastName
-     * @return TRUE = Found / FALSE = Not Found
+     * @return appointmentId
      */
-    public boolean findAppointmentByCustomerName(String customerFirstName, String customerLastName) {
-        String encryptedFirstName = encryptionConverter.convertToDatabaseColumn(customerFirstName);
-        System.out.println(encryptedFirstName);
-        String encryptedLastName = encryptionConverter.convertToDatabaseColumn(customerLastName);
-        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(encryptedFirstName, encryptedLastName);
-        System.out.println(appointment);
-        return appointment != null;
+    public String findAppointmentByCustomerName(String customerFirstName, String customerLastName) {
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(customerFirstName, customerLastName);
+        return appointment != null ? appointment.getAppointmentId() : null;
     }
 
     /**
