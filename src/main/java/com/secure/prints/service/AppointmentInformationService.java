@@ -99,8 +99,8 @@ public class AppointmentInformationService {
             assert fbiReasonCode != null;
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
                     .appointmentId(appointmentId)
-                    .customerFirstName(appointmentRequest.getCustomerFirstName())
-                    .customerLastName(appointmentRequest.getCustomerLastName())
+                    .customerFirstName(appointmentRequest.getCustomerFirstName().trim().toUpperCase())
+                    .customerLastName(appointmentRequest.getCustomerLastName().trim().toUpperCase())
                     .customerEmail(appointmentRequest.getCustomerEmail())
                     .customerPhone(appointmentRequest.getCustomerPhone())
                     .serviceCode(serviceCode)
@@ -389,7 +389,7 @@ public class AppointmentInformationService {
      * @return appointmentId
      */
     public String findAppointmentByCustomerName(String customerFirstName, String customerLastName) {
-        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(customerFirstName, customerLastName);
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(customerFirstName.trim().toUpperCase(), customerLastName.trim().toUpperCase());
         return appointment != null ? appointment.getAppointmentId() : null;
     }
 
@@ -530,8 +530,8 @@ public class AppointmentInformationService {
     private AppointmentResponse checkDuplicateAppointment(AppointmentRequest appointmentRequest) {
         String serviceCode = ServiceType.getServiceCode(appointmentRequest.getServiceName());
         AppointmentInformationEntity appointmentInformationEntity = appointmentInformationRepository.checkDuplicateAppointment
-                (appointmentRequest.getCustomerFirstName(),
-                 appointmentRequest.getCustomerLastName(),
+                (appointmentRequest.getCustomerFirstName().trim().toUpperCase(),
+                 appointmentRequest.getCustomerLastName().trim().toUpperCase(),
                  serviceCode);
 
         AppointmentResponse appointmentResponse = null;
