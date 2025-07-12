@@ -113,11 +113,10 @@ public class ReasonService {
                         .build();
                 reasonRepository.save(reasonEntity);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException | ArrayIndexOutOfBoundsException e) {
             return ApiStatus.builder()
                     .responseCode(409)
-                    .responseMessage("Reason data file failed to import. " + e.getMessage())
+                    .responseMessage("Reason data file failed to import.")
                     .build();
         }
 

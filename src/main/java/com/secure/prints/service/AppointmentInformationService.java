@@ -7,6 +7,7 @@ import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.*;
 import com.secure.prints.database.AppointmentInformationRepository;
+import com.secure.prints.util.NameFormatUtil;
 import com.secure.prints.util.TimestampUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,8 +100,8 @@ public class AppointmentInformationService {
             assert fbiReasonCode != null;
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
                     .appointmentId(appointmentId)
-                    .customerFirstName(appointmentRequest.getCustomerFirstName().trim().toUpperCase())
-                    .customerLastName(appointmentRequest.getCustomerLastName().trim().toUpperCase())
+                    .customerFirstName(NameFormatUtil.formatName(appointmentRequest.getCustomerFirstName()))
+                    .customerLastName(NameFormatUtil.formatName(appointmentRequest.getCustomerLastName()))
                     .customerEmail(appointmentRequest.getCustomerEmail())
                     .customerPhone(appointmentRequest.getCustomerPhone())
                     .serviceCode(serviceCode)
@@ -161,7 +162,7 @@ public class AppointmentInformationService {
     public ApiResponse rescheduleAppointment(String appointmentId, String strAppointmentTimestamp) {
         responseCode = 409;
         ApiStatus apiStatus;
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse;
         ApiResponse apiResponse;
         AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponseEntity();
         int appointmentStatusCode = 0;
@@ -223,7 +224,7 @@ public class AppointmentInformationService {
     public ApiResponse cancelAppointment(String appointmentId) {
         responseCode = 409;
         ApiStatus apiStatus;
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse;
         ApiResponse apiResponse;
         AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponseEntity();
         int appointmentStatusCode = 0;
@@ -282,7 +283,7 @@ public class AppointmentInformationService {
     public ApiResponse completeAppointment(String appointmentId, String paymentMethodName) {
         responseCode = 409;
         ApiStatus apiStatus;
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse;
         ApiResponse apiResponse;
         AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponseEntity();
         int appointmentStatusCode = 0;
@@ -389,7 +390,8 @@ public class AppointmentInformationService {
      * @return appointmentId
      */
     public String findAppointmentByCustomerName(String customerFirstName, String customerLastName) {
-        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(customerFirstName.trim().toUpperCase(), customerLastName.trim().toUpperCase());
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(
+                NameFormatUtil.formatName(customerFirstName), NameFormatUtil.formatName(customerLastName));
         return appointment != null ? appointment.getAppointmentId() : null;
     }
 
@@ -530,8 +532,8 @@ public class AppointmentInformationService {
     private AppointmentResponse checkDuplicateAppointment(AppointmentRequest appointmentRequest) {
         String serviceCode = ServiceType.getServiceCode(appointmentRequest.getServiceName());
         AppointmentInformationEntity appointmentInformationEntity = appointmentInformationRepository.checkDuplicateAppointment
-                (appointmentRequest.getCustomerFirstName().trim().toUpperCase(),
-                 appointmentRequest.getCustomerLastName().trim().toUpperCase(),
+                (NameFormatUtil.formatName(appointmentRequest.getCustomerFirstName()),
+                 NameFormatUtil.formatName(appointmentRequest.getCustomerLastName()),
                  serviceCode);
 
         AppointmentResponse appointmentResponse = null;
