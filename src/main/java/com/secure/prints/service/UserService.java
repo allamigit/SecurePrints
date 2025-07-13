@@ -4,6 +4,7 @@ import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
+import com.secure.prints.util.NameFormatUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,6 +43,7 @@ public class UserService {
         try {
             userDetails.setUserName(userDetails.getUserName().toLowerCase());
             userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
+            userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
             userRepository.save(userDetails);
             getAllUsers();
             responseCode = 201;
@@ -87,11 +89,10 @@ public class UserService {
         int responseCode;
         String responseMessage;
         try {
-            userDetails.setUserName(userDetails.getUserName().toLowerCase());
-            userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
+            userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
             userRepository.save(userDetails);
             responseCode = 200;
-            responseMessage = "User details updated successfully.";
+            responseMessage = "User details (" + userDetails.getUserName() + ") updated successfully.";
         } catch (Exception e) {
             responseCode = 400;
             responseMessage = e.getMessage();
@@ -120,15 +121,12 @@ public class UserService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpSession session = request.getSession(false);
         String userName = session.getAttribute(USER_SESSION_KEY).toString();
-        UserEntity userEntity = this.getUserDetails(userName);
-        if(!validatePassword(oldPassword, userEntity.getUserPassword())) {
-            responseMessage = "Incorrect current password.";
-        } else if(oldPassword.equals(newPassword)) {
+        if(validatePassword(newPassword, oldPassword)) {
             responseMessage = "The new password is the same of current password.";
         } else {
             userRepository.changeUserPassword(userName, encryptPassword(newPassword));
             responseCode = 200;
-            responseMessage = "Password Changed.";
+            responseMessage = "Success change password for: " + userName;
         }
         return ApiStatus.builder()
                 .responseCode(responseCode)

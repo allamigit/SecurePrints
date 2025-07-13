@@ -178,7 +178,9 @@ public class ExpenseService {
         } else if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
             responseMessage = "Refund date must be at the same or after payment date.";
         } else {
+            String refundMessage = "Refund expense transaction.";
             expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);
+            expense.setExpenseDescription(refundMessage);
             expenseRepository.save(expense);
             ExpenseEntity newExpense = ExpenseEntity.builder()
                     .expensePayeeName(expense.getExpensePayeeName())
@@ -186,7 +188,7 @@ public class ExpenseService {
                     .expenseReferenceDate(expense.getExpenseReferenceDate())
                     .expenseCategoryCode(expense.getExpenseCategoryCode())
                     .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
-                    .expenseDescription("Refund expense transaction.")
+                    .expenseDescription(refundMessage)
                     .expenseAmount(expense.getExpenseAmount().abs())
                     .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                     .expensePaymentDate(expenseRefundDate)

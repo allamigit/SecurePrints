@@ -9,7 +9,7 @@ public class NameFormatUtil {
             String c = name.substring(i, i + 1);
             if(i == 0) {
                 formattedName.append(c.toUpperCase());
-            } else if(c.equals(" ")) {
+            } else if(c.equals(" ") || c.equals("-")) {
                 formattedName.append(c);
                 i++;
                 formattedName.append(name.substring(i, i + 1).toUpperCase());
