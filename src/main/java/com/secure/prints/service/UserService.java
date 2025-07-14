@@ -7,13 +7,16 @@ import com.secure.prints.model.ApiStatus;
 import com.secure.prints.util.NameFormatUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -40,20 +43,21 @@ public class UserService {
     public ApiStatus addUser(UserEntity userDetails) {
         int responseCode;
         String responseMessage;
+        String userName = userDetails.getUserName().trim().toLowerCase();
+        UserEntity user = this.getUserDetails(userName);
         try {
-            userDetails.setUserName(userDetails.getUserName().toLowerCase());
+            if(user != null) {
+                throw new DataIntegrityViolationException("User already exists");
+            }
+            userDetails.setUserName(userName);
             userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
             userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
             userRepository.save(userDetails);
-            getAllUsers();
             responseCode = 201;
             responseMessage = "User added successfully.";
-        } catch (Exception e) {
-            responseCode = 400;
-            responseMessage = e.getMessage();
-            if(responseMessage.contains("unique constraint")) {
-                responseMessage = "Duplicate user name.";
-            }
+        } catch (DataIntegrityViolationException e) {
+            responseCode = 409;
+            responseMessage = "Duplicate user name.";
         }
 
         return ApiStatus.builder()
@@ -92,14 +96,10 @@ public class UserService {
             userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
             userRepository.save(userDetails);
             responseCode = 200;
-            responseMessage = "User details (" + userDetails.getUserName() + ") updated successfully.";
+            responseMessage = "User details updated successfully.";
         } catch (Exception e) {
             responseCode = 400;
             responseMessage = e.getMessage();
-            if(responseMessage.contains("unique constraint")) {
-                responseCode = 409;
-                responseMessage = "Duplicate user name.";
-            }
         }
 
         return ApiStatus.builder()
@@ -126,7 +126,7 @@ public class UserService {
         } else {
             userRepository.changeUserPassword(userName, encryptPassword(newPassword));
             responseCode = 200;
-            responseMessage = "Success change password for: " + userName;
+            responseMessage = "Success password changed.";
         }
         return ApiStatus.builder()
                 .responseCode(responseCode)
