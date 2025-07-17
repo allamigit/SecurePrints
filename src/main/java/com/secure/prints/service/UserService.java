@@ -152,7 +152,7 @@ public class UserService {
         } else {
             userRepository.changeUserPassword(userName, encryptPassword(newPassword));
             responseCode = 200;
-            responseMessage = "Success reset password for: " + userName;
+            responseMessage = "Success reset password to [user1234].";
         }
         return ApiStatus.builder()
                 .responseCode(responseCode)
