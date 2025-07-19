@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class AppointmentInformationController {
      */
     @PostMapping(value = "schedule-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse scheduleAppointment(HttpServletResponse response,
-                                           @RequestBody AppointmentRequest appointmentRequest) {
+                                           @RequestBody AppointmentRequest appointmentRequest) throws UnknownHostException {
         ApiResponse apiResponse = appointmentInformationService.scheduleAppointment(appointmentRequest);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;

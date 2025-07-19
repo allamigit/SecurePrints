@@ -17,9 +17,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.math.BigDecimal;
+import java.net.UnknownHostException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.net.InetAddress;
 
 @Service
 @Transactional
@@ -62,7 +64,7 @@ public class AppointmentInformationService {
      * @param appointmentRequest appointmentRequest
      * @return ApiResponse
      */
-    public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
+    public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) throws UnknownHostException {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -108,7 +110,8 @@ public class AppointmentInformationService {
                     .bciReasonCode(bciReasonCode)
                     .bciReasonDescription(bciReasonDescription)
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonDescription(fbiReasonDescription)
+                    //.fbiReasonDescription(fbiReasonDescription)
+                    .fbiReasonDescription(this.getIpAddress(request))
                     .appointmentTimestamp(appointmentTimestamp)
                     .appointmentStatusCode(AppointmentStatus.Scheduled.getStatusCode())
                     .orderTimestamp(currentTimestamp)
@@ -579,6 +582,22 @@ public class AppointmentInformationService {
     private boolean isAppointmentStatusCancelledOrCompleted(int appointmentStatusCode) {
         return appointmentStatusCode == AppointmentStatus.Cancelled.getStatusCode()
                 || appointmentStatusCode == AppointmentStatus.Completed.getStatusCode();
+    }
+
+    /**
+     * Gets Remote and Local IP Address
+     * @param request request
+     * @return Remote and Local IP Address
+     * @throws UnknownHostException UnknownHostException
+     */
+    private String getIpAddress(HttpServletRequest request) throws UnknownHostException {
+        String remoteIp = request.getHeader("X-Forwarded-For");
+        if (remoteIp == null || remoteIp.isEmpty() || remoteIp.equalsIgnoreCase("unknown")) {
+            remoteIp = request.getRemoteAddr();
+        }
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        String localIp = inetAddress.getHostAddress();
+        return "Remote: " + remoteIp + ", Local: " + localIp + " - " + System.getProperty("user.name");
     }
 
 }

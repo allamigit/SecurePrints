@@ -47,6 +47,9 @@ public class ExpenseService {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
+                /*if (expense.getExpenseDescription() == null) {
+                    expense.setExpenseDescription("");
+                }*/
                 expense.setExpenseUpdate(true);
                 expenseRepository.save(expense);
                 responseCode = 201;
@@ -152,7 +155,7 @@ public class ExpenseService {
             responseCode = 409;
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {
-            expenseRepository.reconcileExpense(expenseId, expenseReconcileDate, expense.getExpenseReconcileDate() == null);
+            expenseRepository.reconcileExpense(expenseId, expenseReconcileDate, !expense.getExpenseDescription().startsWith("Refund"));
             responseCode = 200;
             responseMessage = "Expense Reconciled.";
         }
@@ -194,7 +197,7 @@ public class ExpenseService {
                     .expensePaymentDate(expenseRefundDate)
                     .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
                     .expenseDocumentFileName(expense.getExpenseDocumentFileName())
-                    .expenseUpdate(expense.getExpenseReconcileDate() == null)
+                    .expenseUpdate(expense.getExpenseReconcileDate() != null || expense.getExpenseDescription().startsWith("Refund"))
                     .build();
             expenseRepository.save(newExpense);
             responseCode = 200;
