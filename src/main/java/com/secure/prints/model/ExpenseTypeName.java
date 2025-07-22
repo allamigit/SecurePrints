@@ -12,12 +12,12 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExpenseCode implements Serializable {
+public class ExpenseTypeName implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Integer categoryCode;
-    private Integer subcategoryCode;
+    private String categoryName;
+    private String subcategoryName;
 
 }

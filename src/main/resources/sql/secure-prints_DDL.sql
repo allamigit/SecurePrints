@@ -3,8 +3,8 @@
 -- REASON LIST TABLE
 CREATE TABLE rsn_list (
 	rsn_id int4 NOT NULL,
-	svc_code varchar(10) NOT NULL,
-	rsn_code varchar(10) NOT NULL,
+	rsn_list_type varchar(3) NOT NULL,
+	rsn_code varchar(20) NOT NULL,
 	rsn_desc varchar(150) NULL,
 	CONSTRAINT pk_rsn_id PRIMARY KEY (rsn_id)
 );
@@ -43,9 +43,9 @@ CREATE TABLE usr_info (
 -- CUSTOMER APPOINTMENT INFORMATION TABLE
 CREATE SEQUENCE appt_info_seq
 	INCREMENT BY 1
-	MINVALUE 1000
+	MINVALUE 1233
 	MAXVALUE 1000000
-	START 1001
+	START 1234
 	CACHE 1
 	NO CYCLE;
 CREATE TABLE appt_info (
@@ -65,6 +65,7 @@ CREATE TABLE appt_info (
 	rsch_ts timestamp NULL,
 	cncl_ts timestamp NULL,
 	cmpl_ts timestamp NULL,
+	usr_ip varchar(20) NULL,
 	CONSTRAINT pk_appt_id PRIMARY KEY (appt_id)
 );
 
@@ -134,5 +135,5 @@ CREATE INDEX idx_exp_ref_no ON exp_info(exp_ref_no);
 insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
 insert into usr_info values ('admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', 'Mawj Al-Lami', true);
-insert into usr_info values ('admin2', '$2a$10$kJdaPbXbet.a6z4tKT270uOMCU9zVO7LnQnJB0lbFQ41qtjOcnb2W', 'Mohammad Al-Lami', true);
+insert into usr_info values ('admin2', '$2a$10$4GJY94/pfcxknHgFJfGUFet54ISsMMFaoTJkjyVapvDSmpq3xWvxe', 'Mohammad Al-Lami', true);
 

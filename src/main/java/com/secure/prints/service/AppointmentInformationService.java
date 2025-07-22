@@ -17,11 +17,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.net.InetAddress;
 
 @Service
 @Transactional
@@ -64,7 +62,7 @@ public class AppointmentInformationService {
      * @param appointmentRequest appointmentRequest
      * @return ApiResponse
      */
-    public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) throws UnknownHostException {
+    public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -110,11 +108,11 @@ public class AppointmentInformationService {
                     .bciReasonCode(bciReasonCode)
                     .bciReasonDescription(bciReasonDescription)
                     .fbiReasonCode(fbiReasonCode)
-                    //.fbiReasonDescription(fbiReasonDescription)
-                    .fbiReasonDescription(this.getIpAddress(request))
+                    .fbiReasonDescription(fbiReasonDescription)
                     .appointmentTimestamp(appointmentTimestamp)
                     .appointmentStatusCode(AppointmentStatus.Scheduled.getStatusCode())
                     .orderTimestamp(currentTimestamp)
+                    .userIpAddress(this.getUserIpAddress(appointmentRequest.getUserName()))
                     .build();
             appointmentInformationRepository.save(appointmentInformationEntity);
 
@@ -316,6 +314,7 @@ public class AppointmentInformationService {
                                 .expensePayeeName("Square (CC Reader)")
                                 .expenseReferenceNumber("ApptID-" + appointmentId)
                                 .expenseReferenceDate(completeDate)
+                                .expenseDescription("CC Reader fees")
                                 .expenseCategoryCode(600)
                                 .expenseSubcategoryCode(604)
                                 .expenseAmount(transactionFees)
@@ -585,19 +584,21 @@ public class AppointmentInformationService {
     }
 
     /**
-     * Gets Remote and Local IP Address
-     * @param request request
-     * @return Remote and Local IP Address
-     * @throws UnknownHostException UnknownHostException
+     * Gets Username or Remote IP Address
+     * @return Username or Remote IP Address
      */
-    private String getIpAddress(HttpServletRequest request) throws UnknownHostException {
-        String remoteIp = request.getHeader("X-Forwarded-For");
-        if (remoteIp == null || remoteIp.isEmpty() || remoteIp.equalsIgnoreCase("unknown")) {
-            remoteIp = request.getRemoteAddr();
+    private String getUserIpAddress(String userName) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String userIpAddress;
+        if(userName == null) {
+            userIpAddress = request.getHeader("X-Forwarded-For");
+            if (userIpAddress == null || userIpAddress.isEmpty() || userIpAddress.equalsIgnoreCase("unknown")) {
+                userIpAddress = request.getRemoteAddr();
+            }
+        } else {
+            userIpAddress = userName;
         }
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        String localIp = inetAddress.getHostAddress();
-        return "Remote: " + remoteIp + ", Local: " + localIp + " - " + System.getProperty("user.name");
+        return userIpAddress;
     }
 
 }

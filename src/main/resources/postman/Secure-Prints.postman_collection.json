@@ -302,7 +302,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"Test2\",\r\n    \"customerLastName\": \"Test2\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"FBI Background Check\",\r\n    \"bciReasonCode\": null,\r\n    \"bciReasonDescription\": null,\r\n    \"fbiReasonCode\": \"NO ORC\",\r\n    \"fbiReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"appointmentTimestamp\": \"2025-06-25 13:45:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"asd\",\r\n    \"customerLastName\": \"asd\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": \"NO ORC\",\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": null,\r\n    \"appointmentTimestamp\": \"2025-07-14 13:45:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -404,7 +404,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-06-12",
+							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-07-14",
 							"host": [
 								"{{url}}"
 							],
@@ -415,7 +415,7 @@
 							"query": [
 								{
 									"key": "selectedDate",
-									"value": "2025-06-12"
+									"value": "2025-07-14"
 								}
 							]
 						}
@@ -423,23 +423,51 @@
 					"response": []
 				},
 				{
-					"name": "Find Appointment",
+					"name": "Find Appointment by ID",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/find-appointment?appointmentId=1216",
+							"raw": "{{url}}/secure-prints/find-appointment-id?appointmentId=1231",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
-								"find-appointment"
+								"find-appointment-id"
 							],
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1216"
+									"value": "1231"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find Appointment by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/find-appointment-name?customerFirstName=asd&customerLastName=asd",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"find-appointment-name"
+							],
+							"query": [
+								{
+									"key": "customerFirstName",
+									"value": "asd"
+								},
+								{
+									"key": "customerLastName",
+									"value": "asd"
 								}
 							]
 						}
@@ -643,7 +671,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/refund-payment?appointmentId=1104&paymentRefundDate=2025-05-27",
+							"raw": "{{url}}/secure-prints/payment/refund-payment?appointmentId=1204&paymentRefundDate=2025-07-06",
 							"host": [
 								"{{url}}"
 							],
@@ -655,11 +683,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1104"
+									"value": "1204"
 								},
 								{
 									"key": "paymentRefundDate",
-									"value": "2025-05-27"
+									"value": "2025-07-06"
 								}
 							]
 						}
@@ -986,7 +1014,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Expense Code",
+					"name": "Get Expense Type Code",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1004,6 +1032,35 @@
 								{
 									"key": "subcategoryName",
 									"value": "Bank Fees and Credit Card Processing"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense Type Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/expense/get-expense-type-name?categoryCode=600&subcategoryCode=602",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"expense",
+								"get-expense-type-name"
+							],
+							"query": [
+								{
+									"key": "categoryCode",
+									"value": "600"
+								},
+								{
+									"key": "subcategoryCode",
+									"value": "602"
 								}
 							]
 						}

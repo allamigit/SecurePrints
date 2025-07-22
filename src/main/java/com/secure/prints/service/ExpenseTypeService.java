@@ -1,10 +1,7 @@
 package com.secure.prints.service;
 
 import com.secure.prints.config.RequiresLogin;
-import com.secure.prints.model.ExpenseCategory;
-import com.secure.prints.model.ExpenseCode;
-import com.secure.prints.model.ExpenseSubcategory;
-import com.secure.prints.model.ExpenseType;
+import com.secure.prints.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,15 +130,34 @@ public class ExpenseTypeService {
      * @return Optional of codes value
      */
     @RequiresLogin
-    public static ExpenseCode getExpenseCode(String subcategoryName) {
-        Optional<ExpenseCode> optionalResult = expenseTypeList.stream()
+    public static ExpenseTypeCode getExpenseTypeCode(String subcategoryName) {
+        Optional<ExpenseTypeCode> optionalResult = expenseTypeList.stream()
                 .flatMap(data -> data.getExpenseSubcategories().stream()
                         .filter(sub -> sub.getSubcategoryName().equalsIgnoreCase(subcategoryName))
-                        .map(sub -> new ExpenseCode(
+                        .map(sub -> new ExpenseTypeCode(
                                 data.getExpenseCategory().getCategoryCode(),
                                 sub.getSubcategoryCode())
                         )
                 )
+                .findFirst();
+        return optionalResult.orElse(null);
+    }
+
+    /**
+     * Returns expense category and subcategory names
+     * @param categoryCode categoryCode
+     * @param subcategoryCode subcategoryCode
+     * @return ExpenseTypeName of codes value
+     */
+    @RequiresLogin
+    public static ExpenseTypeName getExpenseTypeName(int categoryCode, int subcategoryCode) {
+        Optional<ExpenseTypeName> optionalResult =  expenseTypeList.stream()
+                .filter(c -> c.getExpenseCategory().getCategoryCode() == categoryCode)
+                .flatMap(c -> c.getExpenseSubcategories().stream()
+                        .filter(sc -> sc.getSubcategoryCode() == subcategoryCode)
+                        .map(sc -> new ExpenseTypeName(
+                                c.getExpenseCategory().getCategoryName(),
+                                sc.getSubcategoryName())))
                 .findFirst();
         return optionalResult.orElse(null);
     }

@@ -90,7 +90,6 @@ BCI~4725 121~State Vision Professionals Board – initial license as an Optometr
 BCI~2151 33~Temporary care of a juvenile
 BCI~4776 021~Trainee license for any approved board
 BCI~4741 10~Veterinary Medical Board license applicants
-FBI~NO ORC~ 
 FBI~4768 06~A controlling person of an appraisal management company
 FBI~4701 08~Accountancy Board license applicants
 FBI~5104 013~An Employee,Owner,Licensee,Administrator or Person Residing in a Type A or Type B Home,or an In-Home Aide

@@ -82,4 +82,8 @@ public class AppointmentInformationEntity implements Serializable {
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     private OffsetDateTime completeTimestamp;
 
+    @Column(name = "usr_ip")
+    //@Convert(converter = EncryptionConverter.class)
+    private String userIpAddress;
+
 }

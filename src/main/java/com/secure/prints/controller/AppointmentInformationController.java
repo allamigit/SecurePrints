@@ -34,7 +34,7 @@ public class AppointmentInformationController {
      */
     @PostMapping(value = "schedule-appointment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse scheduleAppointment(HttpServletResponse response,
-                                           @RequestBody AppointmentRequest appointmentRequest) throws UnknownHostException {
+                                           @RequestBody AppointmentRequest appointmentRequest) {
         ApiResponse apiResponse = appointmentInformationService.scheduleAppointment(appointmentRequest);
         response.setStatus(apiResponse.getApiStatus().getResponseCode());
         return apiResponse;

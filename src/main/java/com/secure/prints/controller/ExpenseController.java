@@ -2,8 +2,9 @@ package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.ApiStatus;
-import com.secure.prints.model.ExpenseCode;
+import com.secure.prints.model.ExpenseTypeCode;
 import com.secure.prints.model.ExpenseType;
+import com.secure.prints.model.ExpenseTypeName;
 import com.secure.prints.service.ExpenseService;
 import com.secure.prints.service.ExpenseTypeService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -131,9 +132,21 @@ public class ExpenseController {
      * @param subcategoryName subcategoryName
      * @return Optional of codes value
      */
-    @GetMapping(value = "get-expense-code", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ExpenseCode getExpenseCode(@RequestParam(name = "subcategoryName") String subcategoryName) {
-        return ExpenseTypeService.getExpenseCode(subcategoryName);
+    @GetMapping(value = "get-expense-type-code", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ExpenseTypeCode getExpenseTypeCode(@RequestParam(name = "subcategoryName") String subcategoryName) {
+        return ExpenseTypeService.getExpenseTypeCode(subcategoryName);
+    }
+
+    /**
+     * Returns expense category and subcategory names
+     * @param categoryCode categoryCode
+     * @param subcategoryCode subcategoryCode
+     * @return ExpenseTypeName of codes value
+     */
+    @GetMapping(value = "get-expense-type-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ExpenseTypeName getExpenseTypeName(@RequestParam(name = "categoryCode") int categoryCode,
+                                              @RequestParam(name = "subcategoryCode") int subcategoryCode) {
+        return ExpenseTypeService.getExpenseTypeName(categoryCode, subcategoryCode);
     }
 
 }
