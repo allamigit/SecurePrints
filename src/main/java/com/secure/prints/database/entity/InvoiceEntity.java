@@ -29,8 +29,8 @@ public class InvoiceEntity implements Serializable {
     @Column(name = "inv_no")
     private String invoiceNumber;
 
-    @Column(name = "inv_payee_name")
-    private String invoicePayeeName;
+    @Column(name = "inv_client_name")
+    private String invoiceClientName;
 
     @Column(name = "inv_dt")
     private LocalDate invoiceDate;

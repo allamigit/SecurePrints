@@ -186,7 +186,7 @@ public class ExpenseService {
             expense.setExpenseDescription(refundMessage);
             expenseRepository.save(expense);
             ExpenseEntity newExpense = ExpenseEntity.builder()
-                    .expensePayeeName(expense.getExpensePayeeName())
+                    .expenseVendorName(expense.getExpenseVendorName())
                     .expenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R")
                     .expenseReferenceDate(expense.getExpenseReferenceDate())
                     .expenseCategoryCode(expense.getExpenseCategoryCode())
@@ -222,7 +222,7 @@ public class ExpenseService {
         expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);
         expenseRepository.save(expense);
         ExpenseEntity newExpense = ExpenseEntity.builder()
-                .expensePayeeName(expense.getExpensePayeeName())
+                .expenseVendorName(expense.getExpenseVendorName())
                 .expenseReferenceNumber(expense.getExpenseReferenceNumber() + "-R")
                 .expenseReferenceDate(expense.getExpenseReferenceDate())
                 .expenseCategoryCode(expense.getExpenseCategoryCode())

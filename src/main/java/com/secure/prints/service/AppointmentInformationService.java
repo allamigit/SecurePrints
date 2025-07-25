@@ -311,10 +311,10 @@ public class AppointmentInformationService {
 
                 // Add transactionFees value to Expense table as expense subcategory of 604
                 expenseService.addExpenseDetails(ExpenseEntity.builder()
-                                .expensePayeeName("Square (CC Reader)")
+                                .expenseVendorName("Square (CC Reader)")
                                 .expenseReferenceNumber("ApptID-" + appointmentId)
                                 .expenseReferenceDate(completeDate)
-                                .expenseDescription("CC Reader fees")
+                                .expenseDescription("CC Reader fee.")
                                 .expenseCategoryCode(600)
                                 .expenseSubcategoryCode(604)
                                 .expenseAmount(transactionFees)

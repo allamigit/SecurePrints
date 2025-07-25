@@ -27,8 +27,8 @@ public class ExpenseEntity implements Serializable {
     @Column(name = "exp_id")
     private Long expenseId;
 
-    @Column(name = "exp_payee_name")
-    private String expensePayeeName;
+    @Column(name = "exp_vendor_name")
+    private String expenseVendorName;
 
     @Column(name = "exp_ref_no")
     private String expenseReferenceNumber;

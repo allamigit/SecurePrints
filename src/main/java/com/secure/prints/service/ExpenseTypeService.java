@@ -132,11 +132,11 @@ public class ExpenseTypeService {
     @RequiresLogin
     public static ExpenseTypeCode getExpenseTypeCode(String subcategoryName) {
         Optional<ExpenseTypeCode> optionalResult = expenseTypeList.stream()
-                .flatMap(data -> data.getExpenseSubcategories().stream()
-                        .filter(sub -> sub.getSubcategoryName().equalsIgnoreCase(subcategoryName))
-                        .map(sub -> new ExpenseTypeCode(
-                                data.getExpenseCategory().getCategoryCode(),
-                                sub.getSubcategoryCode())
+                .flatMap(c -> c.getExpenseSubcategories().stream()
+                        .filter(sc -> sc.getSubcategoryName().equalsIgnoreCase(subcategoryName))
+                        .map(sc -> new ExpenseTypeCode(
+                                c.getExpenseCategory().getCategoryCode(),
+                                sc.getSubcategoryCode())
                         )
                 )
                 .findFirst();
