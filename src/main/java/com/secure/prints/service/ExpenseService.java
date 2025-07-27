@@ -219,6 +219,8 @@ public class ExpenseService {
     @RequiresLogin
     public BigDecimal refundFee(String expenseReferenceNumber, LocalDate paymentRefundDate) {
         ExpenseEntity expense = expenseRepository.findByExpenseReferenceNumber(expenseReferenceNumber);
+        String expenseDescription = "Refund CC Reader fees to customer.";
+        expense.setExpenseDescription(expenseDescription);
         expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);
         expenseRepository.save(expense);
         ExpenseEntity newExpense = ExpenseEntity.builder()
@@ -227,7 +229,7 @@ public class ExpenseService {
                 .expenseReferenceDate(expense.getExpenseReferenceDate())
                 .expenseCategoryCode(expense.getExpenseCategoryCode())
                 .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
-                .expenseDescription("Refund CC Reader fee to customer.")
+                .expenseDescription(expenseDescription)
                 .expenseAmount(expense.getExpenseAmount())
                 .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                 .expensePaymentDate(paymentRefundDate)

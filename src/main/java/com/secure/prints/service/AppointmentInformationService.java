@@ -305,6 +305,7 @@ public class AppointmentInformationService {
             appointmentInformationRepository.completeAppointment(appointmentId, completeTimestamp);
             BigDecimal transactionFees = BigDecimal.ZERO;
             LocalDate completeDate = completeTimestamp.toLocalDate();
+            int paymentMethodCode = PaymentMethod.getPaymentMethodCode(paymentMethodName);
             if(paymentMethodName.equals(PaymentMethod.Card.name())) {
                 AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
                 transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
@@ -319,12 +320,13 @@ public class AppointmentInformationService {
                                 .expenseSubcategoryCode(604)
                                 .expenseAmount(transactionFees)
                                 .expensePaymentStatusCode(202)
+                                .expensePaymentMethodCode(paymentMethodCode)
                                 .expensePaymentDate(completeDate)
                                 .expenseUpdate(true)
                                 .build());
             }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
-                    PaymentMethod.getPaymentMethodCode(paymentMethodName), transactionFees);
+                    paymentMethodCode, transactionFees);
             responseCode = 200;
             responseMessage = "Appointment Completed.";
         }
