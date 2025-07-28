@@ -86,9 +86,17 @@ CREATE TABLE appt_pymt (
 
 
 -- INVOICE INFORMATION TABLE
+CREATE SEQUENCE inv_info_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 10000
+	START 1
+	CACHE 1
+	NO CYCLE;
 CREATE TABLE inv_info (
-	inv_no varchar(15) NOT NULL,
-	inv_payee_name varchar(80) NOT NULL,
+	inv_id int8 NOT NULL DEFAULT nextval('inv_info_seq'),
+	inv_no varchar(30) NOT NULL,
+	inv_client_name varchar(80) NOT NULL,
 	inv_dt date NOT NULL,
 	inv_due_dt date NOT NULL,
 	inv_amt numeric(6, 2) NOT NULL,
@@ -98,8 +106,10 @@ CREATE TABLE inv_info (
 	inv_cmt varchar(100) NULL,
 	inv_doc_file_name varchar(60) NULL,
 	inv_rcncl_dt date NULL,
-	CONSTRAINT pk_inv_no PRIMARY KEY (inv_no)
+	CONSTRAINT pk_inv_no PRIMARY KEY (inv_no),
+	CONSTRAINT uk_inv_no UNIQUE (inv_no)
 );
+CREATE INDEX idx_inv_no ON inv_info(inv_no);
 
 
 -- EXPENSE INFORMATION TABLE
@@ -112,8 +122,8 @@ CREATE SEQUENCE exp_info_seq
 	NO CYCLE;
 CREATE TABLE exp_info (
 	exp_id int8 NOT NULL DEFAULT nextval('exp_info_seq'),
-	exp_payee_name varchar(80) NOT NULL,
-	exp_ref_no varchar(15) NOT NULL,
+	exp_vendor_name varchar(80) NOT NULL,
+	exp_ref_no varchar(30) NOT NULL,
 	exp_ref_dt date NOT NULL,
 	exp_cat_code int4 NOT NULL,
 	exp_sub_cat_code int4 NOT NULL,

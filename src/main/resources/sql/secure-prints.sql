@@ -32,12 +32,15 @@ select * from appt_pymt where pymt_sts_code = 203 and pymt_dt <= date(now())-int
 
 --select nextval('appt_info_seq');
 
+--update appt_info set usr_ip = '3JMR+UCtEi5q83nFPAWWuA==';
+
 --update exp_info set exp_desc = '' where exp_desc is not null;
 --alter table appt_info add column usr_ip varchar(20) null;
 
 --  Remote: 24.31.160.60, Local: 172.31.15.95 - ec2-user
 --  Remote: 174.207.97.255, Local: 172.31.15.95 - ec2-user
-
+--  admin = MaDBdOUgy0x+gEIsHDVqgQ==
+--  0:0:0:0:0:0:0:1 = 3JMR+UCtEi5q83nFPAWWuA==
 
 select * from appt_info where cust_first_name = '3PnYiK7w+C8rIAMsjWFI8Q==' and cust_last_name = '3PnYiK7w+C8rIAMsjWFI8Q==' and appt_sts_code between 101 and 102;
 

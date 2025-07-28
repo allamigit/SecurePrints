@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public interface InvoiceRepository extends JpaRepository<InvoiceEntity, String> {
+public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
 
 }

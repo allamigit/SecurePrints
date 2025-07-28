@@ -302,7 +302,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"asd\",\r\n    \"customerLastName\": \"asd\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": \"NO ORC\",\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": null,\r\n    \"appointmentTimestamp\": \"2025-07-14 13:45:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"asdd5\",\r\n    \"customerLastName\": \"asdd5\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": \"NO ORC\",\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": null,\r\n    \"appointmentTimestamp\": \"2025-07-28 14:30:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -994,7 +994,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/expense/search-expense-type-list?keyword=fees",
+							"raw": "{{url}}/secure-prints/expense/search-expense-type-list?keyword=fee",
 							"host": [
 								"{{url}}"
 							],
@@ -1006,7 +1006,7 @@
 							"query": [
 								{
 									"key": "keyword",
-									"value": "fees"
+									"value": "fee"
 								}
 							]
 						}
@@ -1044,7 +1044,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/expense/get-expense-type-name?categoryCode=600&subcategoryCode=602",
+							"raw": "{{url}}/secure-prints/expense/get-expense-type-name?categoryCode=600&subcategoryCode=604",
 							"host": [
 								"{{url}}"
 							],
@@ -1060,7 +1060,7 @@
 								},
 								{
 									"key": "subcategoryCode",
-									"value": "602"
+									"value": "604"
 								}
 							]
 						}

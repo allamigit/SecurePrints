@@ -136,7 +136,11 @@ sudo systemctl disable secure-prints
 ********
 ANGULAR
 ********
-ng build --configuration=production
+
+Build Angular Project
+---------------------
+ng build --configuration production
+
 
 Copy Files to EC2
 -----------------
@@ -150,11 +154,6 @@ sudo yum update -y
 sudo amazon-linux-extras install nginx1 -y
 sudo systemctl start nginx
 sudo systemctl enable nginx
-
-
-Build Angular Project
----------------------
-ng build --configuration production
 
 
 Move Angular Files to Nginx Web Root
