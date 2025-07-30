@@ -47,9 +47,6 @@ public class ExpenseService {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
-                /*if (expense.getExpenseDescription() == null) {
-                    expense.setExpenseDescription("");
-                }*/
                 expense.setExpenseUpdate(true);
                 expenseRepository.save(expense);
                 responseCode = 201;

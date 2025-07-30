@@ -301,7 +301,8 @@ public class AppointmentInformationService {
         } else if(currentTimestamp.isBefore(appointmentInformationEntity.getAppointmentTimestamp())) {
             responseMessage = "Change appointment status to 'Completed' is not allowed before appointment date.";
         } else {
-            completeTimestamp = appointmentInformationEntity.getAppointmentTimestamp().plusMinutes(15);
+            String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp().plusMinutes(15).toString();
+            completeTimestamp = TimestampUtil.getOffsetDateTime(strTimestamp.substring(0, 10) + " " + strTimestamp.substring(11, 16) + ":00");
             appointmentInformationRepository.completeAppointment(appointmentId, completeTimestamp);
             BigDecimal transactionFees = BigDecimal.ZERO;
             LocalDate completeDate = completeTimestamp.toLocalDate();
