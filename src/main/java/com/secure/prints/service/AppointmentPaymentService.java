@@ -19,6 +19,7 @@ import java.util.List;
 public class AppointmentPaymentService {
 
     private final AppointmentPaymentRepository appointmentPaymentRepository;
+    private final ExpenseRepository expenseRepository;
     private final ExpenseService expenseService;
     private int responseCode;
     private String responseMessage;
@@ -26,10 +27,12 @@ public class AppointmentPaymentService {
     /**
      * Constructor for AppointmentPaymentService
      * @param appointmentPaymentRepository appointmentPaymentRepository
+     * @param expenseRepository expenseRepository
      * @param expenseService expenseService
      */
-    public AppointmentPaymentService(AppointmentPaymentRepository appointmentPaymentRepository, ExpenseService expenseService) {
+    public AppointmentPaymentService(AppointmentPaymentRepository appointmentPaymentRepository, ExpenseRepository expenseRepository, ExpenseService expenseService) {
         this.appointmentPaymentRepository = appointmentPaymentRepository;
+        this.expenseRepository = expenseRepository;
         this.expenseService = expenseService;
     }
 
@@ -81,6 +84,41 @@ public class AppointmentPaymentService {
         } catch (Exception e) {
             responseCode = 400;
             responseMessage = e.getMessage();
+        }
+
+        return ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+    }
+
+    /**
+     * Update service amount and comment
+     * @param appointmentId appointmentId
+     * @param serviceAmount serviceAmount
+     * @param paymentComment paymentComment
+     */
+    @RequiresLogin
+    public ApiStatus updateServiceAmountAndComment(String appointmentId, BigDecimal serviceAmount, String paymentComment) {
+        responseCode = 200;
+        responseMessage = "Appointment service amount updated successfully.";
+        AppointmentPaymentEntity appointmentPayment = this.getPaymentDetails(appointmentId);
+        if(appointmentPayment.getPaymentStatusCode() == PaymentStatus.Processed.getPaymentStatusCode() &&
+                appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode() &&
+                !appointmentPayment.getPaymentComment().startsWith("Refund") &&
+                appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0) {
+
+            if(serviceAmount.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal transactionFees = serviceAmount.multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+                expenseRepository.adjustFee("ApptID-" + appointmentId, transactionFees.negate());
+            }
+            appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, serviceAmount.abs(), paymentComment);
+        } else if(appointmentPayment.getPaymentStatusCode() == PaymentStatus.Pending.getPaymentStatusCode() &&
+                appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0) {
+            appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, serviceAmount.abs(), paymentComment);
+        } else {
+            responseCode = 409;
+            responseMessage = "Invalid status to update appointment service amount.";
         }
 
         return ApiStatus.builder()

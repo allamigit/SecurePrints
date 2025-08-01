@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,6 +42,16 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     void reconcileExpense(@Param("expenseId") long expenseId,
                           @Param("expenseReconcileDate") LocalDate expenseReconcileDate,
                           @Param("expenseUpdate") boolean expenseUpdate);
+
+    /**
+     * Adjust Fee
+     * @param expenseReferenceNumber expenseReferenceNumber
+     * @param expenseAmount expenseAmount
+     */
+    @Modifying
+    @Query(value = "UPDATE ExpenseEntity e SET e.expenseAmount = :expenseAmount WHERE e.expenseReferenceNumber = :expenseReferenceNumber")
+    void adjustFee(@Param("expenseReferenceNumber") String expenseReferenceNumber,
+                   @Param("expenseAmount") BigDecimal expenseAmount);
 
     /**
      * Get expenses list for all Expense Information table data

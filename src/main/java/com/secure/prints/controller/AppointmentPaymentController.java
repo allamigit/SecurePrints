@@ -1,5 +1,6 @@
 package com.secure.prints.controller;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.service.AppointmentPaymentService;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -57,6 +59,22 @@ public class AppointmentPaymentController {
     public ApiStatus updatePaymentDetails(HttpServletResponse response,
                                           @RequestBody AppointmentPaymentEntity appointmentPayment) {
         ApiStatus apiStatus = appointmentPaymentService.updatePaymentDetails(appointmentPayment);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
+    }
+
+    /**
+     * Update service amount and comment
+     * @param appointmentId appointmentId
+     * @param serviceAmount serviceAmount
+     * @param paymentComment paymentComment
+     */
+    @PatchMapping(value = "update-amount-comment", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiStatus updateServiceAmountAndComment(HttpServletResponse response,
+                                                   @RequestParam(name = "appointmentId") String appointmentId,
+                                                   @RequestParam(name = "serviceAmount") BigDecimal serviceAmount,
+                                                   @RequestParam(name = "paymentComment") String paymentComment) {
+        ApiStatus apiStatus = appointmentPaymentService.updateServiceAmountAndComment(appointmentId, serviceAmount, paymentComment);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }

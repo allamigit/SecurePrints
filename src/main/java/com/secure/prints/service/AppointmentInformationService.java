@@ -123,6 +123,7 @@ public class AppointmentInformationService {
                     .bciAmount(ServiceType.getBciFee(serviceCode))
                     .paymentStatusCode(PaymentStatus.Pending.getPaymentStatusCode())
                     .paymentDate(LocalDate.from(appointmentTimestamp))
+                    .paymentComment("")
                     .paymentUpdate(true)
                     .build();
             appointmentPaymentRepository.save(appointmentPaymentEntity);
