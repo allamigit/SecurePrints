@@ -27,6 +27,7 @@ public class AppointmentInformationService {
 
     private final AppointmentInformationRepository appointmentInformationRepository;
     private final AppointmentPaymentRepository appointmentPaymentRepository;
+    private final AwsService awsService;
     private final ExpenseService expenseService;
     private int responseCode;
     private String responseMessage;
@@ -48,13 +49,15 @@ public class AppointmentInformationService {
      * @param appointmentInformationRepository appointmentInformationRepository
      * @param appointmentPaymentRepository appointmentPaymentRepository
      * @param expenseService expenseService
+     * @param awsService awsService
      */
     public AppointmentInformationService(AppointmentInformationRepository appointmentInformationRepository,
                                          AppointmentPaymentRepository appointmentPaymentRepository,
-                                         ExpenseService expenseService) {
+                                         ExpenseService expenseService, AwsService awsService) {
         this.appointmentInformationRepository = appointmentInformationRepository;
         this.appointmentPaymentRepository = appointmentPaymentRepository;
         this.expenseService = expenseService;
+        this.awsService = awsService;
     }
 
     /**
@@ -98,11 +101,12 @@ public class AppointmentInformationService {
             String appointmentId = String.valueOf(appointmentInformationRepository.getNextAppointmentId());
             assert bciReasonCode != null;
             assert fbiReasonCode != null;
+            String customerEmail = appointmentRequest.getCustomerEmail();
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
                     .appointmentId(appointmentId)
                     .customerFirstName(NameFormatUtil.formatName(appointmentRequest.getCustomerFirstName()))
                     .customerLastName(NameFormatUtil.formatName(appointmentRequest.getCustomerLastName()))
-                    .customerEmail(appointmentRequest.getCustomerEmail())
+                    .customerEmail(customerEmail)
                     .customerPhone(appointmentRequest.getCustomerPhone())
                     .serviceCode(serviceCode)
                     .bciReasonCode(bciReasonCode)
@@ -140,6 +144,9 @@ public class AppointmentInformationService {
                     .appointmentStatus(AppointmentStatus.Scheduled.name())
                     .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
                     .build();
+
+            // Send confirmation email to customer
+            //awsService.sendEmail(customerEmail, appointmentResponse);
 
             responseCode = 201;
             responseMessage = "Appointment Scheduled.";
@@ -206,6 +213,9 @@ public class AppointmentInformationService {
                 .appointmentStatus(AppointmentStatus.Rescheduled.name())
                 .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
                 .build();
+
+        // Send confirmation email to customer
+        //awsService.sendEmail(appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)

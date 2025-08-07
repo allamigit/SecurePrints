@@ -113,12 +113,12 @@ public class AppointmentPaymentService {
                 expenseRepository.adjustFee("ApptID-" + appointmentId, transactionFees.negate());
             }
             appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, serviceAmount.abs(), paymentComment);
-        } else if(appointmentPayment.getPaymentStatusCode() == PaymentStatus.Pending.getPaymentStatusCode() &&
-                appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0) {
+        } else if(appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0 ||
+                !appointmentPayment.getPaymentComment().equals(paymentComment)) {
             appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, serviceAmount.abs(), paymentComment);
         } else {
             responseCode = 409;
-            responseMessage = "Invalid status to update appointment service amount.";
+            responseMessage = "There is no change done to save.";
         }
 
         return ApiStatus.builder()
