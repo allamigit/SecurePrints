@@ -274,6 +274,9 @@ public class AppointmentInformationService {
                 .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
                 .build();
 
+        // Send confirmation email to customer
+        //awsService.sendEmail(appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
@@ -474,8 +477,15 @@ public class AppointmentInformationService {
      * @return List of available appointments
      */
     public List<AppointmentTime> generateAppointmentTimes(LocalDate selectedDate) {
-        String strDate = selectedDate.toString() + " ";
         List<AppointmentTime> timeList = new ArrayList<>();
+        LocalDate companyHolidayStartDate = CompanyService.getCompanyDetails(1).getCompanyHolidayStartDate();
+        LocalDate companyHolidayEndDate = CompanyService.getCompanyDetails(1).getCompanyHolidayEndDate();
+        if(companyHolidayStartDate != null && !selectedDate.isBefore(companyHolidayStartDate)
+                && companyHolidayEndDate != null && !selectedDate.isAfter(companyHolidayEndDate)) {
+            return timeList;
+        }
+
+        String strDate = selectedDate.toString() + " ";
         DateRange dateRange = TimestampUtil.getOffsetDateRange(selectedDate, selectedDate);
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         if(!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(dateRange.getEndTimestamp())) {

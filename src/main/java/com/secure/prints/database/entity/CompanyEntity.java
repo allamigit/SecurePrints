@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Data
 @SuperBuilder
@@ -41,5 +42,11 @@ public class CompanyEntity implements Serializable {
 
     @Column(name = "com_email")
     private String companyEmail;
+
+    @Column(name = "com_hol_start_dt")
+    private LocalDate companyHolidayStartDate;
+
+    @Column(name = "com_hol_end_dt")
+    private LocalDate companyHolidayEndDate;
 
 }
