@@ -144,7 +144,12 @@ public class AppointmentPaymentService {
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {
             appointmentPaymentRepository.reconcilePayment(appointmentId, paymentReconcileDate,
-                    appointmentPayment.getPaymentComment() == null || appointmentPayment.getPaymentReconcileDate() != null);
+                    !appointmentPayment.getPaymentComment().startsWith("Refund") ||
+                                    appointmentPayment.getPaymentReconcileDate() != null);
+            if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
+                long expenseId =  expenseRepository.findByExpenseReferenceNumber("ApptID-" + appointmentId).getExpenseId();
+                expenseService.reconcileExpense(expenseId, paymentReconcileDate);
+            }
             responseCode = 200;
             responseMessage = "Payment Reconciled.";
         }
@@ -177,8 +182,8 @@ public class AppointmentPaymentService {
             }
 
             String refundMessage = "Refund payment transaction ($" + refundAmount.toString() + ").";
-            appointmentPayment.setPaymentUpdate(appointmentPayment.getPaymentComment() != null || appointmentPayment.getPaymentReconcileDate() == null);
             appointmentPayment.setPaymentComment(refundMessage);
+            appointmentPayment.setPaymentUpdate(appointmentPayment.getPaymentReconcileDate() == null);
             appointmentPaymentRepository.save(appointmentPayment);
             AppointmentPaymentEntity newAppointmentPayment = AppointmentPaymentEntity.builder()
                     .appointmentId(appointmentId + "-R")
@@ -188,7 +193,8 @@ public class AppointmentPaymentService {
                     .paymentMethodCode(appointmentPayment.getPaymentMethodCode())
                     .paymentDate(paymentRefundDate)
                     .paymentComment(refundMessage)
-                    .paymentUpdate(appointmentPayment.getPaymentComment().startsWith("Refund") || appointmentPayment.getPaymentReconcileDate() != null)
+                    .paymentUpdate(appointmentPayment.getPaymentComment().startsWith("Refund") ||
+                            appointmentPayment.getPaymentReconcileDate() != null)
                     .build();
             appointmentPaymentRepository.save(newAppointmentPayment);
             responseCode = 200;

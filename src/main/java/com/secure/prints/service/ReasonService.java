@@ -38,12 +38,12 @@ public class ReasonService {
     /**
      * Get reason code
      * @param serviceCode serviceCode
-     * @param reasonText reasonText
+     * @param reasonDescription reasonDescription
      * @return reasonCode
      */
-    public static String getReasonCode(String serviceCode, String reasonText) {
+    public static String getReasonCode(String serviceCode, String reasonDescription) {
         List<ReasonEntity> reasonCode = reasonList.stream()
-                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonDescription().equals(reasonText))
+                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonDescription().equals(reasonDescription))
                 .toList();
         return !reasonCode.isEmpty() ? reasonCode.get(0).getReasonCode() : null;
     }

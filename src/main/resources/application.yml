@@ -12,6 +12,19 @@ server:
 spring:
   application:
     name: secure-prints
+  mail:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    username: AKIA6OGQRCAJXMQ7467G
+    password: BFc/ZM236eDQwNaWPWKLNquhSBqlcVpYkZucXgCUsQsJ
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+    from: info@secure-prints.com
 
   datasource:
     driver-class-name: org.postgresql.Driver

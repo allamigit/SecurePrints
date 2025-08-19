@@ -66,6 +66,7 @@ public class AppointmentInformationService {
      * @return ApiResponse
      */
     public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
+        responseCode = 409;
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -75,7 +76,6 @@ public class AppointmentInformationService {
         AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
         if(appointmentResponse != null) {
-            responseCode = 409;
             responseMessage = "Duplicate appointment for the same service was found and not processed yet.";
         } else {
             String serviceName = appointmentRequest.getServiceName();
@@ -145,11 +145,17 @@ public class AppointmentInformationService {
                     .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
                     .build();
 
-            // Send confirmation email to customer
-            //awsService.sendEmail(customerEmail, appointmentResponse);
-
             responseCode = 201;
             responseMessage = "Appointment Scheduled.";
+
+            // Send confirmation email to customer
+            try {
+                awsService.sendEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+            } catch (Exception ex) {
+                responseCode = 409;
+                responseMessage = "Appointment Scheduled. Sending confirmation email failed.";
+            }
+
         }
 
         ApiStatus apiStatus = ApiStatus.builder()
@@ -215,7 +221,7 @@ public class AppointmentInformationService {
                 .build();
 
         // Send confirmation email to customer
-        //awsService.sendEmail(appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        awsService.sendEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
@@ -275,7 +281,7 @@ public class AppointmentInformationService {
                 .build();
 
         // Send confirmation email to customer
-        //awsService.sendEmail(appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        awsService.sendEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
