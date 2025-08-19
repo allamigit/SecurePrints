@@ -101,7 +101,7 @@ public class AppointmentInformationService {
             String appointmentId = String.valueOf(appointmentInformationRepository.getNextAppointmentId());
             assert bciReasonCode != null;
             assert fbiReasonCode != null;
-            String customerEmail = appointmentRequest.getCustomerEmail();
+            String customerEmail = appointmentRequest.getCustomerEmail().toLowerCase();
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
                     .appointmentId(appointmentId)
                     .customerFirstName(NameFormatUtil.formatName(appointmentRequest.getCustomerFirstName()))
@@ -150,7 +150,7 @@ public class AppointmentInformationService {
 
             // Send confirmation email to customer
             try {
-                awsService.sendEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+                awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), customerEmail, appointmentResponse);
             } catch (Exception ex) {
                 responseCode = 409;
                 responseMessage = "Appointment Scheduled. Sending confirmation email failed.";
@@ -202,6 +202,7 @@ public class AppointmentInformationService {
             responseMessage = "Appointment Rescheduled.";
         }
 
+        assert appointmentInformationEntity != null;
         String serviceCode = appointmentInformationEntity.getServiceCode();
         String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
         String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
@@ -221,7 +222,7 @@ public class AppointmentInformationService {
                 .build();
 
         // Send confirmation email to customer
-        awsService.sendEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
@@ -281,7 +282,7 @@ public class AppointmentInformationService {
                 .build();
 
         // Send confirmation email to customer
-        awsService.sendEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
@@ -343,7 +344,6 @@ public class AppointmentInformationService {
                                 .expensePaymentStatusCode(202)
                                 .expensePaymentMethodCode(paymentMethodCode)
                                 .expensePaymentDate(completeDate)
-                                .expenseUpdate(true)
                                 .build());
             }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),

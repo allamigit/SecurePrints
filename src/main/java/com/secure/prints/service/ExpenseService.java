@@ -47,7 +47,10 @@ public class ExpenseService {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
-                expense.setExpenseUpdate(true);
+                expense.setExpenseUpdate(false);
+                if(!expense.getExpenseReferenceNumber().startsWith("ApptID-")) {
+                    expense.setExpenseUpdate(true);
+                }
                 expenseRepository.save(expense);
                 responseCode = 201;
                 responseMessage = "Expense Added.";
@@ -218,7 +221,7 @@ public class ExpenseService {
         ExpenseEntity expense = expenseRepository.findByExpenseReferenceNumber(expenseReferenceNumber);
         String expenseDescription = "Refund CC Reader fees to customer.";
         expense.setExpenseDescription(expenseDescription);
-        expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);
+        expense.setExpenseUpdate(false);
         expenseRepository.save(expense);
         ExpenseEntity newExpense = ExpenseEntity.builder()
                 .expenseVendorName(expense.getExpenseVendorName())
@@ -232,7 +235,7 @@ public class ExpenseService {
                 .expensePaymentDate(paymentRefundDate)
                 .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
                 .expenseDocumentFileName(expense.getExpenseDocumentFileName())
-                .expenseUpdate(expense.getExpenseReconcileDate() == null)
+                .expenseUpdate(false)
                 .build();
         expenseRepository.save(newExpense);
         return expense.getExpenseAmount();

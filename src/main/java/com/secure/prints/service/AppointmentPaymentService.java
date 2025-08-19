@@ -147,8 +147,9 @@ public class AppointmentPaymentService {
                     !appointmentPayment.getPaymentComment().startsWith("Refund") ||
                                     appointmentPayment.getPaymentReconcileDate() != null);
             if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
-                long expenseId =  expenseRepository.findByExpenseReferenceNumber("ApptID-" + appointmentId).getExpenseId();
-                expenseService.reconcileExpense(expenseId, paymentReconcileDate);
+                String refNumber = "ApptID-" + appointmentId;
+                long expenseId =  expenseRepository.findByExpenseReferenceNumber(refNumber).getExpenseId();
+                expenseRepository.reconcileExpense(expenseId, paymentReconcileDate, false);
             }
             responseCode = 200;
             responseMessage = "Payment Reconciled.";
@@ -177,7 +178,8 @@ public class AppointmentPaymentService {
         } else {
             BigDecimal refundAmount = appointmentPayment.getServiceAmount();
             if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
-                BigDecimal expenseAmount = expenseService.refundFee("ApptID-" + appointmentId, paymentRefundDate);
+                String refNumber = "ApptID-" + appointmentId;
+                BigDecimal expenseAmount = expenseService.refundFee(refNumber, paymentRefundDate);
                 refundAmount = refundAmount.add(expenseAmount.abs());
             }
 

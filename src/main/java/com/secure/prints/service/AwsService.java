@@ -18,7 +18,7 @@ public class AwsService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(String firstName, String emailTo, AppointmentResponse appointmentResponse) {
+    public void sendConfirmationEmail(String firstName, String emailTo, AppointmentResponse appointmentResponse) {
         SimpleMailMessage message = new SimpleMailMessage();
         String reason = "";
         if(appointmentResponse.getBciReasonCode() != null) {
