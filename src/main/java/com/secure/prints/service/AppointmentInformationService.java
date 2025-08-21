@@ -534,14 +534,14 @@ public class AppointmentInformationService {
             timeList.subList(cutFromEndIndex, timeList.size()).clear();
         }
 
+        int listSize = timeList.size();
+        int i = 0;
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository
                 .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         if(UserService.isUserLoggedIn(request) || !appointmentInformationEntityList.isEmpty()) {
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
                 String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
                         .toString().substring(0, 16).replace("T", " ") + ":00";
-                int listSize = timeList.size();
-                int i = 0;
                 do {
                     if(listSize == 0) {
                         break;
@@ -555,6 +555,19 @@ public class AppointmentInformationService {
                     i++;
                 } while(i < listSize);
             }
+        } else {
+            do {
+                if(listSize == 0) {
+                    break;
+                }
+                OffsetDateTime appointmentTs = TimestampUtil.getOffsetDateTime(timeList.get(i).getAppointmentTimestamp());
+                if(appointmentTs.isBefore(OffsetDateTime.now())) {
+                    timeList.remove(i);
+                    listSize--;
+                    i--;
+                }
+                i++;
+            } while(i < listSize);
         }
         return timeList;
     }
