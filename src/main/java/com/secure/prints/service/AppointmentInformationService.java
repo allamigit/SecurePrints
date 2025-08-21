@@ -561,7 +561,7 @@ public class AppointmentInformationService {
                     break;
                 }
                 OffsetDateTime appointmentTs = TimestampUtil.getOffsetDateTime(timeList.get(i).getAppointmentTimestamp());
-                if(appointmentTs.isBefore(OffsetDateTime.now())) {
+                if(TimestampUtil.isValidTimestamp(appointmentTs)) {
                     timeList.remove(i);
                     listSize--;
                     i--;
