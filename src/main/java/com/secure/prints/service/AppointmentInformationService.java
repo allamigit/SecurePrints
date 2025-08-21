@@ -149,12 +149,12 @@ public class AppointmentInformationService {
             responseMessage = "Appointment Scheduled.";
 
             // Send confirmation email to customer
-            /*try {
+            try {
                 awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), customerEmail, appointmentResponse);
             } catch (Exception ex) {
                 responseCode = 409;
                 responseMessage = "Appointment Scheduled. Sending confirmation email failed.";
-            }*/
+            }
 
         }
 
