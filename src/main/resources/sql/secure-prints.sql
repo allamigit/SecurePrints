@@ -12,11 +12,11 @@ select * from appt_pymt order by appt_id;
 
 select * from inv_info;
 
-select * from exp_info;
+select * from exp_info order by exp_ref_no;
 
-select * from appt_info where appt_sts_code = 103 and cncl_ts <= date(now())-interval '2 days';
+--select * from appt_info where appt_sts_code = 103 and cncl_ts <= date(now())-interval '2 days';
 
-select * from appt_pymt where pymt_sts_code = 203 and pymt_dt <= date(now())-interval '2 days';
+--select * from appt_pymt where pymt_sts_code = 203 and pymt_dt <= date(now())-interval '2 days';
 
 --select setval('com_info_seq', 0);
 
@@ -32,9 +32,14 @@ select * from appt_pymt where pymt_sts_code = 203 and pymt_dt <= date(now())-int
 
 --select nextval('appt_info_seq');
 
+--update exp_info set exp_rcncl_dt = (select pymt_rcncl_dt from appt_pymt where appt_id = '1277') where exp_ref_no = 'ApptID-1277';
+
+update appt_pymt set bci_amt = -1 * bci_amt; --where appt_id like '%-R';
+
 --update appt_info set usr_ip = '3JMR+UCtEi5q83nFPAWWuA==';
 
 --update exp_info set exp_desc = '' where exp_desc is not null;
+--update appt_pymt set pymt_cmt = '' where pymt_cmt is null;
 --alter table appt_info add column usr_ip varchar(20) null;
 
 --  Remote: 24.31.160.60, Local: 172.31.15.95 - ec2-user

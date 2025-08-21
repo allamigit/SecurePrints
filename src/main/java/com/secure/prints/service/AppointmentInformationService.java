@@ -149,12 +149,12 @@ public class AppointmentInformationService {
             responseMessage = "Appointment Scheduled.";
 
             // Send confirmation email to customer
-            try {
+            /*try {
                 awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), customerEmail, appointmentResponse);
             } catch (Exception ex) {
                 responseCode = 409;
                 responseMessage = "Appointment Scheduled. Sending confirmation email failed.";
-            }
+            }*/
 
         }
 
@@ -314,7 +314,7 @@ public class AppointmentInformationService {
         }
 
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
-        OffsetDateTime completeTimestamp = null;
+        OffsetDateTime completeTimestamp = currentTimestamp;
         if(appointmentInformationEntity == null) {
             responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
@@ -357,7 +357,6 @@ public class AppointmentInformationService {
         String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
         String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
         String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
-        assert completeTimestamp != null;
         appointmentResponse = AppointmentResponse.builder()
                 .appointmentId(appointmentId)
                 .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
@@ -436,7 +435,11 @@ public class AppointmentInformationService {
             DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
             appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         } else if(startDate == null && endDate == null) {
-            appointmentList = appointmentInformationRepository.getAllAppointments();
+            //appointmentList = appointmentInformationRepository.getAllAppointments();
+            String strStartDate = LocalDate.now().getYear() + "-01-01";
+            String strEndDate = LocalDate.now().getYear() + "-12-31";
+            DateRange dateRange = TimestampUtil.getOffsetDateRange(LocalDate.parse(strStartDate), LocalDate.parse(strEndDate));
+            appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         }
 
         // Generate Appointment Response list

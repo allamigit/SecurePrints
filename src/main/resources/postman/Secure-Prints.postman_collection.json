@@ -302,7 +302,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customerFirstName\": \"asdd5\",\r\n    \"customerLastName\": \"asdd5\",\r\n    \"customerEmail\": \"example@email.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI Background Check\",\r\n    \"bciReasonCode\": \"NO ORC\",\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": null,\r\n    \"appointmentTimestamp\": \"2025-07-28 14:30:00\"\r\n}",
+							"raw": "{\r\n    \"customerFirstName\": \"Mawj\",\r\n    \"customerLastName\": \"Al-Lami5\",\r\n    \"customerEmail\": \"mawj_allami@yahoo.com\",\r\n    \"customerPhone\": \"(123) 456-7890\",\r\n    \"serviceName\": \"BCI and FBI Background Check\",\r\n    \"bciReasonCode\": \"NO ORC\",\r\n    \"bciReasonDescription\": \"Accountancy Board license applicants\",\r\n    \"fbiReasonCode\": null,\r\n    \"fbiReasonDescription\": \"A controlling person of an appraisal management company\",\r\n    \"appointmentTimestamp\": \"2025-08-21 11:30:00\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -328,7 +328,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/reschedule-appointment?appointmentId=1200&appointmentTimestamp=2025-06-16 10:45:00",
+							"raw": "{{url}}/secure-prints/reschedule-appointment?appointmentId=1280&appointmentTimestamp=2025-08-19 11:45:00",
 							"host": [
 								"{{url}}"
 							],
@@ -339,11 +339,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1200"
+									"value": "1280"
 								},
 								{
 									"key": "appointmentTimestamp",
-									"value": "2025-06-16 10:45:00"
+									"value": "2025-08-19 11:45:00"
 								}
 							]
 						}
@@ -356,7 +356,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/cancel-appointment?appointmentId=1200",
+							"raw": "{{url}}/secure-prints/cancel-appointment?appointmentId=1280",
 							"host": [
 								"{{url}}"
 							],
@@ -367,7 +367,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1200"
+									"value": "1280"
 								}
 							]
 						}
@@ -404,7 +404,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-07-14",
+							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-08-29",
 							"host": [
 								"{{url}}"
 							],
@@ -415,7 +415,7 @@
 							"query": [
 								{
 									"key": "selectedDate",
-									"value": "2025-07-14"
+									"value": "2025-08-29"
 								}
 							]
 						}
@@ -485,7 +485,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1228&paymentMethodName=Card",
+							"raw": "{{url}}/secure-prints/complete-appointment?appointmentId=1290&paymentMethodName=Card",
 							"host": [
 								"{{url}}"
 							],
@@ -496,7 +496,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1228"
+									"value": "1290"
 								},
 								{
 									"key": "paymentMethodName",
@@ -513,7 +513,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-07-01&endDate=2025-07-01",
+							"raw": "{{url}}/secure-prints/all-appointments?startDate=2025-07-01&endDate=2025-07-31",
 							"host": [
 								"{{url}}"
 							],
@@ -528,7 +528,7 @@
 								},
 								{
 									"key": "endDate",
-									"value": "2025-07-01"
+									"value": "2025-07-31"
 								}
 							]
 						}
@@ -637,6 +637,39 @@
 					"response": []
 				},
 				{
+					"name": "Update Amount and Comment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/payment/update-amount-comment?appointmentId=1217&serviceAmount=38&paymentComment=",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"payment",
+								"update-amount-comment"
+							],
+							"query": [
+								{
+									"key": "appointmentId",
+									"value": "1217"
+								},
+								{
+									"key": "serviceAmount",
+									"value": "38"
+								},
+								{
+									"key": "paymentComment",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Reconcile Payment",
 					"request": {
 						"method": "PATCH",
@@ -700,7 +733,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-05-20&endDate=2025-05-20&showNonReconciled=false",
+							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-08-21&endDate=2025-08-21&showNonReconciled=false",
 							"host": [
 								"{{url}}"
 							],
@@ -712,11 +745,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-05-20"
+									"value": "2025-08-21"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-05-20"
+									"value": "2025-08-21"
 								},
 								{
 									"key": "showNonReconciled",
@@ -761,7 +794,27 @@
 					"name": "Add Invoice",
 					"request": {
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"invoiceNumber\": \"inv-01\",\r\n    \"invoicePayeeName\": \"BCI\",\r\n    \"invoiceDate\": \"2025-08-20\",\r\n    \"invoiceDueDate\": \"2025-09-20\",\r\n    \"expenseCategoryCode\": 1000,\r\n    \"expenseSubcategoryCode\": 1005,\r\n    \"invoiceAmount\": 115,\r\n    \"invoicePaymentStatusCode\": 202,\r\n    \"invoicePaymentDate\": \"2025-08-21\",\r\n    \"invoicePaymentMethodCode\": 301,\r\n    \"invoiceComments\": \"Agust charges\",\r\n    \"invoiceDocumentFileName\": null,\r\n    \"invoiceReconcileDate\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/add-invoice",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"add-invoice"
+							]
+						}
 					},
 					"response": []
 				},
@@ -769,7 +822,27 @@
 					"name": "Update Invoice",
 					"request": {
 						"method": "PUT",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"invoiceId\": 1,\r\n    \"invoiceNumber\": \"inv-01\",\r\n    \"invoicePayeeName\": \"BCI\",\r\n    \"invoiceDate\": \"2025-08-20\",\r\n    \"invoiceDueDate\": \"2025-09-20\",\r\n    \"expenseCategoryCode\": 1000,\r\n    \"expenseSubcategoryCode\": 1005,\r\n    \"invoiceAmount\": 120,\r\n    \"invoicePaymentStatusCode\": 202,\r\n    \"invoicePaymentDate\": \"2025-08-21\",\r\n    \"invoicePaymentMethodCode\": 301,\r\n    \"invoiceComments\": \"Agust charges\",\r\n    \"invoiceDocumentFileName\": null,\r\n    \"invoiceReconcileDate\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/update-invoice",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"update-invoice"
+							]
+						}
 					},
 					"response": []
 				},
@@ -777,7 +850,28 @@
 					"name": "Reconcile Invoice",
 					"request": {
 						"method": "PATCH",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/reconcile-invoice?invoiceId=1&invoiceReconcileDate=2025-08-21",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"reconcile-invoice"
+							],
+							"query": [
+								{
+									"key": "invoiceId",
+									"value": "1"
+								},
+								{
+									"key": "invoiceReconcileDate",
+									"value": "2025-08-21"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -785,7 +879,32 @@
 					"name": "Get All Invoices",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/all-invoices?startDate=2025-08-20&endDate=2025-08-20&showNonReconciled=false",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"all-invoices"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-08-20"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-08-20"
+								},
+								{
+									"key": "showNonReconciled",
+									"value": "false"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -793,7 +912,24 @@
 					"name": "Get Invoice Details",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/invoice-details?invoiceId=1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"invoice-details"
+							],
+							"query": [
+								{
+									"key": "invoiceId",
+									"value": "1"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -804,7 +940,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"expensePayeeName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-July-2025\",\r\n    \"expenseReferenceDate\": \"2025-07-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-07-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
+							"raw": "{\r\n    \"expenseVendorName\": \"Landlord\",\r\n    \"expenseReferenceNumber\": \"Rent-July-2025\",\r\n    \"expenseReferenceDate\": \"2025-07-12\",\r\n    \"expenseDescription\": null,\r\n    \"expenseCategoryCode\": 400,\r\n    \"expenseSubcategoryCode\": 401,\r\n    \"expenseAmount\": 2500,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-07-12\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -832,7 +968,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"expenseId\": 2,\r\n    \"expensePayeeName\": \"Square (CC Reader)\",\r\n    \"expenseReferenceNumber\": \"ApptID-1228\",\r\n    \"expenseReferenceDate\": \"2025-07-04\",\r\n    \"expenseCategoryCode\": 600,\r\n    \"expenseSubcategoryCode\": 604,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": -1.00,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-07-04\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null,\r\n    \"expenseUpdate\": true\r\n}",
+							"raw": "{\r\n    \"expenseId\": 2,\r\n    \"expenseVendorName\": \"Square (CC Reader)\",\r\n    \"expenseReferenceNumber\": \"ApptID-1228\",\r\n    \"expenseReferenceDate\": \"2025-07-04\",\r\n    \"expenseCategoryCode\": 600,\r\n    \"expenseSubcategoryCode\": 604,\r\n    \"expenseDescription\": null,\r\n    \"expenseAmount\": -1.00,\r\n    \"expensePaymentStatusCode\": 202,\r\n    \"expensePaymentDate\": \"2025-07-04\",\r\n    \"expensePaymentMethodCode\": null,\r\n    \"expenseDocumentFileName\": null,\r\n    \"expenseReconcileDate\": null,\r\n    \"expenseUpdate\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

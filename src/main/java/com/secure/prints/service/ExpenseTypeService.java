@@ -28,6 +28,7 @@ public class ExpenseTypeService {
         ExpenseCategory expenseCategory4 = new ExpenseCategory(700, "Vehicle and Transportation Expenses");
         ExpenseCategory expenseCategory5 = new ExpenseCategory(800, "Financial Expenses");
         ExpenseCategory expenseCategory6 = new ExpenseCategory(900, "Miscellaneous");
+        ExpenseCategory expenseCategory7 = new ExpenseCategory(1000, "Cost of Goods Sold (COGS)");
 
         List<ExpenseSubcategory> expenseSubcategoryList1 = List.of(
                 new ExpenseSubcategory(401, "Rent or Lease", "Office, equipment, or vehicle rentals"),
@@ -80,12 +81,21 @@ public class ExpenseTypeService {
                 new ExpenseSubcategory(903, "Penalties and Fines", "Not usually tax-deductible, but recorded")
         );
 
+        List<ExpenseSubcategory> expenseSubcategoryList7 = List.of(
+                new ExpenseSubcategory(1001, "Raw Materials", ""),
+                new ExpenseSubcategory(1002, "Inventory Purchases", ""),
+                new ExpenseSubcategory(1003, "Production Supplies", ""),
+                new ExpenseSubcategory(1004, "Direct Labor", ""),
+                new ExpenseSubcategory(1005, "BCI Service Fees", "")
+        );
+
         ExpenseType expenseType1 = new ExpenseType(expenseCategory1, expenseSubcategoryList1);
         ExpenseType expenseType2 = new ExpenseType(expenseCategory2, expenseSubcategoryList2);
         ExpenseType expenseType3 = new ExpenseType(expenseCategory3, expenseSubcategoryList3);
         ExpenseType expenseType4 = new ExpenseType(expenseCategory4, expenseSubcategoryList4);
         ExpenseType expenseType5 = new ExpenseType(expenseCategory5, expenseSubcategoryList5);
         ExpenseType expenseType6 = new ExpenseType(expenseCategory6, expenseSubcategoryList6);
+        ExpenseType expenseType7 = new ExpenseType(expenseCategory7, expenseSubcategoryList7);
 
         expenseTypeList = new ArrayList<>();
         expenseTypeList.add(expenseType1);
@@ -94,6 +104,7 @@ public class ExpenseTypeService {
         expenseTypeList.add(expenseType4);
         expenseTypeList.add(expenseType5);
         expenseTypeList.add(expenseType6);
+        expenseTypeList.add(expenseType7);
 
         return expenseTypeList;
     }

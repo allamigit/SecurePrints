@@ -30,14 +30,20 @@ public class InvoiceEntity implements Serializable {
     @Column(name = "inv_no")
     private String invoiceNumber;
 
-    @Column(name = "inv_client_name")
-    private String invoiceClientName;
+    @Column(name = "inv_payee_name")
+    private String invoicePayeeName;
 
     @Column(name = "inv_dt")
     private LocalDate invoiceDate;
 
     @Column(name = "inv_due_dt")
     private LocalDate invoiceDueDate;
+
+    @Column(name = "exp_cat_code")
+    private Integer expenseCategoryCode;
+
+    @Column(name = "exp_sub_cat_code")
+    private Integer expenseSubcategoryCode;
 
     @Column(name = "inv_amt")
     private BigDecimal invoiceAmount;

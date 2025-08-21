@@ -25,6 +25,8 @@ CREATE TABLE com_info (
 	com_address_2 varchar(100) NOT NULL,
 	com_phone varchar(20) NOT NULL,
 	com_email varchar(80) NOT NULL,
+	com_hol_start_dt date NULL,
+	com_hol_end_dt date NULL,
 	CONSTRAINT pk_com_id PRIMARY KEY (com_id),
 	CONSTRAINT uk_com_name UNIQUE (com_name)
 );
@@ -96,9 +98,11 @@ CREATE SEQUENCE inv_info_seq
 CREATE TABLE inv_info (
 	inv_id int8 NOT NULL DEFAULT nextval('inv_info_seq'),
 	inv_no varchar(30) NOT NULL,
-	inv_client_name varchar(80) NOT NULL,
+	inv_payee_name varchar(80) NOT NULL,
 	inv_dt date NOT NULL,
 	inv_due_dt date NOT NULL,
+	exp_cat_code int4 NOT NULL,
+	exp_sub_cat_code int4 NOT NULL,
 	inv_amt numeric(6, 2) NOT NULL,
 	inv_pymt_sts_code int4 NOT NULL,
 	inv_pymt_dt date NULL,

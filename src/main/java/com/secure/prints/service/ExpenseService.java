@@ -96,7 +96,10 @@ public class ExpenseService {
                 resultList = expenseRepository.getAllExpensesForDateRange(startDate, endDate);
             }
         } else if(startDate == null && endDate == null) {
-            resultList = expenseRepository.getAllExpenses();
+            //resultList = expenseRepository.getAllExpenses();
+            startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
+            endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
+            resultList = expenseRepository.getAllExpensesForDateRange(startDate, endDate);
         }
         return resultList;
     }
