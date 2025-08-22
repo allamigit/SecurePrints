@@ -5,10 +5,8 @@ import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.ApiStatus;
-import com.secure.prints.model.DateRange;
 import com.secure.prints.model.PaymentMethod;
 import com.secure.prints.model.PaymentStatus;
-import com.secure.prints.util.TimestampUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -195,7 +193,7 @@ public class AppointmentPaymentService {
             AppointmentPaymentEntity newAppointmentPayment = AppointmentPaymentEntity.builder()
                     .appointmentId(appointmentId + "-R")
                     .serviceAmount(appointmentPayment.getServiceAmount().negate())
-                    .bciAmount(appointmentPayment.getBciAmount().abs())
+                    .bciAmount(BigDecimal.ZERO)
                     .paymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                     .paymentMethodCode(appointmentPayment.getPaymentMethodCode())
                     .paymentDate(paymentRefundDate)
