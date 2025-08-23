@@ -43,7 +43,7 @@ public class ExpenseService {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
-            if(expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
+            if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {
@@ -99,7 +99,11 @@ public class ExpenseService {
             //resultList = expenseRepository.getAllExpenses();
             startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
             endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
-            resultList = expenseRepository.getAllExpensesForDateRange(startDate, endDate);
+            if(showNonReconciled) {
+                resultList = expenseRepository.getNonReconciledExpensesForDateRange(startDate, endDate);
+            } else {
+                resultList = expenseRepository.getAllExpensesForDateRange(startDate, endDate);
+            }
         }
         return resultList;
     }
@@ -115,7 +119,7 @@ public class ExpenseService {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
-            if(expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
+            if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else {

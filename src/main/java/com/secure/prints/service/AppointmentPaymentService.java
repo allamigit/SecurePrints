@@ -66,7 +66,11 @@ public class AppointmentPaymentService {
             //resultList = appointmentPaymentRepository.getAllAppointmentPayments();
             startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
             endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
-            resultList = appointmentPaymentRepository.getAllAppointmentPaymentsForDateRange(startDate, endDate);
+            if(showNonReconciled) {
+                resultList = appointmentPaymentRepository.getAllNonReconciledPaymentsForDateRange(startDate, endDate);
+            } else {
+                resultList = appointmentPaymentRepository.getAllAppointmentPaymentsForDateRange(startDate, endDate);
+            }
         }
         return resultList;
     }

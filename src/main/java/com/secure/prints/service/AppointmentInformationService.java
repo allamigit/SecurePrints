@@ -222,7 +222,12 @@ public class AppointmentInformationService {
                 .build();
 
         // Send confirmation email to customer
-        awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        try {
+            awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        } catch (Exception ex) {
+            responseCode = 409;
+            responseMessage = "Appointment Rescheduled. Sending confirmation email failed.";
+        }
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
@@ -282,7 +287,12 @@ public class AppointmentInformationService {
                 .build();
 
         // Send confirmation email to customer
-        awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        try {
+            awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        } catch (Exception ex) {
+            responseCode = 409;
+            responseMessage = "Appointment Cancelled. Sending confirmation email failed.";
+        }
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)

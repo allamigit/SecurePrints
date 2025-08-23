@@ -89,4 +89,14 @@ public class InvoiceController {
         return apiStatus;
     }
 
+    /**
+     * Get invoice due date which is invoice date + 30 days
+     * @param invoiceDate invoiceDate
+     * @return Invoice Due Date
+     */
+    @GetMapping(value = "due-date", produces = MediaType.APPLICATION_JSON_VALUE)
+    public LocalDate getInvoiceDueDate(@RequestParam(name = "invoiceDate") LocalDate invoiceDate) {
+        return invoiceDate.plusDays(30);
+    }
+
 }

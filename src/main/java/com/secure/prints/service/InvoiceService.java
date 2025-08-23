@@ -38,10 +38,11 @@ public class InvoiceService {
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) > 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().negate());
             }
-            if(invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
+            if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after invoice date.";
             } else {
+                invoice.setInvoiceNumber(invoice.getInvoiceNumber().toUpperCase().trim());
                 invoiceRepository.save(invoice);
                 responseCode = 201;
                 responseMessage = "Invoice Added.";
@@ -90,7 +91,11 @@ public class InvoiceService {
             //resultList = invoiceRepository.getAllInvoices();
             startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
             endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
-            resultList = invoiceRepository.getAllInvoicesForDateRange(startDate, endDate);
+            if(showNonReconciled) {
+                resultList = invoiceRepository.getNonReconciledInvoicesForDateRange(startDate, endDate);
+            } else {
+                resultList = invoiceRepository.getAllInvoicesForDateRange(startDate, endDate);
+            }
         }
         return resultList;
     }
@@ -106,10 +111,11 @@ public class InvoiceService {
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) > 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().negate());
             }
-            if(invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
+            if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
                 responseCode = 409;
                 responseMessage = "Payment date must be at the same or after invoice date.";
             } else {
+                invoice.setInvoiceNumber(invoice.getInvoiceNumber().toUpperCase().trim());
                 invoiceRepository.save(invoice);
                 responseCode = 200;
                 responseMessage = "Invoice Updated.";
