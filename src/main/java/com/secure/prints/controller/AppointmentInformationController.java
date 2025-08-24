@@ -1,16 +1,15 @@
 package com.secure.prints.controller;
 
-import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.model.ApiResponse;
 import com.secure.prints.model.Appointment;
 import com.secure.prints.model.AppointmentRequest;
 import com.secure.prints.model.AppointmentTime;
 import com.secure.prints.service.AppointmentInformationService;
+import com.secure.prints.util.NameFormatUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.UnknownHostException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -138,6 +137,16 @@ public class AppointmentInformationController {
     @GetMapping(value = "times-list", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AppointmentTime> generateAppointmentTimes(@RequestParam(name = "selectedDate") LocalDate selectedDate) {
         return appointmentInformationService.generateAppointmentTimes(selectedDate);
+    }
+
+    /**
+     * Format Entered Name
+     * @param enteredName enteredName
+     * @return Formatted Name
+     */
+    @GetMapping(value = "format-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String formatName(@RequestParam(name = "enteredName") String enteredName) {
+        return NameFormatUtil.formatName(enteredName);
     }
 
 }
