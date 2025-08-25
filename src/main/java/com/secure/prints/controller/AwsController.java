@@ -1,7 +1,6 @@
 package com.secure.prints.controller;
 
 import com.secure.prints.model.ApiStatus;
-import com.secure.prints.model.AppointmentResponse;
 import com.secure.prints.model.ContactEmail;
 import com.secure.prints.service.AwsService;
 import jakarta.servlet.http.HttpServletResponse;

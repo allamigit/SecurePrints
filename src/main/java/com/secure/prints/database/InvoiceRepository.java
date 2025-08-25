@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -64,5 +65,13 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
             "i.invoiceDate BETWEEN :startDate AND :endDate ORDER BY i.invoiceDate DESC")
     List<InvoiceEntity> getNonReconciledInvoicesForDateRange(@Param("startDate") LocalDate startDate,
                                                              @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of invoice amount for a specific date range
+     * @return Total of invoice amount
+     */
+    @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoiceDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalInvoiceAmount(@Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate);
 
 }

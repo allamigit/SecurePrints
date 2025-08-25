@@ -77,4 +77,20 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     List<ExpenseEntity> getNonReconciledExpensesForDateRange(@Param("startDate") LocalDate startDate,
                                                              @Param("endDate") LocalDate endDate);
 
+    /**
+     * Get total of bank fees amount (CC Reader) for a specific date range
+     * @return Total of bank fees amount
+     */
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalBankFeesAmount(@Param("startDate") LocalDate startDate,
+                                      @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of expense amount (other than CC Reader) for a specific date range
+     * @return Total of expense amount
+     */
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalExpenseAmount(@Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate);
+
 }

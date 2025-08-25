@@ -11,8 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-//import software.amazon.awssdk.services.ses.SesClient;
-//import software.amazon.awssdk.regions.Region;
 
 @Configuration
 @EnableWebSecurity
@@ -54,12 +52,5 @@ public class AppConfig {
             }
         };
     }
-
-//    @Bean
-//    public SesClient sesClient() {
-//        return SesClient.builder()
-//                .region(Region.US_EAST_2)
-//                .build();
-//    }
 
 }

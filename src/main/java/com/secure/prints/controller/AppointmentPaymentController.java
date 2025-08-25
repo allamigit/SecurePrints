@@ -1,6 +1,5 @@
 package com.secure.prints.controller;
 
-import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.service.AppointmentPaymentService;

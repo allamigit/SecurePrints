@@ -107,13 +107,15 @@ public class InvoiceService {
      */
     @RequiresLogin
     public ApiStatus updateInvoiceDetails(InvoiceEntity invoice) {
+        responseCode = 409;
         try {
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) > 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().negate());
             }
             if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
-                responseCode = 409;
                 responseMessage = "Payment date must be at the same or after invoice date.";
+            } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoiceReconcileDate().isBefore(invoice.getInvoicePaymentDate())) {
+                responseMessage = "Reconcile date must be at the same or after payment date.";
             } else {
                 invoice.setInvoiceNumber(invoice.getInvoiceNumber().toUpperCase().trim());
                 invoiceRepository.save(invoice);

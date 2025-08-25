@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping( value = "user")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;

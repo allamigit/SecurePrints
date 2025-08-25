@@ -121,4 +121,24 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
     @Query(value = "SELECT a FROM AppointmentPaymentEntity a ORDER BY a.paymentDate DESC")
     List<AppointmentPaymentEntity> getAllAppointmentPayments();
 
+    /**
+     * Get total of service amount for a specific date range
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return Total of service amount
+     */
+    @Query(value = "SELECT SUM(a.serviceAmount) FROM AppointmentPaymentEntity a WHERE a.paymentStatusCode <> 203 AND a.paymentDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalServiceAmount(@Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of BCI amount for a specific date range
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return Total of BCI amount
+     */
+    @Query(value = "SELECT SUM(a.bciAmount) FROM AppointmentPaymentEntity a WHERE a.paymentStatusCode <> 203 AND a.paymentDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalBciAmount(@Param("startDate") LocalDate startDate,
+                                 @Param("endDate") LocalDate endDate);
+
 }

@@ -7,17 +7,20 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiStatus implements Serializable {
+public class FinancialReport implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Integer responseCode;
-    private String responseMessage;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Revenue revenueAll;
+    private Revenue revenueProcessed;
 
 }

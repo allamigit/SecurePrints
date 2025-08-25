@@ -115,13 +115,15 @@ public class ExpenseService {
      */
     @RequiresLogin
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
+        responseCode = 409;
         try {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().negate());
             }
             if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
-                responseCode = 409;
                 responseMessage = "Payment date must be at the same or after reference date.";
+            } else if(expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
+                responseMessage = "Reconcile date must be at the same or after payment date.";
             } else {
                 BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount().abs();
                 BigDecimal newExpenseAmount = expense.getExpenseAmount().abs();
