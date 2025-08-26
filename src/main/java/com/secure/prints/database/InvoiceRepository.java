@@ -67,11 +67,19 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
                                                              @Param("endDate") LocalDate endDate);
 
     /**
-     * Get total of invoice amount for a specific date range
+     * Get total of invoice amount (Pending & Processed) for a specific date range
      * @return Total of invoice amount
      */
     @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoiceDate BETWEEN :startDate AND :endDate")
-    BigDecimal getTotalInvoiceAmount(@Param("startDate") LocalDate startDate,
-                                     @Param("endDate") LocalDate endDate);
+    BigDecimal getTotalInvoiceAmountAll(@Param("startDate") LocalDate startDate,
+                                        @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of invoice amount (Processed) for a specific date range
+     * @return Total of invoice amount
+     */
+    @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoicePaymentStatusCode <> 201 AND i.invoiceDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalInvoiceAmountProcessed(@Param("startDate") LocalDate startDate,
+                                              @Param("endDate") LocalDate endDate);
 
 }

@@ -1,6 +1,7 @@
 package com.secure.prints.database;
 
 import com.secure.prints.database.entity.ExpenseEntity;
+import com.secure.prints.model.ExpenseResultset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -78,19 +79,57 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
                                                              @Param("endDate") LocalDate endDate);
 
     /**
-     * Get total of bank fees amount (CC Reader) for a specific date range
+     * Get total of bank fees amount CC Reader (Pending & Processed) for a specific date range
      * @return Total of bank fees amount
      */
     @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
-    BigDecimal getTotalBankFeesAmount(@Param("startDate") LocalDate startDate,
-                                      @Param("endDate") LocalDate endDate);
+    BigDecimal getTotalBankFeesAmountAll(@Param("startDate") LocalDate startDate,
+                                         @Param("endDate") LocalDate endDate);
 
     /**
-     * Get total of expense amount (other than CC Reader) for a specific date range
+     * Get total of expense amount other than CC Reader (Pending & Processed) for a specific date range
      * @return Total of expense amount
      */
     @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
-    BigDecimal getTotalExpenseAmount(@Param("startDate") LocalDate startDate,
-                                     @Param("endDate") LocalDate endDate);
+    BigDecimal getTotalExpenseAmountAll(@Param("startDate") LocalDate startDate,
+                                        @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of bank fees amount CC Reader (Processed) for a specific date range
+     * @return Total of bank fees amount
+     */
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalBankFeesAmountProcessed(@Param("startDate") LocalDate startDate,
+                                               @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of expense amount other than CC Reader (Processed) for a specific date range
+     * @return Total of expense amount
+     */
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalExpenseAmountProcessed(@Param("startDate") LocalDate startDate,
+                                              @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get list of total expense amount (Pending & Processed) for a specific date range
+     * @return List of total expense amount
+     */
+    @Query(value = "SELECT e.expenseCategoryCode, e.expenseSubcategoryCode, SUM(e.expenseAmount) FROM ExpenseEntity e " +
+            "WHERE e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY e.expenseCategoryCode, e.expenseSubcategoryCode " +
+            "ORDER BY e.expenseCategoryCode, e.expenseSubcategoryCode")
+    List<ExpenseResultset> getExpenseTotalsAll(@Param("startDate") LocalDate startDate,
+                                               @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get list of total expense amount (Processed) for a specific date range
+     * @return List of total expense amount
+     */
+    @Query(value = "SELECT e.expenseCategoryCode, e.expenseSubcategoryCode, SUM(e.expenseAmount) FROM ExpenseEntity e " +
+            "WHERE e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY e.expenseCategoryCode, e.expenseSubcategoryCode " +
+            "ORDER BY e.expenseCategoryCode, e.expenseSubcategoryCode")
+    List<ExpenseResultset> getExpenseTotalsProcessed(@Param("startDate") LocalDate startDate,
+                                                     @Param("endDate") LocalDate endDate);
 
 }

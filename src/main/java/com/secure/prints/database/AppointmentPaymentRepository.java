@@ -122,23 +122,43 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
     List<AppointmentPaymentEntity> getAllAppointmentPayments();
 
     /**
-     * Get total of service amount for a specific date range
+     * Get total of service amount (Pending & Processed) for a specific date range
      * @param startDate startDate
      * @param endDate endDate
      * @return Total of service amount
      */
     @Query(value = "SELECT SUM(a.serviceAmount) FROM AppointmentPaymentEntity a WHERE a.paymentStatusCode <> 203 AND a.paymentDate BETWEEN :startDate AND :endDate")
-    BigDecimal getTotalServiceAmount(@Param("startDate") LocalDate startDate,
-                                     @Param("endDate") LocalDate endDate);
+    BigDecimal getTotalServiceAmountAll(@Param("startDate") LocalDate startDate,
+                                        @Param("endDate") LocalDate endDate);
 
     /**
-     * Get total of BCI amount for a specific date range
+     * Get total of BCI amount (Pending & Processed) for a specific date range
      * @param startDate startDate
      * @param endDate endDate
      * @return Total of BCI amount
      */
     @Query(value = "SELECT SUM(a.bciAmount) FROM AppointmentPaymentEntity a WHERE a.paymentStatusCode <> 203 AND a.paymentDate BETWEEN :startDate AND :endDate")
-    BigDecimal getTotalBciAmount(@Param("startDate") LocalDate startDate,
-                                 @Param("endDate") LocalDate endDate);
+    BigDecimal getTotalBciAmountAll(@Param("startDate") LocalDate startDate,
+                                    @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of service amount (Processed) for a specific date range
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return Total of service amount
+     */
+    @Query(value = "SELECT SUM(a.serviceAmount) FROM AppointmentPaymentEntity a WHERE a.paymentStatusCode <> 201 AND a.paymentStatusCode <> 203 AND a.paymentDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalServiceAmountProcessed(@Param("startDate") LocalDate startDate,
+                                              @Param("endDate") LocalDate endDate);
+
+    /**
+     * Get total of BCI amount (Processed) for a specific date range
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return Total of BCI amount
+     */
+    @Query(value = "SELECT SUM(a.bciAmount) FROM AppointmentPaymentEntity a WHERE a.paymentStatusCode <> 201 AND a.paymentStatusCode <> 203 AND a.paymentDate BETWEEN :startDate AND :endDate")
+    BigDecimal getTotalBciAmountProcessed(@Param("startDate") LocalDate startDate,
+                                          @Param("endDate") LocalDate endDate);
 
 }
