@@ -1,6 +1,5 @@
 package com.secure.prints.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,19 +7,18 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExpenseResultset implements Serializable {
+public class ExpenseFullReport implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Integer categoryCode;
-    private Integer subcategoryCode;
-    private BigDecimal subcategoryTotal;
+    private List<ExpenseReport> expenseReportAll;
+    private List<ExpenseReport> expenseReportProcessed;
 
 }

@@ -3,13 +3,12 @@ package com.secure.prints.service;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.InvoiceRepository;
-import com.secure.prints.model.ExpenseReport;
-import com.secure.prints.model.FinancialReport;
-import com.secure.prints.model.Revenue;
+import com.secure.prints.model.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -106,9 +105,55 @@ public class FinancialReportService {
      * @return List of expense report
      */
     //@RequiresLogin
-    public List<ExpenseReport> generateExpenseReport(LocalDate startDate, LocalDate endDate) {
-        ExpenseReport expenseReport = new ExpenseReport();
-        return null;
+    public ExpenseFullReport generateExpenseReport(LocalDate startDate, LocalDate endDate) {
+        List<ExpenseResultset> expenseTotalsAll = expenseRepository.getExpenseTotalsAll(startDate, endDate);
+        List<ExpenseReport> expenseReportAllList = new ArrayList<>();
+        ExpenseReport expenseReport;
+        List<ExpenseSubcategoryTotal> expenseSubcategoryTotalList;
+        for(int i = 0; i < expenseTotalsAll.size(); i++) {
+            int catCode = expenseTotalsAll.get(i).getCategoryCode();
+            int subcatCode = expenseTotalsAll.get(i).getSubcategoryCode();
+            expenseReport = ExpenseReport.builder()
+                    .expenseCategory(new ExpenseCategory(catCode, ExpenseTypeService.getExpenseTypeName(catCode, subcatCode).getCategoryName()))
+                    .build();
+            expenseSubcategoryTotalList = new ArrayList<>();
+            int j = i;
+            do {
+                subcatCode = expenseTotalsAll.get(j).getSubcategoryCode();
+                expenseSubcategoryTotalList.add(new ExpenseSubcategoryTotal(subcatCode,
+                        ExpenseTypeService.getExpenseTypeName(catCode, subcatCode).getSubcategoryName(),
+                        expenseTotalsAll.get(j).getSubcategoryTotal()));
+                i = j; j++;
+            } while(j < expenseTotalsAll.size() && catCode == expenseTotalsAll.get(j).getCategoryCode());
+            expenseReport.setExpenseSubcategoriesTotal(expenseSubcategoryTotalList);
+            expenseReportAllList.add(expenseReport);
+        }
+
+        List<ExpenseResultset> expenseTotalsProcessed = expenseRepository.getExpenseTotalsProcessed(startDate, endDate);
+        List<ExpenseReport> expenseReportProcessedList = new ArrayList<>();
+        for(int i = 0; i < expenseTotalsProcessed.size(); i++) {
+            int catCode = expenseTotalsProcessed.get(i).getCategoryCode();
+            int subcatCode = expenseTotalsProcessed.get(i).getSubcategoryCode();
+            expenseReport = ExpenseReport.builder()
+                    .expenseCategory(new ExpenseCategory(catCode, ExpenseTypeService.getExpenseTypeName(catCode, subcatCode).getCategoryName()))
+                    .build();
+            expenseSubcategoryTotalList = new ArrayList<>();
+            int j = i;
+            do {
+                subcatCode = expenseTotalsProcessed.get(j).getSubcategoryCode();
+                expenseSubcategoryTotalList.add(new ExpenseSubcategoryTotal(subcatCode,
+                        ExpenseTypeService.getExpenseTypeName(catCode, subcatCode).getSubcategoryName(),
+                        expenseTotalsProcessed.get(j).getSubcategoryTotal()));
+                i = j; j++;
+            } while(j < expenseTotalsProcessed.size() && catCode == expenseTotalsProcessed.get(j).getCategoryCode());
+            expenseReport.setExpenseSubcategoriesTotal(expenseSubcategoryTotalList);
+            expenseReportProcessedList.add(expenseReport);
+        }
+
+        return ExpenseFullReport.builder()
+                .expenseReportAll(expenseReportAllList)
+                .expenseReportProcessed(expenseReportProcessedList)
+                .build();
     }
 
 }

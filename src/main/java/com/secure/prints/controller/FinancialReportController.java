@@ -1,6 +1,8 @@
 package com.secure.prints.controller;
 
+import com.secure.prints.model.ExpenseFullReport;
 import com.secure.prints.model.ExpenseReport;
+import com.secure.prints.model.ExpenseResultset;
 import com.secure.prints.model.FinancialReport;
 import com.secure.prints.service.FinancialReportService;
 import org.springframework.http.MediaType;
@@ -45,8 +47,8 @@ public class FinancialReportController {
      * @return List of expense report
      */
     @GetMapping(value = "generate-expense-report", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ExpenseReport> generateExpenseReport(@RequestParam(name = "startDate") LocalDate startDate,
-                                                     @RequestParam(name = "endDate") LocalDate endDate) {
+    public ExpenseFullReport generateExpenseReport(@RequestParam(name = "startDate") LocalDate startDate,
+                                                   @RequestParam(name = "endDate") LocalDate endDate) {
         return financialReportService.generateExpenseReport(startDate, endDate);
     }
 
