@@ -54,7 +54,7 @@ public class FinancialReportService {
         BigDecimal totalExpenseAmount = expenseRepository.getTotalExpenseAmountAll(startDate, endDate);
         totalExpenseAmount = totalExpenseAmount == null ? BigDecimal.ZERO : totalExpenseAmount;
         BigDecimal netProfit = grossProfit.add(totalExpenseAmount);
-        BigDecimal totalInvoicedAmount = invoiceRepository.getTotalInvoiceAmountAll(startDate, endDate);
+        BigDecimal totalInvoicedAmount = invoiceRepository.getTotalInvoiceAmountAll(startDate.plusMonths(1), endDate.plusMonths(1));
         totalInvoicedAmount = totalInvoicedAmount == null ? BigDecimal.ZERO : totalInvoicedAmount;
         BigDecimal totalNotInvoicedAmount = totalBciAmount.add(totalInvoicedAmount.abs());
 
@@ -80,7 +80,7 @@ public class FinancialReportService {
         totalExpenseAmount = expenseRepository.getTotalExpenseAmountProcessed(startDate, endDate);
         totalExpenseAmount = totalExpenseAmount == null ? BigDecimal.ZERO : totalExpenseAmount;
         netProfit = grossProfit.add(totalExpenseAmount);
-        totalInvoicedAmount = invoiceRepository.getTotalInvoiceAmountProcessed(startDate, endDate);
+        totalInvoicedAmount = invoiceRepository.getTotalInvoiceAmountProcessed(startDate.plusMonths(1), endDate.plusMonths(1));
         totalInvoicedAmount = totalInvoicedAmount == null ? BigDecimal.ZERO : totalInvoicedAmount;
         totalNotInvoicedAmount = totalBciAmount.add(totalInvoicedAmount.abs());
 
