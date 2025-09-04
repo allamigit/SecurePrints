@@ -137,10 +137,6 @@ sudo systemctl disable secure-prints
 ANGULAR
 ********
 
-Build Angular Project
----------------------
-ng build --configuration production
-
 
 Copy Files to EC2
 -----------------
@@ -156,6 +152,11 @@ sudo systemctl start nginx
 sudo systemctl enable nginx
 
 
+Build Angular Project
+---------------------
+ng build --configuration production
+
+
 Move Angular Files to Nginx Web Root
 ------------------------------------
 scp -i secure-prints-ec2-key-pair.pem -r dist/secure-prints/browser/* ec2-user@18.119.142.19:/tmp/angular-dist/
@@ -167,7 +168,7 @@ sudo chmod -R 755 /usr/share/nginx/html
 sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl status nginx
-sudo journalctl -u nginx
+sudo journals -u nginx
 
 
 Fix Permissions
@@ -234,7 +235,7 @@ sudo amazon-linux-extras enable epel
 sudo yum install -y epel-release
 sudo yum install -y certbot python3-certbot-nginx
 certbot --version
-http://secure-prints.com/secure-prints/company?companyId=1
+
 
 Request SSL Certificate
 -----------------------

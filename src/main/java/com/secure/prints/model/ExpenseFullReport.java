@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -18,6 +19,8 @@ public class ExpenseFullReport implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private LocalDate startDate;
+    private LocalDate endDate;
     private List<ExpenseReport> expenseReportAll;
     private List<ExpenseReport> expenseReportProcessed;
 

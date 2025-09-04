@@ -1,5 +1,6 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.InvoiceRepository;
@@ -36,8 +37,12 @@ public class FinancialReportService {
      * @param endDate endDate
      * @return FinancialReport
      */
-    //@RequiresLogin
+    @RequiresLogin
     public FinancialReport generateFinancialReport(LocalDate startDate, LocalDate endDate) {
+        if(startDate == null && endDate == null) {
+            startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
+            endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
+        }
         BigDecimal totalServiceAmount = appointmentPaymentRepository.getTotalServiceAmountAll(startDate, endDate);
         totalServiceAmount = totalServiceAmount == null ? BigDecimal.ZERO : totalServiceAmount;
         BigDecimal totalBciAmount = appointmentPaymentRepository.getTotalBciAmountAll(startDate, endDate);
@@ -104,8 +109,12 @@ public class FinancialReportService {
      * @param endDate endDate
      * @return List of expense report
      */
-    //@RequiresLogin
+    @RequiresLogin
     public ExpenseFullReport generateExpenseReport(LocalDate startDate, LocalDate endDate) {
+        if(startDate == null && endDate == null) {
+            startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
+            endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
+        }
         List<ExpenseResultset> expenseTotalsAll = expenseRepository.getExpenseTotalsAll(startDate, endDate);
         List<ExpenseReport> expenseReportAllList = new ArrayList<>();
         ExpenseReport expenseReport;
@@ -151,6 +160,8 @@ public class FinancialReportService {
         }
 
         return ExpenseFullReport.builder()
+                .startDate(startDate)
+                .endDate(endDate)
                 .expenseReportAll(expenseReportAllList)
                 .expenseReportProcessed(expenseReportProcessedList)
                 .build();

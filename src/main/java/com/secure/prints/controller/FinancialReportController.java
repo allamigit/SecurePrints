@@ -34,9 +34,9 @@ public class FinancialReportController {
      * @param endDate endDate
      * @return FinancialReport
      */
-    @GetMapping(value = "generate-financial-report", produces = MediaType.APPLICATION_JSON_VALUE)
-    public FinancialReport generateFinancialReport(@RequestParam(name = "startDate") LocalDate startDate,
-                                                   @RequestParam(name = "endDate") LocalDate endDate) {
+    @GetMapping(value = "financial-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    public FinancialReport generateFinancialReport(@RequestParam(name = "startDate", required = false) LocalDate startDate,
+                                                   @RequestParam(name = "endDate", required = false) LocalDate endDate) {
         return financialReportService.generateFinancialReport(startDate, endDate);
     }
 
@@ -46,9 +46,9 @@ public class FinancialReportController {
      * @param endDate endDate
      * @return List of expense report
      */
-    @GetMapping(value = "generate-expense-report", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ExpenseFullReport generateExpenseReport(@RequestParam(name = "startDate") LocalDate startDate,
-                                                   @RequestParam(name = "endDate") LocalDate endDate) {
+    @GetMapping(value = "expense-report", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ExpenseFullReport generateExpenseReport(@RequestParam(name = "startDate", required = false) LocalDate startDate,
+                                                   @RequestParam(name = "endDate", required = false) LocalDate endDate) {
         return financialReportService.generateExpenseReport(startDate, endDate);
     }
 

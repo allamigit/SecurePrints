@@ -323,6 +323,34 @@
 					"response": []
 				},
 				{
+					"name": "Send Contact Email to Admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"mohammad\",\r\n    \"emailTo\": \"mo.i.allami@gmail.com\",\r\n    \"messageText\": \"This is a test contact us message\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/aws/send-contact-email",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"aws",
+								"send-contact-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Reschedule Appointment",
 					"request": {
 						"method": "PATCH",
@@ -404,7 +432,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-08-29",
+							"raw": "{{url}}/secure-prints/times-list?selectedDate=2025-08-21",
 							"host": [
 								"{{url}}"
 							],
@@ -415,7 +443,31 @@
 							"query": [
 								{
 									"key": "selectedDate",
-									"value": "2025-08-29"
+									"value": "2025-08-21"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Format Entered Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/format-name?enteredName=mohammad al-lami",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"format-name"
+							],
+							"query": [
+								{
+									"key": "enteredName",
+									"value": "mohammad al-lami"
 								}
 							]
 						}
@@ -934,6 +986,31 @@
 					"response": []
 				},
 				{
+					"name": "Get Invoice Due Date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/due-date?invoiceDate=2025-03-03",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"due-date"
+							],
+							"query": [
+								{
+									"key": "invoiceDate",
+									"value": "2025-03-03"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add Expense",
 					"request": {
 						"method": "POST",
@@ -1207,7 +1284,66 @@
 		},
 		{
 			"name": "Reports",
-			"item": []
+			"item": [
+				{
+					"name": "Financial Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/report/financial-report?startDate=2025-08-01&endDate=2025-08-25",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"report",
+								"financial-report"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-08-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-08-25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Expense Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/secure-prints/report/expense-report?startDate=2025-08-01&endDate=2025-08-25",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"report",
+								"expense-report"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-08-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-08-25"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -1235,13 +1371,11 @@
 	"variable": [
 		{
 			"key": "url",
-			"value": "http://localhost:8080",
-			"type": "string"
+			"value": "http://localhost:8080"
 		},
 		{
 			"key": "url",
 			"value": "https://secure-prints.com",
-			"type": "string",
 			"disabled": true
 		}
 	]

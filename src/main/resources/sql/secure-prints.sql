@@ -8,11 +8,11 @@ select * from usr_info;
 
 select * from appt_info order by appt_id;
 
-select * from appt_pymt order by appt_id;
+select * from appt_pymt order by pymt_dt desc;
 
 select * from inv_info;
 
-select * from exp_info order by exp_ref_no;
+select * from exp_info order by exp_ref_dt desc;
 
 --select * from appt_info where appt_sts_code = 103 and cncl_ts <= date(now())-interval '2 days';
 
@@ -34,8 +34,24 @@ select * from exp_info order by exp_ref_no;
 
 --update exp_info set exp_rcncl_dt = (select pymt_rcncl_dt from appt_pymt where appt_id = '1277') where exp_ref_no = 'ApptID-1277';
 
-update appt_pymt set bci_amt = -1 * bci_amt; --where appt_id like '%-R';
+--update appt_pymt set bci_amt = -1 * bci_amt; --where appt_id like '%-R';
 
+select count(1) from appt_pymt where appt_id not like '%-R';
+select count(1) from exp_info where exp_ref_no like 'ApptID-%';
+
+select sum(svc_amt) from appt_pymt where pymt_dt between '2025-08-01' and '2025-08-25';
+select sum(bci_amt) from appt_pymt where pymt_dt between '2025-08-01' and '2025-08-25';
+select sum(exp_amt) from exp_info where exp_ref_no like 'ApptID-%' and exp_pymt_dt between '2025-08-01' and '2025-08-25';
+select sum(exp_amt) from exp_info where exp_ref_no not like 'ApptID-%' and exp_pymt_dt between '2025-08-01' and '2025-08-25';
+select sum(inv_amt) from inv_info where inv_dt between '2025-08-01' and '2025-08-25';
+
+select exp_cat_code, exp_sub_cat_code, sum(exp_amt) from exp_info where exp_pymt_dt between '2025-08-01' and '2025-08-25' 
+	group by exp_cat_code, exp_sub_cat_code 
+	order by exp_cat_code, exp_sub_cat_code;
+
+select * from exp_info where exp_pymt_dt between '2025-08-01' and '2025-08-25';
+
+        
 --update appt_info set usr_ip = '3JMR+UCtEi5q83nFPAWWuA==';
 
 --update exp_info set exp_desc = '' where exp_desc is not null;
