@@ -1,17 +1,20 @@
 package com.secure.prints.service;
 
 import com.secure.prints.config.RequiresLogin;
+import com.secure.prints.database.AppointmentInformationRepository;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
+import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
+import com.secure.prints.model.Payment;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.PaymentMethod;
-import com.secure.prints.model.PaymentStatus;
-import org.springframework.stereotype.Service;
+import com.secure.prints.model.PaymentStatus;import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,6 +22,7 @@ import java.util.List;
 public class AppointmentPaymentService {
 
     private final AppointmentPaymentRepository appointmentPaymentRepository;
+    private final AppointmentInformationRepository appointmentInformationRepository;
     private final ExpenseRepository expenseRepository;
     private final ExpenseService expenseService;
     private int responseCode;
@@ -27,11 +31,15 @@ public class AppointmentPaymentService {
     /**
      * Constructor for AppointmentPaymentService
      * @param appointmentPaymentRepository appointmentPaymentRepository
+     * @param appointmentInformationRepository appointmentInformationRepository
      * @param expenseRepository expenseRepository
      * @param expenseService expenseService
      */
-    public AppointmentPaymentService(AppointmentPaymentRepository appointmentPaymentRepository, ExpenseRepository expenseRepository, ExpenseService expenseService) {
+    public AppointmentPaymentService(AppointmentPaymentRepository appointmentPaymentRepository,
+                                     AppointmentInformationRepository appointmentInformationRepository,
+                                     ExpenseRepository expenseRepository, ExpenseService expenseService) {
         this.appointmentPaymentRepository = appointmentPaymentRepository;
+        this.appointmentInformationRepository = appointmentInformationRepository;
         this.expenseRepository = expenseRepository;
         this.expenseService = expenseService;
     }
@@ -54,7 +62,7 @@ public class AppointmentPaymentService {
      * @return List of payments
      */
     @RequiresLogin
-    public List<AppointmentPaymentEntity> getAllPayments(LocalDate startDate, LocalDate endDate, boolean showNonReconciled) {
+    public Payment getAllPayments(LocalDate startDate, LocalDate endDate, boolean showNonReconciled) {
         List<AppointmentPaymentEntity> resultList = null;
         if(startDate != null && endDate != null) {
             if(showNonReconciled) {
@@ -72,7 +80,23 @@ public class AppointmentPaymentService {
                 resultList = appointmentPaymentRepository.getAllAppointmentPaymentsForDateRange(startDate, endDate);
             }
         }
-        return resultList;
+        //DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
+        //List<AppointmentInformationEntity> appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+        List<AppointmentInformationEntity> appointmentList = appointmentInformationRepository.getAllAppointments();
+        List<AppointmentInformationEntity> newAppointmentList = new ArrayList<>();
+        assert resultList != null;
+        for(AppointmentPaymentEntity appointmentPaymentEntity : resultList) {
+            for(AppointmentInformationEntity appointmentInformationEntity : appointmentList) {
+                if(appointmentInformationEntity.getAppointmentId().equals(appointmentPaymentEntity.getAppointmentId())) {
+                    newAppointmentList.add(appointmentInformationEntity);
+                    break;
+                }
+            }
+        }
+        return Payment.builder()
+                .appointmentPayment(resultList)
+                .appointmentInformation(newAppointmentList)
+                .build();
     }
 
     /**
@@ -84,10 +108,12 @@ public class AppointmentPaymentService {
     public ApiStatus updatePaymentDetails(AppointmentPaymentEntity appointmentPayment) {
         try {
             appointmentPayment.setServiceAmount(appointmentPayment.getServiceAmount().abs());
-            appointmentPayment.setBciAmount(appointmentPayment.getBciAmount().abs());
+            if(appointmentPayment.getBciAmount().compareTo(BigDecimal.ZERO) > 0) {
+                appointmentPayment.setBciAmount(appointmentPayment.getBciAmount().negate());
+            }
             appointmentPaymentRepository.save(appointmentPayment);
             responseCode = 200;
-            responseMessage = "Appointment updated successfully.";
+            responseMessage = "Appointment payment updated successfully.";
         } catch (Exception e) {
             responseCode = 400;
             responseMessage = e.getMessage();

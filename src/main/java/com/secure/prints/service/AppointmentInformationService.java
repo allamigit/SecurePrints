@@ -549,6 +549,7 @@ public class AppointmentInformationService {
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository
                 .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         if(UserService.isUserLoggedIn(request) || !appointmentInformationEntityList.isEmpty()) {
+            // Remove booked appointments from the list
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
                 String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
                         .toString().substring(0, 16).replace("T", " ") + ":00";
@@ -566,6 +567,7 @@ public class AppointmentInformationService {
                 } while(i < listSize);
             }
         } else {
+            // Remove appointments of holiday days from the list
             do {
                 if(listSize == 0) {
                     break;

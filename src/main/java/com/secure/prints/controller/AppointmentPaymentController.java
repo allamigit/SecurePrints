@@ -2,6 +2,7 @@ package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
 import com.secure.prints.model.ApiStatus;
+import com.secure.prints.model.Payment;
 import com.secure.prints.service.AppointmentPaymentService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -43,9 +44,9 @@ public class AppointmentPaymentController {
      * @return List of payments
      */
     @GetMapping(value = "all-payments", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AppointmentPaymentEntity> getAllPayments(@RequestParam(name = "startDate", required = false) LocalDate startDate,
-                                                         @RequestParam(name = "endDate", required = false) LocalDate endDate,
-                                                         @RequestParam(name = "showNonReconciled", required = false) boolean showNonReconciled) {
+    public Payment getAllPayments(@RequestParam(name = "startDate", required = false) LocalDate startDate,
+                                  @RequestParam(name = "endDate", required = false) LocalDate endDate,
+                                  @RequestParam(name = "showNonReconciled", required = false) boolean showNonReconciled) {
         return appointmentPaymentService.getAllPayments(startDate, endDate, showNonReconciled);
     }
 
