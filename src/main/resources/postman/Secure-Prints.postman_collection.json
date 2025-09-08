@@ -612,24 +612,28 @@
 					"response": []
 				},
 				{
-					"name": "Import Reason List",
+					"name": "Import Reason Data File",
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/moial/OneDrive/Desktop/SecurePrints/ReasonList.txt"
+								}
+							]
+						},
 						"url": {
-							"raw": "{{url}}/secure-prints/import-reason-data-file?fileName=ReasonList.txt",
+							"raw": "{{url}}/secure-prints/import-reason-data-file",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
 								"import-reason-data-file"
-							],
-							"query": [
-								{
-									"key": "fileName",
-									"value": "ReasonList.txt"
-								}
 							]
 						}
 					},
@@ -785,7 +789,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-08-21&endDate=2025-08-21&showNonReconciled=false",
+							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-08-20&endDate=2025-08-20&showNonReconciled=false",
 							"host": [
 								"{{url}}"
 							],
@@ -797,11 +801,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-08-21"
+									"value": "2025-08-20"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-08-21"
+									"value": "2025-08-20"
 								},
 								{
 									"key": "showNonReconciled",

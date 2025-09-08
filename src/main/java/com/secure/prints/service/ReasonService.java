@@ -4,17 +4,12 @@ import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.ReasonRepository;
 import com.secure.prints.database.entity.ReasonEntity;
 import com.secure.prints.model.ApiStatus;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -24,8 +19,6 @@ public class ReasonService {
     private static List<ReasonEntity> reasonList;
     private static List<ReasonEntity> bciReasonList;
     private static List<ReasonEntity> fbiReasonList;
-    @Value("${secure-prints.reason-data-file-path}")
-    private String fileLocalPath;
 
     /**
      * Constructor for ReasonService
@@ -92,17 +85,18 @@ public class ReasonService {
 
     /**
      * Import reason data into rsn_list table from CSV/TXT file
-     * @param fileName fileName
+     * @param file file content
      * @return ApiStatus
      */
     @RequiresLogin
-    public ApiStatus importReasonDataFile(String fileName) {
-        Path filePath = Paths.get(fileLocalPath, fileName);
+    public ApiStatus importReasonDataFile(MultipartFile file) {
+        String content;
         List<String> fileLines;
-        try (Stream<String> lines = Files.lines(filePath)) {
-            fileLines = lines.toList();
+        try {
+            content = new String(file.getBytes());
+            fileLines = Arrays.asList(content.split("\\R"));
             reasonRepository.removeAllReasonData();
-            for(int id = 0; id < Objects.requireNonNull(fileLines).size(); id++) {
+            for(int id = 0; id < fileLines.size(); id++) {
                 String[] eachLine = fileLines.get(id).split(", ");
                 String[] lineData = eachLine[0].split("~");
                 ReasonEntity reasonEntity = ReasonEntity.builder()
@@ -113,7 +107,7 @@ public class ReasonService {
                         .build();
                 reasonRepository.save(reasonEntity);
             }
-        } catch (IOException | ArrayIndexOutOfBoundsException e) {
+        } catch (Exception e) {
             return ApiStatus.builder()
                     .responseCode(409)
                     .responseMessage("Reason data file failed to import.")
@@ -125,5 +119,5 @@ public class ReasonService {
                 .responseMessage("Reason data file was successfully imported and saved (" + fileLines.size() + ") lines.")
                 .build();
     }
-    
+
 }

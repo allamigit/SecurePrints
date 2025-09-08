@@ -87,7 +87,11 @@ public class AppointmentPaymentService {
         assert resultList != null;
         for(AppointmentPaymentEntity appointmentPaymentEntity : resultList) {
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentList) {
-                if(appointmentInformationEntity.getAppointmentId().equals(appointmentPaymentEntity.getAppointmentId())) {
+                String appointmentId = appointmentPaymentEntity.getAppointmentId();
+                if(appointmentId.endsWith("-R")) {
+                    appointmentId = appointmentId.substring(0, appointmentId.length() - 2);
+                }
+                if(appointmentInformationEntity.getAppointmentId().equals(appointmentId)) {
                     newAppointmentList.add(appointmentInformationEntity);
                     break;
                 }

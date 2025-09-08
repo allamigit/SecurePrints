@@ -6,6 +6,7 @@ import com.secure.prints.service.ReasonService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,13 +46,13 @@ public class ReasonController {
 
     /**
      * Import reason data into rsn_list table from TXT file
-     * @param fileName fileName
+     * @param file file content
      * @return ApiStatus
      */
     @PostMapping(value = "import-reason-data-file", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiStatus importReasonDataFile(HttpServletResponse response,
-                                          @RequestParam("fileName") String fileName) {
-        ApiStatus apiStatus = reasonService.importReasonDataFile(fileName);
+                                          @RequestParam("file") MultipartFile file) {
+        ApiStatus apiStatus = reasonService.importReasonDataFile(file);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }
