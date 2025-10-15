@@ -122,7 +122,7 @@ public class ExpenseService {
             }
             if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseMessage = "Payment date must be at the same or after reference date.";
-            } else if(expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
+            } else if(expense.getExpensePaymentDate() != null && expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
                 responseMessage = "Reconcile date must be at the same or after payment date.";
             } else {
                 BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount().abs();
@@ -160,7 +160,7 @@ public class ExpenseService {
     @RequiresLogin
     public ApiStatus reconcileExpense(long expenseId, LocalDate expenseReconcileDate) {
         ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
-        if(expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
+        if(expense.getExpensePaymentDate() != null && expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
             responseCode = 409;
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {

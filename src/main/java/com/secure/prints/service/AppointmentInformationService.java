@@ -150,7 +150,8 @@ public class AppointmentInformationService {
 
             // Send confirmation email to customer
             try {
-                awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), customerEmail, appointmentResponse);
+                String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+                awsService.sendConfirmationEmail(customerName, customerEmail, appointmentResponse);
             } catch (Exception ex) {
                 responseCode = 409;
                 responseMessage = "Appointment Scheduled. Sending confirmation email failed.";
@@ -223,7 +224,8 @@ public class AppointmentInformationService {
 
         // Send confirmation email to customer
         try {
-            awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+            String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+            awsService.sendConfirmationEmail(customerName, appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
         } catch (Exception ex) {
             responseCode = 409;
             responseMessage = "Appointment Rescheduled. Sending confirmation email failed.";
@@ -288,7 +290,8 @@ public class AppointmentInformationService {
 
         // Send confirmation email to customer
         try {
-            awsService.sendConfirmationEmail(appointmentInformationEntity.getCustomerFirstName(), appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+            String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+            awsService.sendConfirmationEmail(customerName, appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
         } catch (Exception ex) {
             responseCode = 409;
             responseMessage = "Appointment Cancelled. Sending confirmation email failed.";
@@ -379,6 +382,15 @@ public class AppointmentInformationService {
                 .appointmentStatus(AppointmentStatus.Completed.name())
                 .statusTimestamp(TimestampUtil.formatTimestamp(completeTimestamp))
                 .build();
+
+        // Send confirmation email to customer
+        try {
+            String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+            awsService.sendConfirmationEmail(customerName, appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        } catch (Exception ex) {
+            responseCode = 409;
+            responseMessage = "Appointment Completed. Sending confirmation email failed.";
+        }
 
         apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)

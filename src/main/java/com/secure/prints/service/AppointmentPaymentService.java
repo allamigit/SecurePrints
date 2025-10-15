@@ -86,8 +86,8 @@ public class AppointmentPaymentService {
         List<AppointmentInformationEntity> newAppointmentList = new ArrayList<>();
         assert resultList != null;
         for(AppointmentPaymentEntity appointmentPaymentEntity : resultList) {
+            String appointmentId = appointmentPaymentEntity.getAppointmentId();
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentList) {
-                String appointmentId = appointmentPaymentEntity.getAppointmentId();
                 if(appointmentId.endsWith("-R")) {
                     appointmentId = appointmentId.substring(0, appointmentId.length() - 2);
                 }

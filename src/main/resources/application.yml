@@ -42,8 +42,17 @@ spring:
     open-in-view: true
     show-sql: false
 
+#logging:
+#  level:
+#    software:
+#      amazon:
+#        awssdk: debug
+
+aws:
+  s3:
+    bucket-name: secure-prints-s3
+
 secure-prints:
-  reason-data-file-path: C:\Users\moial\OneDrive\Desktop\SecurePrints\
   encryption:
     secret-key: mySuperSecretKey12345678
   appointment:

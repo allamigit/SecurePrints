@@ -6,7 +6,9 @@ import com.secure.prints.database.entity.InvoiceEntity;
 import com.secure.prints.model.ApiStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,15 +18,18 @@ import java.util.List;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+    private final S3Service s3Service;
     private int responseCode;
     private String responseMessage;
 
     /**
      * Constructor for InvoiceService
      * @param invoiceRepository invoiceRepository
+     * @param s3Service s3Service
      */
-    public InvoiceService(InvoiceRepository invoiceRepository) {
+    public InvoiceService(InvoiceRepository invoiceRepository, S3Service s3Service) {
         this.invoiceRepository = invoiceRepository;
+        this.s3Service = s3Service;
     }
 
     /**
@@ -114,7 +119,7 @@ public class InvoiceService {
             }
             if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
                 responseMessage = "Payment date must be at the same or after invoice date.";
-            } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoiceReconcileDate().isBefore(invoice.getInvoicePaymentDate())) {
+            } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoiceReconcileDate() != null && invoice.getInvoiceReconcileDate().isBefore(invoice.getInvoicePaymentDate())) {
                 responseMessage = "Reconcile date must be at the same or after payment date.";
             } else {
                 invoice.setInvoiceNumber(invoice.getInvoiceNumber().toUpperCase().trim());
@@ -137,6 +142,17 @@ public class InvoiceService {
     }
 
     /**
+     * Upload invoice file to S3 bucket
+     * @param file file
+     * @return File path in S3 bucket
+     * @throws IOException IOException
+     */
+    //@RequiresLogin
+    public String uploadInvoiceToS3Bucket(MultipartFile file) throws IOException {
+        return s3Service.uploadFile("invoice", file);
+    }
+
+    /**
      * Reconcile Invoice
      * @param invoiceId invoiceId
      * @param invoiceReconcileDate invoiceReconcileDate
@@ -145,7 +161,7 @@ public class InvoiceService {
     @RequiresLogin
     public ApiStatus reconcileInvoice(long invoiceId, LocalDate invoiceReconcileDate) {
         InvoiceEntity invoice = invoiceRepository.findByInvoiceId(invoiceId);
-        if(invoiceReconcileDate.isBefore(invoice.getInvoicePaymentDate())) {
+        if(invoice.getInvoicePaymentDate() != null && invoiceReconcileDate.isBefore(invoice.getInvoicePaymentDate())) {
             responseCode = 409;
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {

@@ -6,7 +6,9 @@ import com.secure.prints.service.InvoiceService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -72,6 +74,17 @@ public class InvoiceController {
         ApiStatus apiStatus = invoiceService.updateInvoiceDetails(invoice);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
+    }
+
+    /**
+     * Upload invoice file to S3 bucket
+     * @param file file
+     * @return File path in S3 bucket
+     * @throws IOException IOException
+     */
+    @PostMapping(value = "upload-invoice", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String uploadInvoiceToS3Bucket(@RequestParam(name = "file") MultipartFile file) throws IOException {
+        return invoiceService.uploadInvoiceToS3Bucket(file);
     }
 
     /**
