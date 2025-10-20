@@ -30,18 +30,18 @@ public class AwsService {
 
     /**
      * Send appointment confirmation email to customer
-     * @param firstName firstName
+     * @param customerName customerName
      * @param emailTo emailTo
      * @param appointmentResponse appointmentResponse
      */
-    public void sendConfirmationEmail(String firstName, String emailTo, AppointmentResponse appointmentResponse) {
+    public void sendConfirmationEmail(String customerName, String emailTo, AppointmentResponse appointmentResponse) {
         SimpleMailMessage message = new SimpleMailMessage();
         String reason = "";
-        if(appointmentResponse.getBciReasonCode() != null) {
+        if(!appointmentResponse.getBciReasonCode().isBlank()) {
             reason = "\nBCI Reason Code: " + appointmentResponse.getBciReasonCode();
             reason = reason + "\nBCI Reason Description: " + appointmentResponse.getBciReasonDescription();
         }
-        if(appointmentResponse.getFbiReasonCode() != null) {
+        if(!appointmentResponse.getFbiReasonCode().isBlank()) {
             reason = reason + "\nFBI Reason Code: " + appointmentResponse.getFbiReasonCode();
             reason = reason + "\nFBI Reason Description: " + appointmentResponse.getFbiReasonDescription();
         }
@@ -51,7 +51,7 @@ public class AwsService {
         message.setBcc(emailFrom);
         message.setSubject("SecurePrints: Appointment ID (" + appointmentResponse.getAppointmentId() + ") " + appointmentResponse.getAppointmentStatus());
         message.setText(
-                "\nHi " + firstName + "," +
+                "\nHi " + customerName + "," +
                 "\n\nAppointment ID: " + appointmentResponse.getAppointmentId() +
                 "\nService Name: " + appointmentResponse.getServiceName() +
                 reason +
@@ -82,7 +82,7 @@ public class AwsService {
             responseMessage = "Contact email sent to SecurePrints team.";
         } catch (Exception e) {
             responseCode = 409;
-            responseMessage = "Failed sending email to SecurePrints team.";
+            responseMessage = "Failed sending contact email to SecurePrints team.";
         }
         return ApiStatus.builder()
                 .responseCode(responseCode)
