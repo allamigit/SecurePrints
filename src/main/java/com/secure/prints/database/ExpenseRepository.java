@@ -55,6 +55,14 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
                    @Param("expenseAmount") BigDecimal expenseAmount);
 
     /**
+     * Remove Fee
+     * @param expenseReferenceNumber expenseReferenceNumber
+     */
+    @Modifying
+    @Query(value = "DELETE ExpenseEntity e WHERE e.expenseReferenceNumber = :expenseReferenceNumber")
+    void removeFee(@Param("expenseReferenceNumber") String expenseReferenceNumber);
+
+    /**
      * Get expenses list for all Expense Information table data
      * @return List of expenses
      */

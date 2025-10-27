@@ -6,6 +6,7 @@ import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
+import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.Payment;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.PaymentMethod;
@@ -145,11 +146,34 @@ public class AppointmentPaymentService {
                 !appointmentPayment.getPaymentComment().startsWith("Refund") &&
                 appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0) {
 
-            if(serviceAmount.compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal transactionFees = serviceAmount.multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
-                expenseRepository.adjustFee("ApptID-" + appointmentId, transactionFees.negate());
+            String expenseReferenceNumber = "ApptID-" + appointmentId;
+            BigDecimal transactionFees = serviceAmount.multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+            BigDecimal newServiceAmount = serviceAmount.subtract(transactionFees);
+            ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expenseReferenceNumber);
+            if(serviceAmount.compareTo(BigDecimal.ZERO) > 0 && expenseEntity != null) {
+                expenseRepository.adjustFee(expenseReferenceNumber, transactionFees.negate());
+            } else if(serviceAmount.compareTo(BigDecimal.ZERO) > 0 && expenseEntity == null) {
+                LocalDate completeDate = appointmentPayment.getPaymentDate();
+                int paymentMethodCode = appointmentPayment.getPaymentMethodCode();
+                expenseService.addExpenseDetails(ExpenseEntity.builder()
+                        .expenseVendorName("Square (CC Reader)")
+                        .expenseReferenceNumber("ApptID-" + appointmentId)
+                        .expenseReferenceDate(completeDate)
+                        .expenseDescription("CC Reader fee.")
+                        .expenseCategoryCode(600)
+                        .expenseSubcategoryCode(604)
+                        .expenseAmount(transactionFees)
+                        .expensePaymentStatusCode(202)
+                        .expensePaymentMethodCode(paymentMethodCode)
+                        .expensePaymentDate(completeDate)
+                        .build());
+                appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
+                        paymentMethodCode, transactionFees);
+            } else if(serviceAmount.compareTo(BigDecimal.ZERO) == 0) {
+                expenseRepository.removeFee(expenseReferenceNumber);
+                newServiceAmount = BigDecimal.ZERO;
             }
-            appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, serviceAmount.abs(), paymentComment);
+            appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, newServiceAmount.abs(), paymentComment);
         } else if(appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0 ||
                 !appointmentPayment.getPaymentComment().equals(paymentComment)) {
             appointmentPaymentRepository.updateServiceAmountAndComment(appointmentId, serviceAmount.abs(), paymentComment);
