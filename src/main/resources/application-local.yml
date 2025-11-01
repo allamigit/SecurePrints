@@ -2,3 +2,6 @@
 spring:
   datasource:
     url: jdbc:postgresql://postgresql-db.c2ywefhxo11e.us-east-2.rds.amazonaws.com:5432/postgresql_dev?currentSchema=secure-prints-dev
+
+#  mail:
+#    from: info-dev@secure-prints.com

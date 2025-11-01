@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "payment")
@@ -55,26 +54,28 @@ public class AppointmentPaymentController {
      * @param appointmentPayment appointmentPayment
      * @return ApiStatus
      */
-    @PutMapping(value = "update-payment", produces = MediaType.APPLICATION_JSON_VALUE)
+    /*@PutMapping(value = "update-payment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiStatus updatePaymentDetails(HttpServletResponse response,
                                           @RequestBody AppointmentPaymentEntity appointmentPayment) {
         ApiStatus apiStatus = appointmentPaymentService.updatePaymentDetails(appointmentPayment);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
-    }
+    }*/
 
     /**
-     * Update service amount and comment
+     * Update service amount, payment method and comment
      * @param appointmentId appointmentId
      * @param serviceAmount serviceAmount
+     * @param paymentMethodCode paymentMethodCode
      * @param paymentComment paymentComment
      */
     @PatchMapping(value = "update-amount-comment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiStatus updateServiceAmountAndComment(HttpServletResponse response,
-                                                   @RequestParam(name = "appointmentId") String appointmentId,
-                                                   @RequestParam(name = "serviceAmount") BigDecimal serviceAmount,
-                                                   @RequestParam(name = "paymentComment") String paymentComment) {
-        ApiStatus apiStatus = appointmentPaymentService.updateServiceAmountAndComment(appointmentId, serviceAmount, paymentComment);
+    public ApiStatus updatePaymentDetails(HttpServletResponse response,
+                                          @RequestParam(name = "appointmentId") String appointmentId,
+                                          @RequestParam(name = "serviceAmount") BigDecimal serviceAmount,
+                                          @RequestParam(name = "paymentMethodCode") int paymentMethodCode,
+                                          @RequestParam(name = "paymentComment") String paymentComment) {
+        ApiStatus apiStatus = appointmentPaymentService.updatePaymentDetails(appointmentId, serviceAmount, paymentMethodCode, paymentComment);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }

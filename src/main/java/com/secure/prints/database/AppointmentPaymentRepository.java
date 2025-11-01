@@ -63,17 +63,19 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
                                       @Param("transactionFees") BigDecimal transactionFees);
 
     /**
-     * Update service amount and comment
+     * Update service amount, payment method and comment
      * @param appointmentId appointmentId
      * @param serviceAmount serviceAmount
+     * @param paymentMethodCode paymentMethodCode
      * @param paymentComment paymentComment
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.serviceAmount = :serviceAmount, a.paymentComment = :paymentComment " +
-            "WHERE a.appointmentId = :appointmentId")
-    void updateServiceAmountAndComment(@Param("appointmentId") String appointmentId,
-                                       @Param("serviceAmount") BigDecimal serviceAmount,
-                                       @Param("paymentComment") String paymentComment);
+    @Query(value = "UPDATE AppointmentPaymentEntity a SET a.serviceAmount = :serviceAmount, a.paymentMethodCode = :paymentMethodCode, " + "" +
+            "a.paymentComment = :paymentComment WHERE a.appointmentId = :appointmentId")
+    void updatePaymentDetails(@Param("appointmentId") String appointmentId,
+                              @Param("serviceAmount") BigDecimal serviceAmount,
+                              @Param("paymentMethodCode") int paymentMethodCode,
+                              @Param("paymentComment") String paymentComment);
 
     /**
      * Adjust service amount
