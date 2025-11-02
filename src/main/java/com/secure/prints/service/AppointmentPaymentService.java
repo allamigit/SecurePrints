@@ -164,7 +164,7 @@ public class AppointmentPaymentService {
             if (serviceAmount.compareTo(BigDecimal.ZERO) > 0 && expenseEntity != null) {
                 expenseRepository.adjustFee(expenseReferenceNumber, transactionFees.negate());
             } else if (serviceAmount.compareTo(BigDecimal.ZERO) > 0 && expenseEntity == null) {
-                this.addExpenseDetails(appointmentId, completeDate, transactionFees, paymentMethodCode);
+                this.addExpenseDetails(appointmentId, completeDate, transactionFees, paymentMethodCode, appointmentPayment.getPaymentReconcileDate());
                 appointmentPaymentRepository.updatePaymentStatusAndMethod(
                         appointmentId,
                         PaymentStatus.Processed.getPaymentStatusCode(),
@@ -185,7 +185,7 @@ public class AppointmentPaymentService {
                 !appointmentPayment.getPaymentComment().startsWith("Refund")) {
 
             if(paymentMethodCode == PaymentMethod.Card.getPaymentMethodCode()) {
-                this.addExpenseDetails(appointmentId, completeDate, transactionFees, paymentMethodCode);
+                this.addExpenseDetails(appointmentId, completeDate, transactionFees, paymentMethodCode, appointmentPayment.getPaymentReconcileDate());
                 appointmentPaymentRepository.updatePaymentDetails(
                         appointmentId,
                         newServiceAmount,
@@ -311,8 +311,15 @@ public class AppointmentPaymentService {
      * @param completeDate completeDate
      * @param transactionFees transactionFees
      * @param paymentMethodCode paymentMethodCode
+     * @param reconcileDate reconcileDate
      */
-    private void addExpenseDetails(String appointmentId, LocalDate completeDate, BigDecimal transactionFees, int paymentMethodCode) {
+    private void addExpenseDetails(
+            String appointmentId,
+            LocalDate completeDate,
+            BigDecimal transactionFees,
+            int paymentMethodCode,
+            LocalDate reconcileDate) {
+
         expenseService.addExpenseDetails(ExpenseEntity.builder()
                 .expenseVendorName("Square (CC Reader)")
                 .expenseReferenceNumber("ApptID-" + appointmentId)
@@ -324,6 +331,7 @@ public class AppointmentPaymentService {
                 .expensePaymentStatusCode(PaymentStatus.Processed.getPaymentStatusCode())
                 .expensePaymentMethodCode(paymentMethodCode)
                 .expensePaymentDate(completeDate)
+                .expenseReconcileDate(reconcileDate)
                 .build());
     }
 

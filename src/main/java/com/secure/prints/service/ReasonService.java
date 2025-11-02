@@ -73,13 +73,11 @@ public class ReasonService {
      */
     @RequiresLogin
     public static ApiStatus refreshReasonList() {
-        reasonList = reasonRepository.findAll();
-        bciReasonList = reasonRepository.getAllReasonsByType("BCI");
-        fbiReasonList = reasonRepository.getAllReasonsByType("FBI");
+        reloadList();
 
         return ApiStatus.builder()
                 .responseCode(200)
-                .responseMessage("Reason list was successfully refreshed and reloaded (" + reasonList.size() + ") reasons.")
+                .responseMessage("Reason list was successfully refreshed and cached (" + reasonList.size() + ") reasons.")
                 .build();
     }
 
@@ -114,10 +112,21 @@ public class ReasonService {
                     .build();
         }
 
+        reloadList();
+
         return ApiStatus.builder()
                 .responseCode(200)
-                .responseMessage("Reason data file was successfully imported and saved (" + fileLines.size() + ") lines.")
+                .responseMessage("Reason data file was successfully imported, saved and cached (" + fileLines.size() + ") lines.")
                 .build();
+    }
+
+    /**
+     * Reload all static lists values
+     */
+    private static void reloadList() {
+        reasonList = reasonRepository.findAll();
+        bciReasonList = reasonRepository.getAllReasonsByType("BCI");
+        fbiReasonList = reasonRepository.getAllReasonsByType("FBI");
     }
 
 }
