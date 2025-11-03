@@ -71,7 +71,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/login?userName=admin&userPassword=admin",
+							"raw": "{{url}}/secure-prints/user/login?userName=admin&userPassword=admin321",
 							"host": [
 								"{{url}}"
 							],
@@ -87,7 +87,7 @@
 								},
 								{
 									"key": "userPassword",
-									"value": "admin"
+									"value": "admin321"
 								}
 							]
 						}
@@ -120,7 +120,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"admin2\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userName\": \"admin2\",\r\n    \"userPassword\": \"admin2\",\r\n    \"userFullName\": \"Mohammad Al-Lami\",\r\n    \"userStatus\": true,\r\n    \"userFullAccess\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -269,7 +269,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userStatus\": true\r\n}",
+							"raw": "{\r\n    \"userName\": \"admin\",\r\n    \"userPassword\": \"admin\",\r\n    \"userFullName\": \"Mawj Al-Lami\",\r\n    \"userStatus\": true,\r\n    \"userFullAccess\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -693,12 +693,12 @@
 					"response": []
 				},
 				{
-					"name": "Update Amount and Comment",
+					"name": "Update Payment Details",
 					"request": {
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/update-amount-comment?appointmentId=1217&serviceAmount=38&paymentComment=",
+							"raw": "{{url}}/secure-prints/payment/update-amount-comment?appointmentId=1291&serviceAmount=36.86&paymentMethodCode=302&paymentComment=",
 							"host": [
 								"{{url}}"
 							],
@@ -710,11 +710,15 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1217"
+									"value": "1291"
 								},
 								{
 									"key": "serviceAmount",
-									"value": "38"
+									"value": "36.86"
+								},
+								{
+									"key": "paymentMethodCode",
+									"value": "302"
 								},
 								{
 									"key": "paymentComment",
@@ -789,7 +793,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-08-20&endDate=2025-08-20&showNonReconciled=false",
+							"raw": "{{url}}/secure-prints/payment/all-payments?startDate=2025-10-01&endDate=2025-10-15&showNonReconciled=false",
 							"host": [
 								"{{url}}"
 							],
@@ -801,11 +805,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-08-20"
+									"value": "2025-10-01"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-08-20"
+									"value": "2025-10-15"
 								},
 								{
 									"key": "showNonReconciled",
@@ -869,6 +873,35 @@
 								"secure-prints",
 								"invoice",
 								"add-invoice"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Invoice to S3 Bucket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/moial/OneDrive/Desktop/SecurePrints/Invoice.PDF"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/secure-prints/invoice/upload-invoice",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"secure-prints",
+								"invoice",
+								"upload-invoice"
 							]
 						}
 					},
@@ -1324,7 +1357,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/report/expense-report?startDate=2025-08-01&endDate=2025-08-25",
+							"raw": "{{url}}/secure-prints/report/expense-report?startDate=2025-10-01&endDate=2025-10-31",
 							"host": [
 								"{{url}}"
 							],
@@ -1336,11 +1369,11 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-08-01"
+									"value": "2025-10-01"
 								},
 								{
 									"key": "endDate",
-									"value": "2025-08-25"
+									"value": "2025-10-31"
 								}
 							]
 						}

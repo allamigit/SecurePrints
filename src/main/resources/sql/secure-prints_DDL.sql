@@ -38,6 +38,7 @@ CREATE TABLE usr_info (
 	usr_paswd text NOT NULL,
 	usr_full_name varchar(60) NOT NULL,
 	usr_sts boolean NOT NULL,
+	usr_role boolean NOT NULL,
 	CONSTRAINT pk_usr_name PRIMARY KEY (usr_name)
 );
 
@@ -148,6 +149,6 @@ CREATE INDEX idx_exp_ref_no ON exp_info(exp_ref_no);
 -- INSERT DATA
 insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
-insert into usr_info values ('admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', 'Mawj Al-Lami', true);
-insert into usr_info values ('admin2', '$2a$10$4GJY94/pfcxknHgFJfGUFet54ISsMMFaoTJkjyVapvDSmpq3xWvxe', 'Mohammad Al-Lami', true);
+insert into usr_info values ('admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', 'Mawj Al-Lami', true, true);
+insert into usr_info values ('admin2', '$2a$10$4GJY94/pfcxknHgFJfGUFet54ISsMMFaoTJkjyVapvDSmpq3xWvxe', 'Mohammad Al-Lami', true, true);
 

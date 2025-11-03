@@ -133,10 +133,19 @@ Disable it from Starting on Boot
 sudo systemctl disable secure-prints
 
 
+*********
+S3 Bucket
+*********
+curl -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" -X PUT "http://169.254.169.254/latest/api/token"
+
+curl -H "X-aws-ec2-metadata-token: AQAEAFIcmkWUYQrgLngMm981Nhl0LVz_idYVzjpNJv81LfFVF4FsEA==" http://169.254.169.254/latest/meta-data/iam/security-credentials/
+
+curl -H "X-aws-ec2-metadata-token: AQAEAFIcmkWUYQrgLngMm981Nhl0LVz_idYVzjpNJv81LfFVF4FsEA==" http://169.254.169.254/latest/meta-data/iam/security-credentials/secure-prints-s3-role
+
+
 ********
 ANGULAR
 ********
-
 
 Copy Files to EC2
 -----------------
@@ -157,8 +166,9 @@ Build Angular Project
 ng build --configuration production
 
 
+************************************
 Move Angular Files to Nginx Web Root
-------------------------------------
+************************************
 scp -i secure-prints-ec2-key-pair.pem -r dist/secure-prints/browser/* ec2-user@18.119.142.19:/tmp/angular-dist/
 ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
 sudo mkdir -p /usr/share/nginx/html
@@ -244,8 +254,13 @@ sudo /usr/local/bin/certbot --nginx -d secure-prints.com -d www.secure-prints.co
 
 Check SSL expiry date
 ---------------------
-openssl s_client -connect secure-prints.com:443 | openssl x509 -noout -dates
+echo | openssl s_client -connect secure-prints.com:443 -servername secure-prints.com 2>/dev/null | openssl x509 -noout -dates
+
+
+Renew SSL Certificate
+---------------------
 sudo certbot renew --dry-run
+
 
 Auto-renewal
 ------------
@@ -256,9 +271,86 @@ sudo crontab -l
 sudo systemctl status nginx
 
 
+AUTO-RENEW
+----------
+sudo crontab -e
+0 3 * * * certbot renew --quiet && systemctl reload nginx
+echo | openssl s_client -connect secure-prints.com:443 -servername secure-prints.com 2>/dev/null | openssl x509 -noout -dates
+
+
+Check port connectivity
+-----------------------
+nc -vz email-smtp.us-east-1.amazonaws.com 587
+
+
+***********
+EMAIL-ALERT
+***********
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+sudo yum install mailx -y
+
+sudo nano /usr/local/bin/check-cert.sh
+------
+#!/bin/bash
+# SSL Expiry Alert Script for Amazon Linux 2
+
+# Domain to check
+DOMAIN="secure-prints.com"
+
+# Email address where alerts will be sent
+ALERT_EMAIL="info@secure-prints.com"
+
+# Get expiry date from certificate
+expiry_date=$(echo | openssl s_client -connect $DOMAIN:443 -servername $DOMAIN 2>/dev/null \
+  | openssl x509 -noout -enddate | cut -d= -f2)
+
+# Convert to seconds
+expiry_sec=$(date -d "$expiry_date" +%s)
+now_sec=$(date +%s)
+
+# Days left until expiration
+days_left=$(( (expiry_sec - now_sec) / 86400 ))
+
+# Threshold (change if you want alerts earlier)
+THRESHOLD=15
+
+if [ $days_left -le $THRESHOLD ]; then
+    echo -e "⚠️ SSL certificate for $DOMAIN will expire in $days_left days.\nExpiry Date: $expiry_date" \
+    | mail -s "SSL Expiry Alert: $DOMAIN ($days_left days left)" $ALERT_EMAIL
+fi
+------
+(Ctrl+O  ENTER  Ctrl+X)
+
+sudo chmod +x /usr/local/bin/check-cert.sh
+sudo crontab -e
+
+Press i, paste command
+------
+0 8 * * * /usr/local/bin/check-cert.sh
+------
+Press ESC, type :wq, press ENTER
+
+Check cron job:  sudo crontab -l
+
+Test Manually:  /usr/local/bin/check-cert.sh
+
+
 Check Backend
 -------------
 sudo lsof -i :8080
+
+
+*********************
+Renew SSL Certificate
+*********************
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
+sudo certbot renew --dry-run
+sudo systemctl enable chronyd
+sudo systemctl start chronyd
+chronyc sources -v
+sudo certbot renew --force-renewal
+sudo systemctl reload nginx
+echo | openssl s_client -connect secure-prints.com:443 -servername secure-prints.com 2>/dev/null | openssl x509 -noout -dates
 
 
 *******************************
