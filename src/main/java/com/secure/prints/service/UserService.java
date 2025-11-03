@@ -3,6 +3,7 @@ package com.secure.prints.service;
 import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
+import com.secure.prints.model.ApiResponse;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.util.NameFormatUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -162,9 +163,9 @@ public class UserService {
      * User Login
      * @param userName userName
      * @param userPassword userPassword
-     * @return ApiStatus
+     * @return ApiResponse
      */
-    public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
+    public static ApiResponse userLogin(HttpServletRequest request, String userName, String userPassword) {
         int responseCode = 401;
         String responseMessage;
         UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
@@ -181,9 +182,14 @@ public class UserService {
             responseMessage = userEntity.getUserFullName() + ", logged in as: " + userEntity.getUserName();
         }
 
-        return ApiStatus.builder()
+        ApiStatus apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
+                .build();
+
+        return ApiResponse.builder()
+                .apiStatus(apiStatus)
+                .apiResponseEntity(userEntity)
                 .build();
     }
 

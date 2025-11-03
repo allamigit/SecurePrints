@@ -159,6 +159,16 @@ public class FinancialReportService {
             expenseReportProcessedList.add(expenseReport);
         }
 
+        /*List<ExpenseReport> newExpenseReportProcessedList = expenseReportProcessedList;
+        for(int i = 0; i < expenseReportAllList.size(); i++) {
+            BigDecimal transactionAmount = BigDecimal.ZERO;
+            for(int j = 0; j < expenseReportProcessedList.size(); j++) {
+                // if found transactionAmount = found value
+                if(expenseReportAllList.get(i).getExpenseSubcategoriesTotal().get(i).getSubcategoryCode())
+            }
+            // Add transactionAmount to newExpenseReportProcessedList
+        }*/
+
         return ExpenseFullReport.builder()
                 .startDate(startDate)
                 .endDate(endDate)

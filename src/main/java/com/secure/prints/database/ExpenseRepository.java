@@ -123,7 +123,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @return List of total expense amount
      */
     @Query(value = "SELECT new com.secure.prints.model.ExpenseResultset(e.expenseCategoryCode, e.expenseSubcategoryCode, SUM(e.expenseAmount)) FROM ExpenseEntity e " +
-            "WHERE e.expensePaymentDate BETWEEN :startDate AND :endDate " +
+            "WHERE e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
             "GROUP BY e.expenseCategoryCode, e.expenseSubcategoryCode " +
             "ORDER BY e.expenseCategoryCode, e.expenseSubcategoryCode")
     List<ExpenseResultset> getExpenseTotalsAll(@Param("startDate") LocalDate startDate,
@@ -134,7 +134,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @return List of total expense amount
      */
     @Query(value = "SELECT new com.secure.prints.model.ExpenseResultset(e.expenseCategoryCode, e.expenseSubcategoryCode, SUM(e.expenseAmount)) FROM ExpenseEntity e " +
-            "WHERE e.expensePaymentStatusCode <> 201 AND e.expensePaymentDate BETWEEN :startDate AND :endDate " +
+            "WHERE e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
             "GROUP BY e.expenseCategoryCode, e.expenseSubcategoryCode " +
             "ORDER BY e.expenseCategoryCode, e.expenseSubcategoryCode")
     List<ExpenseResultset> getExpenseTotalsProcessed(@Param("startDate") LocalDate startDate,

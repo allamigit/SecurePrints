@@ -33,4 +33,7 @@ public class UserEntity implements Serializable {
     @Column(name = "usr_sts")
     private Boolean userStatus;
 
+    @Column(name = "usr_role")
+    private Boolean userFullAccess;
+
 }

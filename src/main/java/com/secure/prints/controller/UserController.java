@@ -1,6 +1,7 @@
 package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.UserEntity;
+import com.secure.prints.model.ApiResponse;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -102,15 +103,15 @@ public class UserController {
      * User Login
      * @param userName userName
      * @param userPassword userPassword
-     * @return UserLoginResponse
+     * @return ApiResponse
      */
     @PostMapping(value = "login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static ApiStatus userLogin(HttpServletRequest request, HttpServletResponse response,
-                                      @RequestParam(name = "userName") String userName,
-                                      @RequestParam(name = "userPassword") String userPassword) {
-        ApiStatus apiStatus = UserService.userLogin(request, userName, userPassword);
-        response.setStatus(apiStatus.getResponseCode());
-        return apiStatus;
+    public static ApiResponse userLogin(HttpServletRequest request, HttpServletResponse response,
+                                        @RequestParam(name = "userName") String userName,
+                                        @RequestParam(name = "userPassword") String userPassword) {
+        ApiResponse apiResponse = UserService.userLogin(request, userName, userPassword);
+        response.setStatus(apiResponse.getApiStatus().getResponseCode());
+        return apiResponse;
     }
 
     /**
