@@ -147,7 +147,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/user/change-password?oldPassword=admin2&newPassword=admin22",
+							"raw": "{{url}}/secure-prints/user/change-password?oldPassword=admin321&newPassword=admin321",
 							"host": [
 								"{{url}}"
 							],
@@ -159,11 +159,11 @@
 							"query": [
 								{
 									"key": "oldPassword",
-									"value": "admin2"
+									"value": "admin321"
 								},
 								{
 									"key": "newPassword",
-									"value": "admin22"
+									"value": "admin321"
 								}
 							]
 						}
@@ -593,7 +593,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/appointment?appointmentId=1206",
+							"raw": "{{url}}/secure-prints/appointment?appointmentId=1275",
 							"host": [
 								"{{url}}"
 							],
@@ -604,7 +604,7 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1206"
+									"value": "1275"
 								}
 							]
 						}
@@ -1269,14 +1269,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/expense/get-expense-code?subcategoryName=Bank Fees and Credit Card Processing",
+							"raw": "{{url}}/secure-prints/expense/get-expense-type-code?subcategoryName=Bank Fees and Credit Card Processing",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"secure-prints",
 								"expense",
-								"get-expense-code"
+								"get-expense-type-code"
 							],
 							"query": [
 								{

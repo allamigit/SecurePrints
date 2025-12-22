@@ -46,7 +46,7 @@ select * from exp_info where exp_ref_no = 'ApptID-1291';
 --update appt_pymt set bci_amt = -1 * bci_amt; --where appt_id like '%-R';
 
 select count(1) from appt_pymt where appt_id not like '%-R';
-select count(1) from exp_info where exp_ref_no like 'ApptID-%';
+select sum(exp_amt) from exp_info where exp_ref_no like 'ApptID-%';
 
 select sum(svc_amt) from appt_pymt where pymt_dt between '2025-08-01' and '2025-08-25';
 select sum(bci_amt) from appt_pymt where pymt_dt between '2025-08-01' and '2025-08-25';

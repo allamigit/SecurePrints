@@ -178,7 +178,8 @@ sudo chmod -R 755 /usr/share/nginx/html
 sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl status nginx
-sudo journals -u nginx
+
+XXXXXsudo journals -u nginx
 
 
 Fix Permissions
@@ -365,7 +366,7 @@ ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
 sudo systemctl daemon-reload
 sudo systemctl start secure-prints
 sudo systemctl status secure-prints
-journalctl -u secure-prints -f
+sudo journalctl -u secure-prints -f
 *******************************
 
 http://18.119.142.19

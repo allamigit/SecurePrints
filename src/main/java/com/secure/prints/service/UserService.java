@@ -46,7 +46,7 @@ public class UserService {
         UserEntity user = this.getUserDetails(userName);
         try {
             if(user != null) {
-                throw new DataIntegrityViolationException("User already exists");
+                throw new DataIntegrityViolationException("User already exists.");
             }
             userDetails.setUserName(userName);
             userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
@@ -54,9 +54,9 @@ public class UserService {
             userRepository.save(userDetails);
             responseCode = 201;
             responseMessage = "User added successfully.";
-        } catch (DataIntegrityViolationException e) {
+        } catch (Exception e) {
             responseCode = 409;
-            responseMessage = "Duplicate user name.";
+            responseMessage = e.getMessage();
         }
 
         return ApiStatus.builder()
@@ -120,12 +120,15 @@ public class UserService {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpSession session = request.getSession(false);
         String userName = session.getAttribute(USER_SESSION_KEY).toString();
-        if(validatePassword(newPassword, oldPassword)) {
-            responseMessage = "The new password is the same of current password.";
+        UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
+        if(!validatePassword(oldPassword, userEntity.getUserPassword())) {
+            responseMessage = "Old password is incorrect.";
+        } else if(oldPassword.equals(newPassword)) {
+            responseMessage = "New password must be different from the old password.";
         } else {
             userRepository.changeUserPassword(userName, encryptPassword(newPassword));
             responseCode = 200;
-            responseMessage = "Success password changed.";
+            responseMessage = "Password changed successfully.";
         }
         return ApiStatus.builder()
                 .responseCode(responseCode)
@@ -151,7 +154,7 @@ public class UserService {
         } else {
             userRepository.changeUserPassword(userName, encryptPassword(newPassword));
             responseCode = 200;
-            responseMessage = "Success reset password to [user1234].";
+            responseMessage = "Success reset password.";
         }
         return ApiStatus.builder()
                 .responseCode(responseCode)
@@ -169,17 +172,15 @@ public class UserService {
         int responseCode = 401;
         String responseMessage;
         UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
-        if(userEntity == null) {
-            responseMessage = "User not found.";
+        if(userEntity == null || !validatePassword(userPassword, userEntity.getUserPassword())) {
+            responseMessage = "Invalid username or password.";
         } else if(!userEntity.getUserStatus()) {
-            responseMessage = "User is not active.";
-        } else if(!validatePassword(userPassword, userEntity.getUserPassword())) {
-            responseMessage = "Incorrect password.";
+            responseMessage = "User account is inactive.";
         } else {
             HttpSession session = request.getSession(true);
             session.setAttribute(USER_SESSION_KEY, userEntity.getUserName());
             responseCode = 200;
-            responseMessage = userEntity.getUserFullName() + ", logged in as: " + userEntity.getUserName();
+            responseMessage = userEntity.getUserFullName() + ", logged in successfully.";
         }
 
         ApiStatus apiStatus = ApiStatus.builder()
