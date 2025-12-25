@@ -40,8 +40,8 @@ public class ExpenseService {
     @RequiresLogin
     public ApiStatus addExpenseDetails(ExpenseEntity expense) {
         try {
-            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
-                expense.setExpenseAmount(expense.getExpenseAmount().negate());
+            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
+                expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
             if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseCode = 409;
@@ -117,16 +117,16 @@ public class ExpenseService {
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
         responseCode = 409;
         try {
-            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) > 0) {
-                expense.setExpenseAmount(expense.getExpenseAmount().negate());
+            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
+                expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
             if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else if(expense.getExpensePaymentDate() != null && expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
                 responseMessage = "Reconcile date must be at the same or after payment date.";
             } else {
-                BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount().abs();
-                BigDecimal newExpenseAmount = expense.getExpenseAmount().abs();
+                BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount();
+                BigDecimal newExpenseAmount = expense.getExpenseAmount();
                 String expenseReferenceNumber = expense.getExpenseReferenceNumber();
                 String appointmentId = expenseReferenceNumber.substring(expenseReferenceNumber.indexOf("-") + 1);
                 if(expenseReferenceNumber.startsWith("ApptID-") && !newExpenseAmount.equals(oldExpenseAmount)) {
@@ -201,7 +201,7 @@ public class ExpenseService {
                     .expenseCategoryCode(expense.getExpenseCategoryCode())
                     .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
                     .expenseDescription(refundMessage)
-                    .expenseAmount(expense.getExpenseAmount().abs())
+                    .expenseAmount(expense.getExpenseAmount().negate())
                     .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                     .expensePaymentDate(expenseRefundDate)
                     .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())
@@ -239,7 +239,7 @@ public class ExpenseService {
                 .expenseCategoryCode(expense.getExpenseCategoryCode())
                 .expenseSubcategoryCode(expense.getExpenseSubcategoryCode())
                 .expenseDescription(expenseDescription)
-                .expenseAmount(expense.getExpenseAmount())
+                .expenseAmount(expense.getExpenseAmount().negate())
                 .expensePaymentStatusCode(PaymentStatus.Refunded.getPaymentStatusCode())
                 .expensePaymentDate(paymentRefundDate)
                 .expensePaymentMethodCode(expense.getExpensePaymentMethodCode())

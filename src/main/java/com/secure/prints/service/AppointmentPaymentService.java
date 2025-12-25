@@ -147,13 +147,17 @@ public class AppointmentPaymentService {
 
         responseCode = 200;
         responseMessage = "Appointment payment details updated successfully.";
+
+        if(serviceAmount.compareTo(BigDecimal.ZERO) < 0) {
+            serviceAmount = serviceAmount.abs();
+        }
         AppointmentPaymentEntity appointmentPayment = this.getPaymentDetails(appointmentId);
         int currentPaymentMethodCode = appointmentPayment.getPaymentMethodCode();
         String expenseReferenceNumber = "ApptID-" + appointmentId;
         ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expenseReferenceNumber);
         LocalDate completeDate = appointmentPayment.getPaymentDate();
-        BigDecimal transactionFees = serviceAmount.abs().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
-        BigDecimal newServiceAmount = serviceAmount.abs().subtract(transactionFees);
+        BigDecimal transactionFees = serviceAmount.multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+        BigDecimal newServiceAmount = serviceAmount.subtract(transactionFees);
 
         if (appointmentPayment.getPaymentStatusCode() == PaymentStatus.Processed.getPaymentStatusCode() &&
                 currentPaymentMethodCode == PaymentMethod.Card.getPaymentMethodCode() &&
@@ -161,18 +165,18 @@ public class AppointmentPaymentService {
                 !appointmentPayment.getPaymentComment().startsWith("Refund") &&
                 appointmentPayment.getServiceAmount().compareTo(serviceAmount) != 0) {
 
-            if (serviceAmount.compareTo(BigDecimal.ZERO) > 0 && expenseEntity != null) {
-                expenseRepository.adjustFee(expenseReferenceNumber, transactionFees.negate());
-            } else if (serviceAmount.compareTo(BigDecimal.ZERO) > 0 && expenseEntity == null) {
+            if (serviceAmount.compareTo(BigDecimal.ZERO) != 0 && expenseEntity != null) {
+                expenseRepository.adjustFee(expenseReferenceNumber, transactionFees);
+            } else if (serviceAmount.compareTo(BigDecimal.ZERO) < 0 && expenseEntity == null) {
                 this.addExpenseDetails(appointmentId, completeDate, transactionFees, paymentMethodCode, appointmentPayment.getPaymentReconcileDate());
                 appointmentPaymentRepository.updatePaymentStatusAndMethod(
                         appointmentId,
                         PaymentStatus.Processed.getPaymentStatusCode(),
                         currentPaymentMethodCode,
-                        transactionFees);
+                        transactionFees.abs());
             } else if(serviceAmount.compareTo(BigDecimal.ZERO) == 0) {
-                transactionFees = appointmentPayment.getBciAmount().abs().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
-                expenseRepository.adjustFee(expenseReferenceNumber, transactionFees.negate());
+                transactionFees = appointmentPayment.getBciAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+                expenseRepository.adjustFee(expenseReferenceNumber, transactionFees);
                 newServiceAmount = BigDecimal.ZERO;
             }
             appointmentPaymentRepository.updatePaymentDetails(
@@ -194,14 +198,14 @@ public class AppointmentPaymentService {
             } else if(currentPaymentMethodCode == PaymentMethod.Card.getPaymentMethodCode()){
                 appointmentPaymentRepository.updatePaymentDetails(
                         appointmentId,
-                        appointmentPayment.getServiceAmount().add(expenseEntity.getExpenseAmount().abs()),
+                        appointmentPayment.getServiceAmount().add(expenseEntity.getExpenseAmount()),
                         paymentMethodCode,
                         paymentComment);
                 expenseRepository.removeFee(expenseReferenceNumber);
             } else {
                 appointmentPaymentRepository.updatePaymentDetails(
                         appointmentId,
-                        serviceAmount.abs(),
+                        serviceAmount,
                         paymentMethodCode,
                         paymentComment);
             }
@@ -209,7 +213,7 @@ public class AppointmentPaymentService {
                 !appointmentPayment.getPaymentComment().equals(paymentComment)) {
             appointmentPaymentRepository.updatePaymentDetails(
                     appointmentId,
-                    serviceAmount.abs(),
+                    serviceAmount,
                     currentPaymentMethodCode,
                     paymentComment);
         } else {

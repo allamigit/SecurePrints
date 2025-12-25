@@ -124,7 +124,7 @@ public class AppointmentInformationService {
             AppointmentPaymentEntity appointmentPaymentEntity = AppointmentPaymentEntity.builder()
                     .appointmentId(appointmentId)
                     .serviceAmount(ServiceType.getServiceFee(serviceCode))
-                    .bciAmount(ServiceType.getBciFee(serviceCode).negate())
+                    .bciAmount(ServiceType.getBciFee(serviceCode))
                     .paymentStatusCode(PaymentStatus.Pending.getPaymentStatusCode())
                     .paymentDate(LocalDate.from(appointmentTimestamp))
                     .paymentComment("")

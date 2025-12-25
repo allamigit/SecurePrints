@@ -46,17 +46,17 @@ public class FinancialReportService {
         BigDecimal totalServiceAmount = appointmentPaymentRepository.getTotalServiceAmountAll(startDate, endDate);
         totalServiceAmount = totalServiceAmount == null ? BigDecimal.ZERO : totalServiceAmount;
         BigDecimal totalBciAmount = appointmentPaymentRepository.getTotalBciAmountAll(startDate, endDate);
-        totalBciAmount = totalBciAmount == null ? BigDecimal.ZERO : totalBciAmount;
+        totalBciAmount = totalBciAmount == null ? BigDecimal.ZERO : totalBciAmount.negate();
         BigDecimal totalBankFeesAmount = expenseRepository.getTotalBankFeesAmountAll(startDate, endDate);
-        totalBankFeesAmount = totalBankFeesAmount == null ? BigDecimal.ZERO : totalBankFeesAmount;
+        totalBankFeesAmount = totalBankFeesAmount == null ? BigDecimal.ZERO : totalBankFeesAmount.negate();
         BigDecimal totalRevenue = totalServiceAmount.add(totalBankFeesAmount.abs());
         BigDecimal grossProfit = totalRevenue.add(totalBciAmount).add(totalBankFeesAmount);
         BigDecimal totalExpenseAmount = expenseRepository.getTotalExpenseAmountAll(startDate, endDate);
-        totalExpenseAmount = totalExpenseAmount == null ? BigDecimal.ZERO : totalExpenseAmount;
+        totalExpenseAmount = totalExpenseAmount == null ? BigDecimal.ZERO : totalExpenseAmount.negate();
         BigDecimal netProfit = grossProfit.add(totalExpenseAmount);
         BigDecimal totalInvoicedAmount = invoiceRepository.getTotalInvoiceAmountAll(startDate.plusMonths(1), endDate.plusMonths(1));
         totalInvoicedAmount = totalInvoicedAmount == null ? BigDecimal.ZERO : totalInvoicedAmount;
-        BigDecimal totalNotInvoicedAmount = totalBciAmount.add(totalInvoicedAmount.abs());
+        BigDecimal totalNotInvoicedAmount = totalBciAmount.add(totalInvoicedAmount);
 
         Revenue revenueAll = Revenue.builder()
                 .totalRevenue(totalRevenue)
@@ -72,17 +72,17 @@ public class FinancialReportService {
         totalServiceAmount = appointmentPaymentRepository.getTotalServiceAmountProcessed(startDate, endDate);
         totalServiceAmount = totalServiceAmount == null ? BigDecimal.ZERO : totalServiceAmount;
         totalBciAmount = appointmentPaymentRepository.getTotalBciAmountProcessed(startDate, endDate);
-        totalBciAmount = totalBciAmount == null ? BigDecimal.ZERO : totalBciAmount;
+        totalBciAmount = totalBciAmount == null ? BigDecimal.ZERO : totalBciAmount.negate();
         totalBankFeesAmount = expenseRepository.getTotalBankFeesAmountProcessed(startDate, endDate);
-        totalBankFeesAmount = totalBankFeesAmount == null ? BigDecimal.ZERO : totalBankFeesAmount;
+        totalBankFeesAmount = totalBankFeesAmount == null ? BigDecimal.ZERO : totalBankFeesAmount.negate();
         totalRevenue = totalServiceAmount.add(totalBankFeesAmount.abs());
         grossProfit = totalRevenue.add(totalBciAmount).add(totalBankFeesAmount);
         totalExpenseAmount = expenseRepository.getTotalExpenseAmountProcessed(startDate, endDate);
-        totalExpenseAmount = totalExpenseAmount == null ? BigDecimal.ZERO : totalExpenseAmount;
+        totalExpenseAmount = totalExpenseAmount == null ? BigDecimal.ZERO : totalExpenseAmount.negate();
         netProfit = grossProfit.add(totalExpenseAmount);
         totalInvoicedAmount = invoiceRepository.getTotalInvoiceAmountProcessed(startDate.plusMonths(1), endDate.plusMonths(1));
         totalInvoicedAmount = totalInvoicedAmount == null ? BigDecimal.ZERO : totalInvoicedAmount;
-        totalNotInvoicedAmount = totalBciAmount.add(totalInvoicedAmount.abs());
+        totalNotInvoicedAmount = totalBciAmount.add(totalInvoicedAmount);
 
         Revenue revenueProcessed = Revenue.builder()
                 .totalRevenue(totalRevenue)
