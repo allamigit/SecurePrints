@@ -106,32 +106,6 @@ public class AppointmentPaymentService {
     }
 
     /**
-     * Update Payment Details
-     * @param appointmentPayment appointmentPayment
-     * @return ApiStatus
-     */
-    /*@RequiresLogin
-    public ApiStatus updatePaymentDetails(AppointmentPaymentEntity appointmentPayment) {
-        try {
-            appointmentPayment.setServiceAmount(appointmentPayment.getServiceAmount().abs());
-            if(appointmentPayment.getBciAmount().compareTo(BigDecimal.ZERO) > 0) {
-                appointmentPayment.setBciAmount(appointmentPayment.getBciAmount().negate());
-            }
-            appointmentPaymentRepository.save(appointmentPayment);
-            responseCode = 200;
-            responseMessage = "Appointment payment updated successfully.";
-        } catch (Exception e) {
-            responseCode = 400;
-            responseMessage = e.getMessage();
-        }
-
-        return ApiStatus.builder()
-                .responseCode(responseCode)
-                .responseMessage(responseMessage)
-                .build();
-    }*/
-
-    /**
      * Update service amount, payment method and comment
      * @param appointmentId appointmentId
      * @param serviceAmount serviceAmount

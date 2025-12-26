@@ -120,7 +120,10 @@ public class ExpenseService {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
-            if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
+
+            if(expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+                responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
+            } else if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseMessage = "Payment date must be at the same or after reference date.";
             } else if(expense.getExpensePaymentDate() != null && expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
                 responseMessage = "Reconcile date must be at the same or after payment date.";
@@ -159,9 +162,11 @@ public class ExpenseService {
      */
     @RequiresLogin
     public ApiStatus reconcileExpense(long expenseId, LocalDate expenseReconcileDate) {
+        responseCode = 409;
         ExpenseEntity expense = expenseRepository.findByExpenseId(expenseId);
-        if(expense.getExpensePaymentDate() != null && expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
-            responseCode = 409;
+        if(expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+            responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
+        } else if(expense.getExpensePaymentDate() != null && expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
             responseMessage = "Reconcile date must be at the same or after payment date.";
         } else {
             expenseRepository.reconcileExpense(expenseId, expenseReconcileDate, !expense.getExpenseDescription().startsWith("Refund"));
