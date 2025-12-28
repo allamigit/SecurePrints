@@ -73,7 +73,6 @@ public class AppointmentPaymentService {
                 resultList = appointmentPaymentRepository.getAllAppointmentPaymentsForDateRange(startDate, endDate);
             }
         } else if(startDate == null && endDate == null) {
-            //resultList = appointmentPaymentRepository.getAllAppointmentPayments();
             startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
             endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
             if(showNonReconciled) {
@@ -82,8 +81,6 @@ public class AppointmentPaymentService {
                 resultList = appointmentPaymentRepository.getAllAppointmentPaymentsForDateRange(startDate, endDate);
             }
         }
-        //DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
-        //List<AppointmentInformationEntity> appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         List<AppointmentInformationEntity> appointmentList = appointmentInformationRepository.getAllAppointments();
         List<AppointmentInformationEntity> newAppointmentList = new ArrayList<>();
         assert resultList != null;
@@ -125,6 +122,7 @@ public class AppointmentPaymentService {
         if(serviceAmount.compareTo(BigDecimal.ZERO) < 0) {
             serviceAmount = serviceAmount.abs();
         }
+
         AppointmentPaymentEntity appointmentPayment = this.getPaymentDetails(appointmentId);
         int currentPaymentMethodCode = appointmentPayment.getPaymentMethodCode();
         String expenseReferenceNumber = "ApptID-" + appointmentId;
@@ -215,7 +213,7 @@ public class AppointmentPaymentService {
             && appointmentPayment.getPaymentStatusCode() != PaymentStatus.Refunded.getPaymentStatusCode()) {
             responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(appointmentPayment.getPaymentStatusCode());
         } else if(paymentReconcileDate.isBefore(appointmentPayment.getPaymentDate())) {
-            responseMessage = "Reconcile date must be at the same or after payment date.";
+            responseMessage = "Reconcile date must be on the same or after payment date.";
         } else {
             appointmentPaymentRepository.reconcilePayment(appointmentId, paymentReconcileDate,
                     !appointmentPayment.getPaymentComment().startsWith("Refund") ||
@@ -248,7 +246,7 @@ public class AppointmentPaymentService {
         if(appointmentPayment.getPaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
             responseMessage = "Invalid payment status to refund. Current status: " + PaymentStatus.getPaymentStatusName(appointmentPayment.getPaymentStatusCode());
         } else if(paymentRefundDate.isBefore(appointmentPayment.getPaymentDate())) {
-            responseMessage = "Refund date must be at the same or after payment date.";
+            responseMessage = "Refund date must be on the same or after payment date.";
         } else {
             BigDecimal refundAmount = appointmentPayment.getServiceAmount();
             if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {

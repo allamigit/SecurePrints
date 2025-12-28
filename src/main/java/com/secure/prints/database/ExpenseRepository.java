@@ -63,13 +63,6 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     void removeFee(@Param("expenseReferenceNumber") String expenseReferenceNumber);
 
     /**
-     * Get expenses list for all Expense Information table data
-     * @return List of expenses
-     */
-    @Query(value = "SELECT e FROM ExpenseEntity e ORDER BY e.expenseReferenceDate DESC")
-    List<ExpenseEntity> getAllExpenses();
-
-    /**
      * Get expenses list for a specific date range
      * @return List of expenses
      */
@@ -90,7 +83,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * Get total of bank fees amount CC Reader (Pending & Processed) for a specific date range
      * @return Total of bank fees amount
      */
-    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 203 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
     BigDecimal getTotalBankFeesAmountAll(@Param("startDate") LocalDate startDate,
                                          @Param("endDate") LocalDate endDate);
 
@@ -98,7 +91,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * Get total of expense amount other than CC Reader (Pending & Processed) for a specific date range
      * @return Total of expense amount
      */
-    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 203 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
     BigDecimal getTotalExpenseAmountAll(@Param("startDate") LocalDate startDate,
                                         @Param("endDate") LocalDate endDate);
 
@@ -106,7 +99,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * Get total of bank fees amount CC Reader (Processed) for a specific date range
      * @return Total of bank fees amount
      */
-    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 201 AND e.expensePaymentStatusCode <> 203 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
     BigDecimal getTotalBankFeesAmountProcessed(@Param("startDate") LocalDate startDate,
                                                @Param("endDate") LocalDate endDate);
 
@@ -114,7 +107,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * Get total of expense amount other than CC Reader (Processed) for a specific date range
      * @return Total of expense amount
      */
-    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT SUM(e.expenseAmount) FROM ExpenseEntity e WHERE e.expenseReferenceNumber NOT LIKE 'ApptID-%' AND e.expensePaymentStatusCode <> 201 AND e.expensePaymentStatusCode <> 203 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate")
     BigDecimal getTotalExpenseAmountProcessed(@Param("startDate") LocalDate startDate,
                                               @Param("endDate") LocalDate endDate);
 
@@ -123,7 +116,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @return List of total expense amount
      */
     @Query(value = "SELECT new com.secure.prints.model.ExpenseResultset(e.expenseCategoryCode, e.expenseSubcategoryCode, SUM(e.expenseAmount)) FROM ExpenseEntity e " +
-            "WHERE e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
+            "WHERE e.expensePaymentStatusCode <> 203 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
             "GROUP BY e.expenseCategoryCode, e.expenseSubcategoryCode " +
             "ORDER BY e.expenseCategoryCode, e.expenseSubcategoryCode")
     List<ExpenseResultset> getExpenseTotalsAll(@Param("startDate") LocalDate startDate,
@@ -134,7 +127,7 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * @return List of total expense amount
      */
     @Query(value = "SELECT new com.secure.prints.model.ExpenseResultset(e.expenseCategoryCode, e.expenseSubcategoryCode, SUM(e.expenseAmount)) FROM ExpenseEntity e " +
-            "WHERE e.expensePaymentStatusCode <> 201 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
+            "WHERE e.expensePaymentStatusCode <> 201 AND e.expensePaymentStatusCode <> 203 AND e.expenseReferenceDate BETWEEN :startDate AND :endDate " +
             "GROUP BY e.expenseCategoryCode, e.expenseSubcategoryCode " +
             "ORDER BY e.expenseCategoryCode, e.expenseSubcategoryCode")
     List<ExpenseResultset> getExpenseTotalsProcessed(@Param("startDate") LocalDate startDate,

@@ -4,6 +4,7 @@ import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.InvoiceRepository;
 import com.secure.prints.database.entity.InvoiceEntity;
 import com.secure.prints.model.ApiStatus;
+import com.secure.prints.model.PaymentStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,13 +40,16 @@ public class InvoiceService {
      */
     @RequiresLogin
     public ApiStatus addInvoiceDetails(InvoiceEntity invoice) {
+        responseCode = 409;
         try {
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) < 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().abs());
             }
-            if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
-                responseCode = 409;
-                responseMessage = "Payment date must be at the same or after invoice date.";
+
+            if(invoice.getInvoicePaymentStatusCode() == PaymentStatus.Cancelled.getPaymentStatusCode()) {
+                responseMessage = "Invalid payment status to cancel new invoice.";
+            } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
+                responseMessage = "Payment date must be on the same or after invoice date.";
             } else {
                 invoice.setInvoiceNumber(invoice.getInvoiceNumber().toUpperCase().trim());
                 invoiceRepository.save(invoice);
@@ -93,7 +97,6 @@ public class InvoiceService {
                 resultList = invoiceRepository.getAllInvoicesForDateRange(startDate, endDate);
             }
         } else if(startDate == null && endDate == null) {
-            //resultList = invoiceRepository.getAllInvoices();
             startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
             endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
             if(showNonReconciled) {
@@ -117,10 +120,16 @@ public class InvoiceService {
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) < 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().abs());
             }
-            if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
-                responseMessage = "Payment date must be at the same or after invoice date.";
+
+            InvoiceEntity invoiceEntity = invoiceRepository.findByInvoiceNumber(invoice.getInvoiceNumber());
+            if(invoice.getInvoicePaymentStatusCode().equals(invoiceEntity.getInvoicePaymentStatusCode())) {
+                responseMessage = "Invalid payment status to cancel. Current status: " + PaymentStatus.getPaymentStatusName(invoiceEntity.getInvoicePaymentStatusCode());
+            } else if(invoice.getInvoiceReconcileDate() != null && invoice.getInvoicePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+                responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(invoice.getInvoicePaymentStatusCode());
+            } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
+                responseMessage = "Payment date must be on the same or after invoice date.";
             } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoiceReconcileDate() != null && invoice.getInvoiceReconcileDate().isBefore(invoice.getInvoicePaymentDate())) {
-                responseMessage = "Reconcile date must be at the same or after payment date.";
+                responseMessage = "Reconcile date must be on the same or after payment date.";
             } else {
                 invoice.setInvoiceNumber(invoice.getInvoiceNumber().toUpperCase().trim());
                 invoiceRepository.save(invoice);
@@ -163,7 +172,7 @@ public class InvoiceService {
         InvoiceEntity invoice = invoiceRepository.findByInvoiceId(invoiceId);
         if(invoice.getInvoicePaymentDate() != null && invoiceReconcileDate.isBefore(invoice.getInvoicePaymentDate())) {
             responseCode = 409;
-            responseMessage = "Reconcile date must be at the same or after payment date.";
+            responseMessage = "Reconcile date must be on the same or after payment date.";
         } else {
             invoiceRepository.reconcileInvoice(invoiceId, invoiceReconcileDate);
             responseCode = 200;

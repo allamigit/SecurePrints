@@ -39,13 +39,16 @@ public class ExpenseService {
      */
     @RequiresLogin
     public ApiStatus addExpenseDetails(ExpenseEntity expense) {
+        responseCode = 409;
         try {
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
-            if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
-                responseCode = 409;
-                responseMessage = "Payment date must be at the same or after reference date.";
+
+            if(expense.getExpensePaymentStatusCode() == PaymentStatus.Cancelled.getPaymentStatusCode()) {
+                responseMessage = "Invalid payment status to cancel new expense.";
+            } else if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
+                responseMessage = "Payment date must be on the same or after reference date.";
             } else {
                 expense.setExpenseUpdate(false);
                 if(!expense.getExpenseReferenceNumber().startsWith("ApptID-")) {
@@ -121,12 +124,15 @@ public class ExpenseService {
                 expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
 
-            if(expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+            ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expense.getExpenseReferenceNumber());
+            if(expense.getExpensePaymentStatusCode().equals(expenseEntity.getExpensePaymentStatusCode())) {
+                responseMessage = "Invalid payment status to cancel. Current status: " + PaymentStatus.getPaymentStatusName(expenseEntity.getExpensePaymentStatusCode());
+            } else if(expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
                 responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
             } else if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
-                responseMessage = "Payment date must be at the same or after reference date.";
+                responseMessage = "Payment date must be on the same or after reference date.";
             } else if(expense.getExpensePaymentDate() != null && expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
-                responseMessage = "Reconcile date must be at the same or after payment date.";
+                responseMessage = "Reconcile date must be on the same or after payment date.";
             } else {
                 BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount();
                 BigDecimal newExpenseAmount = expense.getExpenseAmount();
@@ -167,7 +173,7 @@ public class ExpenseService {
         if(expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
             responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
         } else if(expense.getExpensePaymentDate() != null && expenseReconcileDate.isBefore(expense.getExpensePaymentDate())) {
-            responseMessage = "Reconcile date must be at the same or after payment date.";
+            responseMessage = "Reconcile date must be on the same or after payment date.";
         } else {
             expenseRepository.reconcileExpense(expenseId, expenseReconcileDate, !expense.getExpenseDescription().startsWith("Refund"));
             responseCode = 200;
@@ -193,7 +199,7 @@ public class ExpenseService {
         if(expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
             responseMessage = "Invalid payment status to refund. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
         } else if(expenseRefundDate.isBefore(expense.getExpensePaymentDate())) {
-            responseMessage = "Refund date must be at the same or after payment date.";
+            responseMessage = "Refund date must be on the same or after payment date.";
         } else {
             String refundMessage = "Refund expense transaction.";
             expense.setExpenseUpdate(expense.getExpenseReconcileDate() == null);

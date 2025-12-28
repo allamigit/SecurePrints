@@ -43,13 +43,6 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
                           @Param("invoiceReconcileDate") LocalDate invoiceReconcileDate);
 
     /**
-     * Get invoices list for all Invoice Information table data
-     * @return List of invoices
-     */
-    @Query(value = "SELECT i FROM InvoiceEntity i ORDER BY i.invoiceDate DESC")
-    List<InvoiceEntity> getAllInvoices();
-
-    /**
      * Get invoices list for a specific date range
      * @return List of invoices
      */
@@ -70,7 +63,7 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
      * Get total of invoice amount (Pending & Processed) for a specific date range
      * @return Total of invoice amount
      */
-    @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoiceDate BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoicePaymentStatusCode <> 203 AND i.invoiceDate BETWEEN :startDate AND :endDate")
     BigDecimal getTotalInvoiceAmountAll(@Param("startDate") LocalDate startDate,
                                         @Param("endDate") LocalDate endDate);
 
@@ -78,7 +71,7 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
      * Get total of invoice amount (Processed) for a specific date range
      * @return Total of invoice amount
      */
-    @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoicePaymentStatusCode <> 201 AND i.invoiceDate BETWEEN :startDate AND :endDate")
+    @Query(value = "SELECT SUM(i.invoiceAmount) FROM InvoiceEntity i WHERE i.invoicePaymentStatusCode <> 201 AND i.invoicePaymentStatusCode <> 203 AND i.invoiceDate BETWEEN :startDate AND :endDate")
     BigDecimal getTotalInvoiceAmountProcessed(@Param("startDate") LocalDate startDate,
                                               @Param("endDate") LocalDate endDate);
 
