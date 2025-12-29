@@ -124,10 +124,7 @@ public class ExpenseService {
                 expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
 
-            ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expense.getExpenseReferenceNumber());
-            if(expense.getExpensePaymentStatusCode().equals(expenseEntity.getExpensePaymentStatusCode())) {
-                responseMessage = "Invalid payment status to cancel. Current status: " + PaymentStatus.getPaymentStatusName(expenseEntity.getExpensePaymentStatusCode());
-            } else if(expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+            if(expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
                 responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
             } else if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseMessage = "Payment date must be on the same or after reference date.";

@@ -121,10 +121,7 @@ public class InvoiceService {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().abs());
             }
 
-            InvoiceEntity invoiceEntity = invoiceRepository.findByInvoiceNumber(invoice.getInvoiceNumber());
-            if(invoice.getInvoicePaymentStatusCode().equals(invoiceEntity.getInvoicePaymentStatusCode())) {
-                responseMessage = "Invalid payment status to cancel. Current status: " + PaymentStatus.getPaymentStatusName(invoiceEntity.getInvoicePaymentStatusCode());
-            } else if(invoice.getInvoiceReconcileDate() != null && invoice.getInvoicePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+            if(invoice.getInvoiceReconcileDate() != null && invoice.getInvoicePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
                 responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(invoice.getInvoicePaymentStatusCode());
             } else if(invoice.getInvoicePaymentDate() != null && invoice.getInvoicePaymentDate().isBefore(invoice.getInvoiceDate())) {
                 responseMessage = "Payment date must be on the same or after invoice date.";
