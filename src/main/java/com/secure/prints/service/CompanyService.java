@@ -49,11 +49,7 @@ public class CompanyService {
                 responseCode = 200;
                 responseMessage = "Company details updated successfully.";
             } catch (Exception e) {
-                responseCode = 400;
                 responseMessage = e.getMessage();
-                if(responseMessage.contains("unique constraint")) {
-                    responseMessage = "Duplicate company name.";
-                }
             }
         }
 

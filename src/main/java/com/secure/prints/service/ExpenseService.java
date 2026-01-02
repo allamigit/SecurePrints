@@ -6,6 +6,7 @@ import com.secure.prints.database.ExpenseRepository;
 import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.PaymentStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +41,12 @@ public class ExpenseService {
     @RequiresLogin
     public ApiStatus addExpenseDetails(ExpenseEntity expense) {
         responseCode = 409;
+        ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expense.getExpenseReferenceNumber());
         try {
+            if(expenseEntity != null) {
+                throw new DataIntegrityViolationException("Duplicate expense reference number.");
+            }
+
             if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
@@ -50,20 +56,13 @@ public class ExpenseService {
             } else if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseMessage = "Payment date must be on the same or after reference date.";
             } else {
-                expense.setExpenseUpdate(false);
-                if(!expense.getExpenseReferenceNumber().startsWith("ApptID-")) {
-                    expense.setExpenseUpdate(true);
-                }
-                expenseRepository.save(expense);
+                expense.setExpenseUpdate(!expense.getExpenseReferenceNumber().startsWith("ApptID-"));
+                expenseRepository.saveAndFlush(expense);
                 responseCode = 201;
                 responseMessage = "Expense Added.";
             }
         } catch (Exception e) {
-            responseCode = 400;
             responseMessage = e.getMessage();
-            if(responseMessage.contains("unique constraint")) {
-                responseMessage = "Duplicate expense reference number.";
-            }
         }
 
         return ApiStatus.builder()

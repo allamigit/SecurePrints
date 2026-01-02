@@ -5,6 +5,7 @@ import com.secure.prints.database.InvoiceRepository;
 import com.secure.prints.database.entity.InvoiceEntity;
 import com.secure.prints.model.ApiStatus;
 import com.secure.prints.model.PaymentStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +42,12 @@ public class InvoiceService {
     @RequiresLogin
     public ApiStatus addInvoiceDetails(InvoiceEntity invoice) {
         responseCode = 409;
+        InvoiceEntity invoiceEntity = invoiceRepository.findByInvoiceNumber(invoice.getInvoiceNumber());
         try {
+            if(invoiceEntity != null) {
+                throw new DataIntegrityViolationException("Duplicate invoice number.");
+            }
+
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) < 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().abs());
             }
@@ -57,11 +63,7 @@ public class InvoiceService {
                 responseMessage = "Invoice Added.";
             }
         } catch (Exception e) {
-            responseCode = 400;
             responseMessage = e.getMessage();
-            if(responseMessage.contains("unique constraint")) {
-                responseMessage = "Duplicate invoice number.";
-            }
         }
 
         return ApiStatus.builder()
