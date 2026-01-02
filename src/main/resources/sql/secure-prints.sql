@@ -76,6 +76,11 @@ select * from appt_info where cust_first_name = '3PnYiK7w+C8rIAMsjWFI8Q==' and c
 
 select exp_payee_name from exp_info where lower(exp_payee_name) = 'landlord';
 
+update appt_pymt set bci_amt = -bci_amt;
+
+update inv_info set inv_amt = -inv_amt;
+
+update exp_info set exp_amt = -exp_amt;
 
 
 INSERT INTO appt_info

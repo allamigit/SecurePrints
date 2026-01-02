@@ -735,7 +735,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/reconcile-payment?appointmentId=1110&paymentReconcileDate=2025-05-20",
+							"raw": "{{url}}/secure-prints/payment/reconcile-payment?appointmentId=1313&paymentReconcileDate=2025-12-26",
 							"host": [
 								"{{url}}"
 							],
@@ -747,11 +747,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1110"
+									"value": "1313"
 								},
 								{
 									"key": "paymentReconcileDate",
-									"value": "2025-05-20"
+									"value": "2025-12-26"
 								}
 							]
 						}
@@ -764,7 +764,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/payment/refund-payment?appointmentId=1204&paymentRefundDate=2025-07-06",
+							"raw": "{{url}}/secure-prints/payment/refund-payment?appointmentId=1313&paymentRefundDate=2025-12-26",
 							"host": [
 								"{{url}}"
 							],
@@ -776,11 +776,11 @@
 							"query": [
 								{
 									"key": "appointmentId",
-									"value": "1204"
+									"value": "1313"
 								},
 								{
 									"key": "paymentRefundDate",
-									"value": "2025-07-06"
+									"value": "2025-12-26"
 								}
 							]
 						}
@@ -1328,7 +1328,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/secure-prints/report/financial-report?startDate=2025-08-01&endDate=2025-08-25",
+							"raw": "{{url}}/secure-prints/report/financial-report",
 							"host": [
 								"{{url}}"
 							],
@@ -1340,11 +1340,13 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2025-08-01"
+									"value": "2025-08-01",
+									"disabled": true
 								},
 								{
 									"key": "endDate",
-									"value": "2025-08-25"
+									"value": "2025-08-25",
+									"disabled": true
 								}
 							]
 						}

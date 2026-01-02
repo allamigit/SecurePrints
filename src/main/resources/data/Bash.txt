@@ -179,8 +179,6 @@ sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl status nginx
 
-XXXXXsudo journals -u nginx
-
 
 Fix Permissions
 ---------------
@@ -296,7 +294,7 @@ sudo nano /usr/local/bin/check-cert.sh
 # SSL Expiry Alert Script for Amazon Linux 2
 
 # Domain to check
-DOMAIN="secure-prints.com"
+DOMAIN="www.secure-prints.com"
 
 # Email address where alerts will be sent
 ALERT_EMAIL="info@secure-prints.com"
