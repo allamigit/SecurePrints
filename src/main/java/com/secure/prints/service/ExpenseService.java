@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -98,7 +99,6 @@ public class ExpenseService {
                 resultList = expenseRepository.getAllExpensesForDateRange(startDate, endDate);
             }
         } else if(startDate == null && endDate == null) {
-            //resultList = expenseRepository.getAllExpenses();
             startDate = LocalDate.parse(LocalDate.now().getYear() + "-01-01");
             endDate = LocalDate.parse(LocalDate.now().getYear() + "-12-31");
             if(showNonReconciled) {
@@ -118,23 +118,28 @@ public class ExpenseService {
     @RequiresLogin
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
         responseCode = 409;
+        ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expense.getExpenseReferenceNumber());
         try {
-            if(expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
+            if(!Objects.equals(expenseEntity.getExpenseId(), expense.getExpenseId())) {
+                throw new DataIntegrityViolationException("Duplicate expense reference number.");
+            }
+
+            if (expense.getExpenseAmount().compareTo(BigDecimal.ZERO) < 0) {
                 expense.setExpenseAmount(expense.getExpenseAmount().abs());
             }
 
-            if(expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
+            if (expense.getExpenseReconcileDate() != null && expense.getExpensePaymentStatusCode() != PaymentStatus.Processed.getPaymentStatusCode()) {
                 responseMessage = "Invalid payment status to reconcile. Current status: " + PaymentStatus.getPaymentStatusName(expense.getExpensePaymentStatusCode());
-            } else if(expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
+            } else if (expense.getExpensePaymentDate() != null && expense.getExpensePaymentDate().isBefore(expense.getExpenseReferenceDate())) {
                 responseMessage = "Payment date must be on the same or after reference date.";
-            } else if(expense.getExpensePaymentDate() != null && expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
+            } else if (expense.getExpensePaymentDate() != null && expense.getExpenseReconcileDate() != null && expense.getExpenseReconcileDate().isBefore(expense.getExpensePaymentDate())) {
                 responseMessage = "Reconcile date must be on the same or after payment date.";
             } else {
                 BigDecimal oldExpenseAmount = this.getExpenseDetails(expense.getExpenseId()).getExpenseAmount();
                 BigDecimal newExpenseAmount = expense.getExpenseAmount();
                 String expenseReferenceNumber = expense.getExpenseReferenceNumber();
                 String appointmentId = expenseReferenceNumber.substring(expenseReferenceNumber.indexOf("-") + 1);
-                if(expenseReferenceNumber.startsWith("ApptID-") && !newExpenseAmount.equals(oldExpenseAmount)) {
+                if (expenseReferenceNumber.startsWith("ApptID-") && !newExpenseAmount.equals(oldExpenseAmount)) {
                     BigDecimal differenceAmount = oldExpenseAmount.subtract(newExpenseAmount);
                     appointmentPaymentRepository.adjustServiceAmount(appointmentId, differenceAmount);
                 }
@@ -143,11 +148,7 @@ public class ExpenseService {
                 responseMessage = "Expense Updated.";
             }
         } catch (Exception e) {
-            responseCode = 400;
             responseMessage = e.getMessage();
-            if(responseMessage.contains("unique constraint")) {
-                responseMessage = "Duplicate expense reference number.";
-            }
         }
 
         return ApiStatus.builder()

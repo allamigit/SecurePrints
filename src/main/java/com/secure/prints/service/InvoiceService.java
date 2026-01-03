@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -118,7 +119,12 @@ public class InvoiceService {
     @RequiresLogin
     public ApiStatus updateInvoiceDetails(InvoiceEntity invoice) {
         responseCode = 409;
+        InvoiceEntity invoiceEntity = invoiceRepository.findByInvoiceNumber(invoice.getInvoiceNumber());
         try {
+            if(!Objects.equals(invoiceEntity.getInvoiceId(), invoice.getInvoiceId())) {
+                throw new DataIntegrityViolationException("Duplicate invoice number.");
+            }
+
             if(invoice.getInvoiceAmount().compareTo(BigDecimal.ZERO) < 0) {
                 invoice.setInvoiceAmount(invoice.getInvoiceAmount().abs());
             }
@@ -136,11 +142,7 @@ public class InvoiceService {
                 responseMessage = "Invoice Updated.";
             }
         } catch (Exception e) {
-            responseCode = 400;
             responseMessage = e.getMessage();
-            if(responseMessage.contains("unique constraint")) {
-                responseMessage = "Duplicate invoice number.";
-            }
         }
 
         return ApiStatus.builder()
