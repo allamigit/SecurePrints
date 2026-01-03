@@ -88,16 +88,20 @@ public class UserService {
      */
     @RequiresLogin
     public ApiStatus updateUserDetails(UserEntity userDetails) {
-        int responseCode;
+        int responseCode = 409;
         String responseMessage;
-        try {
-            userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
-            userRepository.save(userDetails);
-            responseCode = 200;
-            responseMessage = "User details updated successfully.";
-        } catch (Exception e) {
-            responseCode = 400;
-            responseMessage = e.getMessage();
+        userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
+        UserEntity userEntity = userRepository.findByUserName(userDetails.getUserName());
+        if(userEntity.equals(userDetails)) {
+            responseMessage = "There is no change to update.";
+        } else {
+            try {
+                userRepository.save(userDetails);
+                responseCode = 200;
+                responseMessage = "User details updated successfully.";
+            } catch (Exception e) {
+                responseMessage = e.getMessage();
+            }
         }
 
         return ApiStatus.builder()
