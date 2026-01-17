@@ -119,9 +119,12 @@ public class InvoiceService {
     @RequiresLogin
     public ApiStatus updateInvoiceDetails(InvoiceEntity invoice) {
         responseCode = 409;
-        InvoiceEntity invoiceEntity = invoiceRepository.findByInvoiceNumber(invoice.getInvoiceNumber());
+        InvoiceEntity invoiceEntity = invoiceRepository.findByInvoiceId(invoice.getInvoiceId());
+        if(!Objects.equals(invoiceEntity.getInvoiceNumber(), invoice.getInvoiceNumber())) {
+            invoiceEntity = invoiceRepository.findByInvoiceNumber(invoice.getInvoiceNumber());
+        }
         try {
-            if(!Objects.equals(invoiceEntity.getInvoiceId(), invoice.getInvoiceId())) {
+            if(invoiceEntity != null && !Objects.equals(invoiceEntity.getInvoiceId(), invoice.getInvoiceId())) {
                 throw new DataIntegrityViolationException("Duplicate invoice number.");
             }
 

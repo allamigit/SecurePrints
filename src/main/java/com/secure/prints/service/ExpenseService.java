@@ -118,9 +118,12 @@ public class ExpenseService {
     @RequiresLogin
     public ApiStatus updateExpenseDetails(ExpenseEntity expense) {
         responseCode = 409;
-        ExpenseEntity expenseEntity = expenseRepository.findByExpenseReferenceNumber(expense.getExpenseReferenceNumber());
+        ExpenseEntity expenseEntity = expenseRepository.findByExpenseId(expense.getExpenseId());
+        if(!Objects.equals(expenseEntity.getExpenseReferenceNumber(), expense.getExpenseReferenceNumber())) {
+            expenseEntity = expenseRepository.findByExpenseReferenceNumber(expense.getExpenseReferenceNumber());
+        }
         try {
-            if(!Objects.equals(expenseEntity.getExpenseId(), expense.getExpenseId())) {
+            if(expenseEntity != null && !Objects.equals(expenseEntity.getExpenseId(), expense.getExpenseId())) {
                 throw new DataIntegrityViolationException("Duplicate expense reference number.");
             }
 
