@@ -1,149 +1,160 @@
-Type~Code~Text
 BCI~NO ORC~ 
-BCI~109 578~Prospective Firefighter / EMT Applicants
-BCI~113 041~Ohio Treasurer of State employees
-BCI~121 08~Ohio Department of Commerce
-BCI~124 74~Employee with access to Federal Tax Information
+BCI~4768 06~A controlling person of an appraisal management company
+BCI~4701 08~Accountancy Board license applicants
+BCI~5104 013~An Employee,Owner,Licensee,Administrator or Person Residing in a Type A or Type B Home,or an In-Home Aide
+BCI~4783 04~Applicant for a certificate to practice as a certified Ohio behavior analyst
+BCI~4764 07~Applicant for a license to perform home inspections
 BCI~147 022~Applicant for a Notary Commission
-BCI~173 27~State long-term care ombudsperson program
+BCI~4735 143~Applicant for a Real Estate Broker’s or Salesperson License
+BCI~5123 169~Applicant for a supported living certificate
+BCI~5164 34~Applicant for Medicaid provider
+BCI~3905 051~Applicant to obtain license to sell Insurance through the Ohio Dept of Insurance
+BCI~5164 342~Applicant with agency that provides home and community based waiver services
+BCI~4731 222~Application for restoration of a medical certificate
+BCI~4717 061~Board of Embalmers and Funeral Directors license applicants
+BCI~1321 53~certification of registration for a financial institution
+BCI~5153 111~Co. Public Children Services Board of Co. Human Services Administering child Welfare
 BCI~173 38~Community based long term care agency
-BCI~2151 86~Out of Home Child Care,Foster Parents,Adoptive Parents and all individuals 18 and over residing in home
-BCI~311 41~Carry Concealed Weapons
-BCI~311 41M~Carry Concealed Weapons – Military
-BCI~311 41R~Carry Concealed Weapons – Renewal
-BCI~311 41T~Carry Concealed Weapons – Temporary
-BCI~311 41F~Carry Concealed Weapons – Retired LE
-BCI~928 03~License for hemp cultivation and processing
-BCI~1121 23~Management of a bank
-BCI~1315 141~Management of a licensee for a financial institution
-BCI~1321 37~License to make short-term loans
-BCI~1321 53~Certification of registration for a financial institution
-BCI~1322 03~Certification of registration as a mortgage broker
+BCI~4757 101~Counselor,Social Worker,and Marriage and Family Therapists Board license applicants
+BCI~124 74~Employee with access to Federal Tax Information
+BCI~4749 06~Employment as Private Investigators/Security Guards
+BCI~5123 081~Employment with DoDD,county board of DD or contracting agency
+BCI~3734 42~Hazardous Waste Environmental Background Investigations
+BCI~3301 32~Headstart Agency
+BCI~3701 881~Home Health Agency Responsible for Children or Adults (in-home patient care)
+BCI~3721 121~Home or Adult Daycare Program
+BCI~3712 09~Hospice Care Program
+BCI~5164 341~Independent provider for the Medicaid home and community based waiver services
+BCI~3775 03~Initial or Renewed Sports Gaming License
+BCI~4123 444~Investment managers/employees who contract with Ohio BWC to invest BWC funds
 BCI~1322 031~License as a loan officer
+BCI~928 03~License for hemp cultivation and processing
+BCI~4749 03~License for Private Investigator or Security Guard
+BCI~4763 05~License or Certificate for General Real Estate Appraisers,Residential Real Estate Appraisers,or Assistant
+BCI~1321 37~License to make short-term loans
+BCI~1121 23~Management of a Bank
 BCI~1733 47~Management of a credit union
 BCI~1761 26~Management of a credit union share guaranty corporation
-BCI~2151 33~Temporary care of a juvenile
-BCI~2151 412~Parent,guardian,custodian,prospective custodian,or prospective placement involved in a case plan
-BCI~3301 32~Headstart Agency
-BCI~3301 541~Preschool Program
-BCI~3319 291~School Employees – Licensure with Ohio Department of Education
-BCI~3319 39B1~School Employees – non teaching positions
-BCI~3319 39B3~School Employees – teachers only
-BCI~3327 10~School Bus Driver
-BCI~3701 881~Home Health Agency Responsible for Children or Adults (in-home patient care)
-BCI~3712 09~Hospice Care Program
-BCI~3721 121~Home or Adult Daycare Program
-BCI~3734 42~Hazardous Waste Environmental Background Investigations
-BCI~3769 03~Ohio Racing Commission
-BCI~3770 02~Ohio Lottery Commission
-BCI~3772 07~Ohio Casino Control Commission
-BCI~3775 03~Initial or Renewed Sports Gaming License
-BCI~3796 12~Medical Marijuana – Owners,officers,and board members of cultivators,processors,and testing labs or dispensaries
-BCI~3796 13~Medical Marijuana – Employee with a cultivator,medical marijuana processor,laboratory or medical marijuana retail dispenser
-BCI~3905 051~Applicant to obtain license to sell Insurance through the Ohio Dept of Insurance
-BCI~4123 444~Investment managers/employees who contract with Ohio BWC to invest BWC funds
-BCI~4303 29~Ohio Division of Liquor Control
-BCI~4701 08~Accountancy Board license applicants
-BCI~4715 101~State Dental Board license applicants
-BCI~4717 061~Board of Embalmers and Funeral Directors license applicants
+BCI~1315 141~Management of a licensee for a financial institution
+BCI~3796 13~Medical Marijuana - employee with a cultivator,medical marijuana processor,laboratory or medical marijuana retail dispenser
+BCI~3796 12~Medical Marijuana - Owners,Officers and board members of cultivators,processors and testing labs or dispensaries
 BCI~4723 09~Nurses (RNs,LPNs,dialysis techs,students entering nursing education or dialysis)
-BCI~4725 181~Applicants for an initial license to practice optometry
-BCI~4729 071~Employees or applicants for employment with a Terminal Distributor of Dangerous Drugs
-BCI~4731 09~Medical Doctors and Podiatrists
-BCI~4732 091~Applicants for an initial license to practice psychology
-BCI~4733 11~State Board of Registration for Professional Engineers and Surveyors license applicants
-BCI~4734 31~Chiropractic license applicants
-BCI~4735 071~Applicants for an initial license to practice real estate
-BCI~4736 091~Applicants for an initial license to practice sanitarians
-BCI~4747 10~Hearing Aid Dealers or Fitters license applicants
-BCI~4753 05~Applicants for a license from the Ohio Speech and Hearing Professionals Board
-BCI~4757 101~Counselor,Social Worker,or Marriage and Family Therapist license applicants
-BCI~4758 20~Applicants for a Chemical Dependency Professionals Board license
-BCI~4759 05~Dietitians Board license applicants
-BCI~4761 03~Respiratory Care Board license applicants
-BCI~4765 301~EMS certification or recertification
-BCI~4773 041~Ohio Radiologic License Applicants
-BCI~4774 061~Applicants for a license to practice orthotics,prosthetics or pedorthics
-BCI~4779 031~Applicants for an athletic trainer license
-BCI~5101 28~Ohio Department of Job and Family Services
-BCI~5104 012~Child Care Center Staff or In-Home Aide
-BCI~5104 013~Certified Type B Home Providers
-BCI~5104 014~Approved Child Day Camps
-BCI~5107 62~Ohio Works First applicants
-BCI~5111 02~Ohio Department of Medicaid
-BCI~5119 34~Employees of a Mental Health or Developmental Disability facility or program
-BCI~5120 021~Ohio Department of Rehabilitation and Correction Volunteers or Contractors
-BCI~5123 081~Developmental Disabilities Direct Service Employees
-BCI~5139 51~Department of Youth Services
-BCI~5902 011~Ohio Department of Veterans Services
-FBI~NO ORC~ 
-FBI~109 578~Prospective Firefighters and Volunteer Firefighters / EMT Applicants
-FBI~113 041~Ohio Treasurer of State Employees,applicants
-FBI~121 08~Ohio Department of Commerce (real estate,mortgage brokers,insurance,liquor and fireworks licensing)
-FBI~124 74~Employee with access to Federal Tax Information
-FBI~173 41~Passport Program – Ohio Department of Aging (community-based long-term continuous care)
-FBI~928 03~License for hemp cultivation and processing
-FBI~2151 86~Out of Home Child Care,Foster Parents,Adoptive Parents (and all individuals 18 and over residing in home)
-FBI~311 41~Carry Concealed Weapons
-FBI~3301 32~Headstart Agency
-FBI~3301 541~Preschool Program
-FBI~3319 291~School Employees – Licensure with Ohio Department of Education
-FBI~3319 39~Public School District or Chartered Nonpublic School Employees and School Bus Drivers
-FBI~3701 881~Homehealth Agency Responsible for Children or Adults (in-home patient care)
-FBI~3712 09~Hospice Care Program
-FBI~3721 121~Home or Adult Daycare Program (nursing home,residential care facility,home for the aging,veteran’s home)
-FBI~3734 42~Hazardous Waste Environmental Background Investigations
-FBI~3769 03~Ohio Racing Commission – Horse Racing applicants
-FBI~3770 02~Ohio Lottery Commission
-FBI~3772 07~Ohio Casino Control Commission
-FBI~3796 12~Medical Marijuana – Owners,officers,and board members of cultivators,processors,and testing labs or dispensaries
-FBI~3796 13~Medical Marijuana – Employee with a cultivator,medical marijuana processor,laboratory or medical marijuana retail dispenser
-FBI~3905 051~Ohio Department of Insurance (Resident license as Insurance Agent or Surety Bail Bond Agent)
-FBI~4123 444~Investment Managers and their employees who contract with Ohio BWC to invest BWC funds
+BCI~4729 553~Ohio Board of Pharmacy – licensure as a Cat III Distributor of dangerous drugs with an office-based opioid treatment classification
+BCI~3772 07~Ohio Casino Control Commission
+BCI~4740 061~Ohio Construction Industry license applicants
+BCI~121 08~Ohio Department of Commerce
+BCI~4303 29~Ohio Division of Liquor Control
+BCI~3770 02~Ohio Lottery Commission
+BCI~4755 70~Ohio OT,PT,and AT Board – license to practice as a Physical or Occupational Therapist / Assistant,or Athletic Trainer
+BCI~4779 091~Ohio OT,PT,and AT Board – license to practice orthotics,prosthetics,orthotics and prosthetics,or pedorthics
+BCI~3769 03~Ohio Racing Commission
+BCI~113 041~Ohio Treasurer of State employees
+BCI~2151 86~Out of Home Child Care,Foster Parents,Adoptive Parents and all individuals 18 and over residing in home
+BCI~4768 01~Owner of an appraisal management company
+BCI~4776 02~Pain Management Clinic Owner/Employee
+BCI~2151 412~Parent,guardian,custodian,prospective custodian,or prospective placement involved in a case plan
+BCI~4731 531~Podiatrists (including surgeons) certificate applicants
+BCI~3301 541~Preschool Program
+BCI~109 578~Prospective Firefighter / EMT Applicants
+BCI~4763 06~Real Estate Appraiser Certificate,Registration or License Renewal
+BCI~4729 92~Registration as a pharmacy technician trainee with the Ohio Board of Pharmacy
+BCI~4729 90~Registration as a registered or certified pharmacy technician with the Ohio Board of Pharmacy
+BCI~4730 28~Reinstatement of a Certificate to Practice as a Physician Assistant
+BCI~4730 14~Renew a Certificate to Practice as a Physician Assistant
+BCI~4731 15~Renew a Certificate to practice massage therapy and cosmetic therapy
+BCI~4762 06~Renew a license to practice Acupuncture
+BCI~4731 281~Renew a License to Practice Medicine
+BCI~4760 06~Renewal or Reinstatement of a license to be an Anesthesiologist Assistant
+BCI~3327 10~School Bus Driver
+BCI~3319 291~School Employees - Licensure with Ohio Department of Education
+BCI~3319 39B1~School Employees - non teaching positions
+BCI~3319 39B3~School Employees - teachers only
+BCI~4729 071~State Board of Pharmacy license applicants
+BCI~4732 091~State Board of Psychology license applicants
+BCI~4734 202~State Chiropractic Board license applicants
+BCI~4715 101~State Dental Board license applicants
+BCI~173 27~State long-term care ombudsperson program
+BCI~4774 031~State Medical Board of Ohio – certificate to practice as a Radiologist Assistant
+BCI~4760 032~State Medical Board of Ohio – certificate to practice as an Anesthesiologist Assistant
+BCI~4762 031~State Medical Board of Ohio – certificate to practice as an Oriental Medicine Practitioner or as an Acupuncturist
+BCI~4731 171~State Medical Board of Ohio – certificate to practice Massage or Cosmetic Therapy
+BCI~4759 061~State Medical Board of Ohio – initial license as a Dietician
+BCI~4761 051~State Medical Board of Ohio – initial license as Respiratory Care Professional
+BCI~4778 04~State Medical Board of Ohio – license to practice as a Genetic Counselor
+BCI~4730 101~State Medical Board of Ohio – license to practice as a Physicians Assistant
+BCI~4731 08~State Medical Board of Ohio – license to practice medicine and surgery or osteopathic medicine or surgery
+BCI~4753 061~State Speech and Hearing Professionals Board – initial license for speech-language Pathologists and Audiologists
+BCI~4747 051~State Speech and Hearing Professionals Board – initial license to practice dealing in or fitting of hearing aids
+BCI~4725 501~State Vision Professionals Board – initial license as an Optical Dispenser
+BCI~4725 121~State Vision Professionals Board – initial license as an Optometrist
+BCI~2151 33~Temporary care of a juvenile
+BCI~4776 021~Trainee license for any approved board
+BCI~4741 10~Veterinary Medical Board license applicants
+FBI~4768 06~A controlling person of an appraisal management company
 FBI~4701 08~Accountancy Board license applicants
+FBI~5104 013~An Employee,Owner,Licensee,Administrator or Person Residing in a Type A or Type B Home,or an In-Home Aide
+FBI~4764 07~Applicant for a license to perform home inspections
+FBI~4735 143~Applicant for a Real Estate Broker’s or Salesperson License
+FBI~4734 202~Chiropractic Board license applicants
+FBI~4740 061~Construction Industry license applicants
+FBI~4757 101~Counselor,Social Worker,and Marriage and Family Therapists Board license applicants
+FBI~5153 111~County Public Children Services Board of County Human Services Administering Child Welfare
 FBI~4715 101~Dental Board license applicants
 FBI~4717 061~Embalmers and Funeral Directors license applicants
-FBI~4723 09~Nurses includes RN and LPN,dialysis techs – Board licensing and students entering nursing education or dialysis
-FBI~4725 121~State Vision Professionals Board – initial license as an Optometrist
-FBI~4725 501~State Vision Professionals Board – initial license as an Optical Dispenser
-FBI~4729 071~Pharmacy Board license applicants
-FBI~4729 553~Ohio Board of Pharmacy – licensure as a Cat III Distributor of dangerous drugs with an office-based opioid treatment classification
-FBI~4729 90~Registration as a registered or certified pharmacy technician with the Ohio Board of Pharmacy
-FBI~4729 92~Registration as a pharmacy technician trainee with the Ohio Board of Pharmacy
-FBI~4730 101~State Medical Board of Ohio – license to practice as a Physician Assistant
-FBI~4731 08~State Medical Board of Ohio - license to practice medicine and surgery,or osteopathic medicine or surgery
-FBI~4731 171~State Medical Board of Ohio – certificate to practice Massage or Cosmetic Therapy
-FBI~4731 531~Podiatric medicine and surgery certificate applicants
-FBI~4732 091~Psychology Board license applicants
-FBI~4734 202~Chiropractic Board license applicants
-FBI~4735 143~Applicant for a Real Estate Broker’s License or a Real Estate Salesperson License
-FBI~4740 061~Construction Industry license applicants
-FBI~4741 10~Veterinary Medical Board license applicants
-FBI~4747 051~State Speech and Hearing Professionals Board – initial license to practice dealing in or fitting of hearing aids
-FBI~4749 06~Private Investigators / Security Guards
-FBI~4753 061~State Speech and Hearing Professionals Board – initial license for speech-language Pathologists and Audiologists
-FBI~4755 70~Ohio OT,PT,and AT Board – license to practice as a Physical or Occupational Therapist / Assistant,or Athletic Trainer
-FBI~4757 101~Counselor,Social Worker,and Marriage and Family Therapists Board license applicants
-FBI~4759 061~State Medical Board of Ohio – initial license as a Dietician
-FBI~4760 032~State Medical Board of Ohio – certificate to practice as an Anesthesiologist Assistant
-FBI~4761 051~State Medical Board of Ohio – initial license as Respiratory Care Professional
-FBI~4762 031~State Medical Board of Ohio – certificate to practice as an Oriental Medicine Practitioner or as an Acupuncturist
+FBI~124 74~Employee with access to Federal Tax Information
+FBI~5126 28~Employment with DoDD
+FBI~3734 42~Hazardous Waste Environmental Background Investigations
+FBI~3301 32~Headstart Agency
+FBI~3721 121~Home or Adult Daycare Program (nursing home,residential care facility,home for the aging,veteran’s home)
+FBI~3701 881~Homehealth Agency Responsible for Children or Adults (in-home patient care)
+FBI~3712 09~Hospice Care Program
+FBI~4123 444~Investment Managers and their employees who contract with Ohio BWC to invest BWC funds
+FBI~928 03~License for hemp cultivation and processing
 FBI~4763 05~License or Certificate for General Real Estate Appraisers,Residential Real Estate Appraisers,or Assistant
-FBI~4763 06~Real Estate Appraiser Certificate,Registration or License Renewal
-FBI~4764 07~Applicant for a license to perform home inspections
-FBI~4768 01~Owner of an appraisal management company
-FBI~4768 06~A controlling person of an appraisal management company
-FBI~4774 031~State Medical Board of Ohio – certificate to practice as a Radiologist Assistant
-FBI~4776 02~Pain Management Clinic Owner/Employee
-FBI~4778 04~State Medical Board of Ohio – license to practice as a Genetic Counselor
+FBI~3796 13~Medical Marijuana - employee with a cultivator,medical marijuana processor,laboratory or medical marijuana retail dispenser
+FBI~3796 12~Medical Marijuana - Owners,Officers and board members of cultivators,processors and testing labs or dispensaries
+FBI~4723 09~Nurses includes RN and LPN,dialysis techs – Board licensing and students entering nursing education or dialysis
+FBI~4729 553~Ohio Board of Pharmacy – licensure as a Cat III Distributor of dangerous drugs with an office-based opioid treatment classification
+FBI~3772 07~Ohio Casino Control Commission
+FBI~121 08~Ohio Department of Commerce (real estate,mortgage brokers,insurance,liquor and fireworks licensing)
+FBI~3905 051~Ohio Department of Insurance (Resident license as Insurance Agent or Surety Bail Bond Agent)
+FBI~3770 02~Ohio Lottery Commission
+FBI~4755 70~Ohio OT,PT,and AT Board – license to practice as a Physical or Occupational Therapist / Assistant,or Athletic Trainer
 FBI~4779 091~Ohio OT,PT,and AT Board – license to practice orthotics,prosthetics,orthotics and prosthetics,or pedorthics
-FBI~5104 013~An Employee,Owner,Licensee,Administrator or Person Residing in a Type A or Type B Home,or an In-Home Aide
-FBI~5126 28~Employees of County Board of DoDD
-FBI~5153 111~County Public Children Services Board of County Human Services Administering Child Welfare
+FBI~3769 03~Ohio Racing Commission – Horse Racing applicants
+FBI~113 041~Ohio Treasurer of State Employees,applicants
+FBI~2151 86~Out of  Home Child Care,Foster Parents,Adoptive Parents (and all individuals 18 and over residing in home)
+FBI~4768 01~Owner of an appraisal management company
+FBI~4776 02~Pain Management Clinic Owner/Employee
+FBI~173 41~Passport Program – Ohio Department of Aging (community-based long-term continuous care)
+FBI~4729 071~Pharmacy Board license applicants
+FBI~4731 531~Podiatric medicine and surgery certificate applicants
+FBI~3301 541~Preschool Program
+FBI~4749 06~Private Investigators / Security Guards
+FBI~109 578~Prospective Firefighters and Volunteer Firefighters / EMT Applicants
+FBI~4732 091~Psychology Board license applicants
+FBI~3319 39~Public School District or Chartered Nonpublic School Employees and School Bus Drivers
+FBI~4763 06~Real Estate Appraiser Certificate,Registration or License Renewal
+FBI~4729 92~Registration as a pharmacy technician trainee with the Ohio Board of Pharmacy
+FBI~4729 90~Registration as a registered or certified pharmacy technician with the Ohio Board of Pharmacy
+FBI~3319 291~School Employees - Licensure with Ohio Department of Education
+FBI~4774 031~State Medical Board of Ohio – certificate to practice as a Radiologist Assistant
+FBI~4760 032~State Medical Board of Ohio – certificate to practice as an Anesthesiologist Assistant
+FBI~4762 031~State Medical Board of Ohio – certificate to practice as an Oriental Medicine Practitioner or as an Acupuncturist
+FBI~4731 171~State Medical Board of Ohio – certificate to practice Massage or Cosmetic Therapy
+FBI~4759 061~State Medical Board of Ohio – initial license as a Dietician
+FBI~4761 051~State Medical Board of Ohio – initial license as Respiratory Care Professional
+FBI~4731 08~State Medical Board of Ohio - license applicants to practice medicine and surgery,or osteopathic medicine or surgery
+FBI~4778 04~State Medical Board of Ohio – license to practice as a Genetic Counselor
+FBI~4730 101~State Medical Board of Ohio – license to practice as a Physician Assistant
+FBI~4753 061~State Speech and Hearing Professionals Board – initial license for speech-language Pathologists and Audiologists
+FBI~4747 051~State Speech and Hearing Professionals Board – initial license to practice dealing in or fitting of hearing aids
+FBI~4725 501~State Vision Professionals Board – initial license as an Optical Dispenser
+FBI~4725 121~State Vision Professionals Board – initial license as an Optometrist
+FBI~4741 10~Veterinary Medical Board license applicants
 FBI~CCDBGA~Child Care and Development Block Grant Act of 2014 employee,for ODJFS use only
 FBI~CCDBGA Volunteer~Child Care and Development Block Grant Act of 2014 volunteer,for ODJFS use only
 FBI~CMVSE~CMVSE Act
-FBI~LAW~Law Enforcement / Criminal Justice
 FBI~NCPA/VCA~Volunteer Children’s Act
 FBI~PL104 120~Public Housing
 FBI~Real ID~Real ID Act

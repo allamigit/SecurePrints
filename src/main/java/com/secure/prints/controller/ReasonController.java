@@ -1,16 +1,16 @@
 package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.ReasonEntity;
+import com.secure.prints.model.ApiStatus;
 import com.secure.prints.service.ReasonService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class ReasonController {
 
     private final ReasonService reasonService;
@@ -35,19 +35,26 @@ public class ReasonController {
 
     /**
      * Reload rsn_list table data into bciReasonList and fbiReasonList
+     * @return apiStatus
      */
     @GetMapping(value = "refresh-reason-list", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static void refreshReasonList() {
-        ReasonService.refreshReasonList();
+    public static ApiStatus refreshReasonList(HttpServletResponse response) {
+        ApiStatus apiStatus = ReasonService.refreshReasonList();
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
     }
 
     /**
      * Import reason data into rsn_list table from TXT file
-     * @param fileName fileName
+     * @param file file content
+     * @return ApiStatus
      */
     @PostMapping(value = "import-reason-data-file", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void importReasonDataFile(@RequestParam("fileName") String fileName) {
-        reasonService.importReasonDataFile(fileName);
+    public ApiStatus importReasonDataFile(HttpServletResponse response,
+                                          @RequestParam("file") MultipartFile file) {
+        ApiStatus apiStatus = reasonService.importReasonDataFile(file);
+        response.setStatus(apiStatus.getResponseCode());
+        return apiStatus;
     }
 
 }

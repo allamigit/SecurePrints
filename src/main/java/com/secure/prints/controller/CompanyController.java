@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -27,8 +26,8 @@ public class CompanyController {
      * @return CompanyEntity
      */
     @GetMapping(value = "company", produces = MediaType.APPLICATION_JSON_VALUE)
-    public static CompanyEntity getCompanyDetails(@RequestParam(name = "companyId") int companyId) {
-        return CompanyService.getCompanyDetails(companyId);
+    public CompanyEntity getCompanyDetails(@RequestParam(name = "companyId") int companyId) {
+        return CompanyService.companyEntity;
     }
 
     /**

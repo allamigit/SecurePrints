@@ -51,13 +51,20 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     /**
      * Update appointment status as Completed
      * @param appointmentId appointmentId
-     * @param currentTimestamp currentTimestamp
+     * @param completeTimestamp completeTimestamp
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentInformationEntity a SET a.completeTimestamp = :currentTimestamp, " +
+    @Query(value = "UPDATE AppointmentInformationEntity a SET a.completeTimestamp = :completeTimestamp, " +
             "a.appointmentStatusCode = 104 WHERE a.appointmentId = :appointmentId")
     void completeAppointment(@Param("appointmentId") String appointmentId,
-                             @Param("currentTimestamp") OffsetDateTime currentTimestamp);
+                             @Param("completeTimestamp") OffsetDateTime completeTimestamp);
+
+    /**
+     * Cleanup Cancelled appointments from Appointment Information table
+     */
+    @Modifying
+    @Query(value = "DELETE FROM appt_info WHERE appt_sts_code = 103 AND cncl_ts <= date(now())-interval '2 days'", nativeQuery = true)
+    void cleanupCancelledAppointments();
 
     /**
      * Get next value of appointment sequence
@@ -67,41 +74,54 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
     long getNextAppointmentId();
 
     /**
-     * Get appointment list for a specific date range for order time
+     * Get appointment list for a specific date range for appointment time
      * @param startTimestamp startTimestamp
      * @param endTimestamp endTimestamp
      * @return List of appointments
      */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.orderTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.orderTimestamp DESC")
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getAllAppointmentsForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
                                                                       @Param("endTimestamp") OffsetDateTime endTimestamp);
 
     /**
-     * Get appointment list for a specific date range for appointment time
-     * @param startTimestamp startTimestamp
-     * @param endTimestamp endTimestamp
-     * @return List of appointment times
-     */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
-    List<AppointmentInformationEntity> getAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
-                                                                       @Param("endTimestamp") OffsetDateTime endTimestamp);
-    /**
-     * Get appointment list for all appointment table data
+     * Get appointment list for all Appointment Information table data ordered by appointment time
      * @return List of appointments
      */
-    @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.orderTimestamp DESC")
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a ORDER BY a.appointmentTimestamp ASC")
     List<AppointmentInformationEntity> getAllAppointments();
 
+    /**
+     * Get active appointment list (Scheduled & Rescheduled) for a specific date range for appointment time
+     * @param startTimestamp startTimestamp
+     * @param endTimestamp endTimestamp
+     * @return List of active appointment times
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE (a.appointmentStatusCode = 101 OR a.appointmentStatusCode = 102) AND " +
+            "a.appointmentTimestamp BETWEEN :startTimestamp AND :endTimestamp ORDER BY a.appointmentTimestamp ASC")
+    List<AppointmentInformationEntity> getActiveAppointmentTimesForDateRange(@Param("startTimestamp") OffsetDateTime startTimestamp,
+                                                                             @Param("endTimestamp") OffsetDateTime endTimestamp);
     /**
      * Check appointment if it is duplicate
      * @param customerFirstName customerFirstName
      * @param customerLastName customerLastName
      * @param serviceCode serviceCode
+     * @return TRUE/FALSE
      */
     @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
-            "AND a.serviceCode = :serviceCode AND (a.appointmentStatusCode BETWEEN 101 AND 103)")
+            "AND a.serviceCode = :serviceCode AND a.appointmentStatusCode BETWEEN 101 AND 102")
     AppointmentInformationEntity checkDuplicateAppointment(@Param("customerFirstName") String customerFirstName,
                                                            @Param("customerLastName") String customerLastName,
                                                            @Param("serviceCode") String serviceCode);
+
+    /**
+     * Find appointment by customer first and last name
+     * @param customerFirstName customerFirstName
+     * @param customerLastName customerLastName
+     * @return TRUE/FALSE
+     */
+    @Query(value = "SELECT a FROM AppointmentInformationEntity a WHERE a.customerFirstName = :customerFirstName AND a.customerLastName = :customerLastName " +
+            "AND a.appointmentStatusCode BETWEEN 101 AND 102")
+    AppointmentInformationEntity findAppointmentByCustomerName(@Param("customerFirstName") String customerFirstName,
+                                                               @Param("customerLastName") String customerLastName);
 
 }

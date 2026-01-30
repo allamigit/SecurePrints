@@ -27,5 +27,6 @@ public class AppointmentRequest implements Serializable {
     private String fbiReasonCode;
     private String fbiReasonDescription;
     private String appointmentTimestamp;
+    private String userName;
 
 }

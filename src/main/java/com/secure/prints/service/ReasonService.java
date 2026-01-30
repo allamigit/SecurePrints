@@ -1,26 +1,24 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.ReasonRepository;
 import com.secure.prints.database.entity.ReasonEntity;
-import org.springframework.beans.factory.annotation.Value;
+import com.secure.prints.model.ApiStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
+@Transactional
 public class ReasonService {
 
     private static ReasonRepository reasonRepository = null;
     private static List<ReasonEntity> reasonList;
     private static List<ReasonEntity> bciReasonList;
     private static List<ReasonEntity> fbiReasonList;
-    @Value("${secure-prints.reason-data-file-path}")
-    private String fileLocalPath;
 
     /**
      * Constructor for ReasonService
@@ -33,12 +31,12 @@ public class ReasonService {
     /**
      * Get reason code
      * @param serviceCode serviceCode
-     * @param reasonText reasonText
+     * @param reasonDescription reasonDescription
      * @return reasonCode
      */
-    public static String getReasonCode(String serviceCode, String reasonText) {
+    public static String getReasonCode(String serviceCode, String reasonDescription) {
         List<ReasonEntity> reasonCode = reasonList.stream()
-                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonDescription().equals(reasonText))
+                .filter(r -> r.getReasonListType().equals(serviceCode) && r.getReasonDescription().equals(reasonDescription))
                 .toList();
         return !reasonCode.isEmpty() ? reasonCode.get(0).getReasonCode() : null;
     }
@@ -71,39 +69,64 @@ public class ReasonService {
 
     /**
      * Reload rsn_list table data into bciReasonList and fbiReasonList
+     * @return apiStatus
      */
-    public static void refreshReasonList() {
+    @RequiresLogin
+    public static ApiStatus refreshReasonList() {
+        reloadList();
+
+        return ApiStatus.builder()
+                .responseCode(200)
+                .responseMessage("Reason list was successfully refreshed and cached (" + reasonList.size() + ") reasons.")
+                .build();
+    }
+
+    /**
+     * Import reason data into rsn_list table from CSV/TXT file
+     * @param file file content
+     * @return ApiStatus
+     */
+    @RequiresLogin
+    public ApiStatus importReasonDataFile(MultipartFile file) {
+        String content;
+        List<String> fileLines;
+        try {
+            content = new String(file.getBytes());
+            fileLines = Arrays.asList(content.split("\\R"));
+            reasonRepository.removeAllReasonData();
+            for(int id = 0; id < fileLines.size(); id++) {
+                String[] eachLine = fileLines.get(id).split(", ");
+                String[] lineData = eachLine[0].split("~");
+                ReasonEntity reasonEntity = ReasonEntity.builder()
+                        .reasonId(id + 1)
+                        .reasonListType(lineData[0])
+                        .reasonCode(lineData[1])
+                        .reasonDescription(lineData[2].replace(",", ", "))
+                        .build();
+                reasonRepository.save(reasonEntity);
+            }
+        } catch (Exception e) {
+            return ApiStatus.builder()
+                    .responseCode(409)
+                    .responseMessage("Reason data file failed to import.")
+                    .build();
+        }
+
+        reloadList();
+
+        return ApiStatus.builder()
+                .responseCode(200)
+                .responseMessage("Reason data file was successfully imported, saved and cached (" + fileLines.size() + ") lines.")
+                .build();
+    }
+
+    /**
+     * Reload all static lists values
+     */
+    private static void reloadList() {
         reasonList = reasonRepository.findAll();
         bciReasonList = reasonRepository.getAllReasonsByType("BCI");
         fbiReasonList = reasonRepository.getAllReasonsByType("FBI");
     }
 
-    /**
-     * Import reason data into rsn_list table from CSV/TXT file
-     * @param fileName fileName
-     */
-    public void importReasonDataFile(String fileName) {
-        Path filePath = Paths.get(fileLocalPath, fileName);
-        List<String> fileLines = null;
-        try (Stream<String> lines = Files.lines(filePath)) {
-            fileLines = lines.toList();
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        reasonRepository.removeAllReasonData();
-        for(int id = 1; id< fileLines.size(); id++) {
-            String[] eachLine = fileLines.get(id).split(", ");
-            String[] lineData = eachLine[0].split("~");
-            ReasonEntity reasonEntity = ReasonEntity.builder()
-                    .reasonId(id)
-                    .reasonListType(lineData[0])
-                    .reasonCode(lineData[1])
-                    .reasonDescription(lineData[2].replace(",", ", "))
-                    .build();
-            reasonRepository.save(reasonEntity);
-        }
-    }
-    
 }

@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.OffsetDateTime;
 
 @Data
 @SuperBuilder
@@ -19,18 +18,15 @@ public class AppointmentResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String appointmentId;
-    private OffsetDateTime orderTimestamp;
+    private String orderTimestamp;
     private String serviceName;
     private String bciReasonCode;
     private String bciReasonDescription;
     private String fbiReasonCode;
     private String fbiReasonDescription;
-    private OffsetDateTime appointmentTimestamp;
+    private String appointmentTimestamp;
     private String appointmentStatus;
-    private OffsetDateTime statusTimestamp;
-    private String customerFirstName;
-    private String customerLastName;
-    private String customerEmail;
-    private String customerPhone;
+    private String statusTimestamp;
+    private boolean canComplete;
 
 }

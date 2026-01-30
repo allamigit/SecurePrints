@@ -3,14 +3,35 @@ server:
   port: 8080
   servlet:
     context-path: /secure-prints
+    session:
+      cookie:
+        secure: true
+        same-site: none
+        http-only: true
 
 spring:
   application:
     name: secure-prints
+  mail:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    #port: 25
+    username: AKIA6OGQRCAJXMQ7467G
+    password: BFc/ZM236eDQwNaWPWKLNquhSBqlcVpYkZucXgCUsQsJ
+    properties:
+      mail:
+        smtp:
+          timeout: 10000
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    default-encoding: UTF-8
+    from: info@secure-prints.com
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgresql-dev.c2ywefhxo11e.us-east-2.rds.amazonaws.com:5432/postgresql_dev?currentSchema=secure-prints
+    url: jdbc:postgresql://postgresql-db.c2ywefhxo11e.us-east-2.rds.amazonaws.com:5432/postgresql_dev?currentSchema=secure-prints-prod
     username: postgresql_dev
     password: M01041972i
 
@@ -24,12 +45,23 @@ spring:
     open-in-view: true
     show-sql: false
 
+#logging:
+#  level:
+#    software:
+#      amazon:
+#        awssdk: debug
+
+aws:
+  s3:
+    bucket-name: secure-prints-s3
+
 secure-prints:
-  reason-data-file-path: C:\Users\moial\OneDrive\Desktop\SecurePrints\
+  encryption:
+    secret-key: mySuperSecretKey12345678
   appointment:
     cut-from-start-index: 0
-    cut-from-end-index: 28
-    start-work-hour: 9
+    cut-from-end-index: 0
+    start-work-hour: 10
     end-work-hour: 16
     start-break-hour: 0
     end-break-hour: 0

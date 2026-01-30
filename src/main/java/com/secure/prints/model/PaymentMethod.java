@@ -12,7 +12,8 @@ public enum PaymentMethod {
     Card(301),
     Cash(302),
     Zelle(303),
-    Other(304);
+    Check(304),
+    DD(305);
 
     private final int paymentMethodCode;
 

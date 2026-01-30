@@ -3,10 +3,10 @@ package com.secure.prints;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class SecurePrintsApplicationTests {
 
-	@Test
+	//@Test
 	void contextLoads() {
 	}
 

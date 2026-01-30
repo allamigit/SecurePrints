@@ -17,7 +17,7 @@ public class ApiStatus implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private int responseCode;
+    private Integer responseCode;
     private String responseMessage;
 
 }

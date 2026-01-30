@@ -1,18 +1,28 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
+import com.secure.prints.util.NameFormatUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class UserService {
 
     private static UserRepository userRepository;
-    private static List<UserEntity> usersList;
-    private static UserEntity userEntity;
+    private static final String USER_SESSION_KEY = "loggedInUser";
 
     /**
      * Constructor for UserService
@@ -27,17 +37,25 @@ public class UserService {
      * @param userDetails userDetails
      * @return ApiStatus
      */
+    @RequiresLogin
     public ApiStatus addUser(UserEntity userDetails) {
-        int responseCode = 409;
+        int responseCode;
         String responseMessage;
+        String userName = userDetails.getUserName().trim().toLowerCase();
+        UserEntity user = this.getUserDetails(userName);
         try {
-            userDetails.setUserId(userRepository.getNextUserId());
+            if(user != null) {
+                throw new DataIntegrityViolationException("User already exists.");
+            }
+            userDetails.setUserName(userName);
+            userDetails.setUserPassword(encryptPassword(userDetails.getUserPassword()));
+            userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
             userRepository.save(userDetails);
-            getAllUsers();
-            responseCode = 200;
-            responseMessage = "User added successfully";
+            responseCode = 201;
+            responseMessage = "User added successfully.";
         } catch (Exception e) {
-            responseMessage = e.getCause().getMessage();
+            responseCode = 409;
+            responseMessage = e.getMessage();
         }
 
         return ApiStatus.builder()
@@ -50,9 +68,9 @@ public class UserService {
      * Get all users
      * @return list of all users
      */
-    public static List<UserEntity> getAllUsers() {
-        usersList = userRepository.findAll();
-        return usersList;
+    @RequiresLogin
+    public List<UserEntity> getAllUsers() {
+       return userRepository.findAll();
     }
 
     /**
@@ -60,33 +78,87 @@ public class UserService {
      * @param userName userName
      * @return UserEntity
      */
-    public static UserEntity getUserByUserName(String userName) {
-        List<UserEntity> resultList = usersList.stream()
-                .filter(u -> u.getUserName().equals(userName))
-                .toList();
-        userEntity = !resultList.isEmpty() ? resultList.get(0) : null;
-        return userEntity;
+    public UserEntity getUserDetails(String userName) {
+        return userRepository.findByUserName(userName.toLowerCase());
     }
 
     /**
      * Update User Details
      * @param userDetails userDetails
      */
+    @RequiresLogin
     public ApiStatus updateUserDetails(UserEntity userDetails) {
         int responseCode = 409;
         String responseMessage;
-        List<UserEntity> resultList = usersList.stream()
-                .filter(u -> u.getUserId().equals(userDetails.getUserId()))
-                .toList();
-        if(resultList.get(0).equals(userDetails)) {
-            responseMessage = "There is no change to update";
+        userDetails.setUserFullName(NameFormatUtil.formatName(userDetails.getUserFullName()));
+        UserEntity userEntity = userRepository.findByUserName(userDetails.getUserName());
+        if(userEntity.equals(userDetails)) {
+            responseMessage = "There is no change to update.";
         } else {
-            userRepository.save(userDetails);
-            getAllUsers();
-            responseCode = 200;
-            responseMessage = "User details updated successfully";
+            try {
+                userRepository.save(userDetails);
+                responseCode = 200;
+                responseMessage = "User details updated successfully.";
+            } catch (Exception e) {
+                responseMessage = e.getMessage();
+            }
         }
 
+        return ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+    }
+
+    /**
+     * Change User Password
+     * @param oldPassword oldPassword
+     * @param newPassword newPassword
+     * @return ApiStatus
+     */
+    @RequiresLogin
+    public ApiStatus changeUserPassword(String oldPassword, String newPassword) {
+        int responseCode = 409;
+        String responseMessage;
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession(false);
+        String userName = session.getAttribute(USER_SESSION_KEY).toString();
+        UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
+        if(!validatePassword(oldPassword, userEntity.getUserPassword())) {
+            responseMessage = "Old password is incorrect.";
+        } else if(oldPassword.equals(newPassword)) {
+            responseMessage = "New password must be different from the old password.";
+        } else {
+            userRepository.changeUserPassword(userName, encryptPassword(newPassword));
+            responseCode = 200;
+            responseMessage = "Password changed successfully.";
+        }
+        return ApiStatus.builder()
+                .responseCode(responseCode)
+                .responseMessage(responseMessage)
+                .build();
+    }
+
+    /**
+     * Reset User Password
+     * @param userName userName
+     * @param newPassword newPassword
+     * @return ApiStatus
+     */
+    @RequiresLogin
+    public ApiStatus resetUserPassword(String userName, String newPassword) {
+        int responseCode = 409;
+        String responseMessage;
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession(false);
+        String currentUserName = session.getAttribute(USER_SESSION_KEY).toString();
+        if(currentUserName.equals(userName)) {
+            responseMessage = "Reset password is only allowed for other users.";
+        } else {
+            userRepository.changeUserPassword(userName, encryptPassword(newPassword));
+            responseCode = 200;
+            responseMessage = "Success reset password.";
+        }
         return ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
@@ -99,19 +171,19 @@ public class UserService {
      * @param userPassword userPassword
      * @return ApiStatus
      */
-    public static ApiStatus userLogin(String userName, String userPassword) {
+    public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
         int responseCode = 401;
         String responseMessage;
-        userEntity = getUserByUserName(userName);
-        if(userEntity == null) {
-            responseMessage = "User not found";
+        UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
+        if(userEntity == null || !validatePassword(userPassword, userEntity.getUserPassword())) {
+            responseMessage = "Invalid username or password.";
         } else if(!userEntity.getUserStatus()) {
-            responseMessage = "User is not active";
-        } else if(!userEntity.getUserPassword().equals(userPassword)) {
-            responseMessage = "Incorrect password";
+            responseMessage = "User account is inactive.";
         } else {
+            HttpSession session = request.getSession(true);
+            session.setAttribute(USER_SESSION_KEY, userEntity.getUserName());
             responseCode = 200;
-            responseMessage = "Logged in successfully";
+            responseMessage = userEntity.getUserFullName() + ", logged in successfully.";
         }
 
         return ApiStatus.builder()
@@ -124,30 +196,52 @@ public class UserService {
      * User Logout
      * @return ApiStatus
      */
-    public static ApiStatus userLogout() {
+    public static ApiStatus userLogout(HttpServletRequest request) {
         int responseCode = 409;
         String responseMessage;
-        if(userEntity == null) {
-            responseMessage = "There is no active login session";
+        HttpSession session = request.getSession(false);
+        if(session == null) {
+            responseMessage = "There is no active login session.";
         } else {
             responseCode = 200;
-            responseMessage = "Logged out successfully";
-            userEntity = null;
+            responseMessage = session.getAttribute(USER_SESSION_KEY) + ", logged out successfully.";
+            session.invalidate();
         }
 
-        ApiStatus apiStatus = ApiStatus.builder()
+        return ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
                 .build();
-        return apiStatus;
     }
 
     /**
-     * Checks if there is an active login session
+     * Checks if the user is logged in
      * @return TRUE/FALSE
      */
-    public static boolean isLoginSessionActive() {
-        return userEntity != null;
+    public static boolean isUserLoggedIn(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        return session != null && session.getAttribute(USER_SESSION_KEY) != null;
+    }
+
+    /**
+     * Password Encryptor
+     * @param rawPassword rawPassword
+     * @return Encrypted Password
+     */
+    private static String encryptPassword(String rawPassword) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.encode(rawPassword);
+    }
+
+    /**
+     * Validate entered password with DB password
+     * @param rawPassword rawPassword
+     * @param encryptedPassword encryptedPassword
+     * @return TRUE = Match / FALSE = Mismatch
+     */
+    private static boolean validatePassword(String rawPassword, String encryptedPassword) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.matches(rawPassword, encryptedPassword);
     }
 
 }

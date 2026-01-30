@@ -1,22 +1,25 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.CompanyRepository;
 import com.secure.prints.database.entity.CompanyEntity;
 import com.secure.prints.model.ApiStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CompanyService {
 
     private static CompanyRepository companyRepository = null;
-    private static CompanyEntity companyEntity;
+    public static CompanyEntity companyEntity;
 
     /**
      * Constructor for CompanyService
      * @param companyRepository companyRepository
      */
     public CompanyService(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
+        CompanyService.companyRepository = companyRepository;
     }
 
     /**
@@ -33,16 +36,21 @@ public class CompanyService {
      * Update Company Details
      * @param companyDetails companyDetails
      */
+    @RequiresLogin
     public ApiStatus updateCompanyDetails(CompanyEntity companyDetails) {
         int responseCode = 409;
         String responseMessage;
         if(companyEntity.equals(companyDetails)) {
-            responseMessage = "There is no change to update";
+            responseMessage = "There is no change to update.";
         } else {
-            companyRepository.save(companyDetails);
-            getCompanyDetails(companyDetails.getCompanyId());
-            responseCode = 200;
-            responseMessage = "Company details updated successfully";
+            try {
+                companyRepository.save(companyDetails);
+                getCompanyDetails(companyDetails.getCompanyId());
+                responseCode = 200;
+                responseMessage = "Company details updated successfully.";
+            } catch (Exception e) {
+                responseMessage = e.getMessage();
+            }
         }
 
         return ApiStatus.builder()

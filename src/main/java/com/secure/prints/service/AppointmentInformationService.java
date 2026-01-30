@@ -1,23 +1,34 @@
 package com.secure.prints.service;
 
+import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.AppointmentPaymentRepository;
 import com.secure.prints.database.entity.AppointmentInformationEntity;
 import com.secure.prints.database.entity.AppointmentPaymentEntity;
+import com.secure.prints.database.entity.ExpenseEntity;
 import com.secure.prints.model.*;
 import com.secure.prints.database.AppointmentInformationRepository;
+import com.secure.prints.util.NameFormatUtil;
 import com.secure.prints.util.TimestampUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class AppointmentInformationService {
 
     private final AppointmentInformationRepository appointmentInformationRepository;
     private final AppointmentPaymentRepository appointmentPaymentRepository;
+    private final AwsService awsService;
+    private final ExpenseService expenseService;
     private int responseCode;
     private String responseMessage;
     @Value("${secure-prints.appointment.cut-from-start-index}")
@@ -37,11 +48,16 @@ public class AppointmentInformationService {
      * Constructor for AppointmentInformationService
      * @param appointmentInformationRepository appointmentInformationRepository
      * @param appointmentPaymentRepository appointmentPaymentRepository
+     * @param expenseService expenseService
+     * @param awsService awsService
      */
     public AppointmentInformationService(AppointmentInformationRepository appointmentInformationRepository,
-                                         AppointmentPaymentRepository appointmentPaymentRepository) {
+                                         AppointmentPaymentRepository appointmentPaymentRepository,
+                                         ExpenseService expenseService, AwsService awsService) {
         this.appointmentInformationRepository = appointmentInformationRepository;
         this.appointmentPaymentRepository = appointmentPaymentRepository;
+        this.expenseService = expenseService;
+        this.awsService = awsService;
     }
 
     /**
@@ -50,48 +66,57 @@ public class AppointmentInformationService {
      * @return ApiResponse
      */
     public ApiResponse scheduleAppointment(AppointmentRequest appointmentRequest) {
+        responseCode = 409;
         OffsetDateTime currentTimestamp = OffsetDateTime.now();
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(appointmentRequest.getAppointmentTimestamp());
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if(UserService.isUserLoggedIn(request) && appointmentTimestamp.toLocalDate().isBefore(currentTimestamp.toLocalDate())) {
+            currentTimestamp = appointmentTimestamp;
+        }
         AppointmentResponse appointmentResponse = this.checkDuplicateAppointment(appointmentRequest);
 
         if(appointmentResponse != null) {
-            responseCode = 409;
-            responseMessage = !appointmentResponse.getAppointmentStatus().equals(AppointmentStatus.Cancelled.name()) ?
-                    "Duplicate appointment for the same service was found and not processed yet" : "Appointment was Cancelled, you can use the same Appointment ID to reschedule";
+            responseMessage = "Duplicate appointment for the same service was found and not processed yet.";
         } else {
             String serviceName = appointmentRequest.getServiceName();
             String serviceCode = ServiceType.getServiceCode(serviceName);
             String bciReasonCode = appointmentRequest.getBciReasonCode();
             String fbiReasonCode = appointmentRequest.getFbiReasonCode();
-            if (bciReasonCode == null && appointmentRequest.getBciReasonDescription() != null) {
-                assert serviceCode != null;
-                bciReasonCode = serviceCode.equals(ServiceType.BCI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name()) ?
-                        ReasonService.getReasonCode(ServiceType.BCI.name(), appointmentRequest.getBciReasonDescription()) : null;
+            String code;
+            String bciReasonDescription = null;
+            String fbiReasonDescription = null;
+            assert serviceCode != null;
+            if (serviceCode.equals(ServiceType.BCI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name())) {
+                code = ReasonService.getReasonCode(ServiceType.BCI.name(), appointmentRequest.getBciReasonDescription());
+                bciReasonCode = code != null ? code : "NO ORC";
+                bciReasonDescription = bciReasonCode.equals("NO ORC") ? appointmentRequest.getBciReasonDescription() : null;
             }
-            if (fbiReasonCode == null && appointmentRequest.getFbiReasonDescription() != null) {
-                assert serviceCode != null;
-                fbiReasonCode = serviceCode.equals(ServiceType.FBI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name()) ?
-                        ReasonService.getReasonCode(ServiceType.FBI.name(), appointmentRequest.getFbiReasonDescription()) : null;
+            if (serviceCode.equals(ServiceType.FBI.name()) || serviceCode.equals(ServiceType.BCI_FBI.name())) {
+                code = ReasonService.getReasonCode(ServiceType.FBI.name(), appointmentRequest.getFbiReasonDescription());
+                fbiReasonCode = code != null ? code : "NO ORC";
+                fbiReasonDescription = fbiReasonCode.equals("NO ORC") ? appointmentRequest.getFbiReasonDescription() : null;
             }
 
-            // Assign reason text values to save in appt_info table when reasonCode is 'NO ORC' or 'null'
-            ReasonDescription reasonDescription = this.getReasonDescription(bciReasonCode, appointmentRequest.getBciReasonDescription(), fbiReasonCode, appointmentRequest.getFbiReasonDescription());
             // Get next sequence value for appt_info table primary key
             String appointmentId = String.valueOf(appointmentInformationRepository.getNextAppointmentId());
+            assert bciReasonCode != null;
+            assert fbiReasonCode != null;
+            String customerEmail = appointmentRequest.getCustomerEmail().toLowerCase();
             AppointmentInformationEntity appointmentInformationEntity = AppointmentInformationEntity.builder()
                     .appointmentId(appointmentId)
-                    .customerFirstName(appointmentRequest.getCustomerFirstName())
-                    .customerLastName(appointmentRequest.getCustomerLastName())
-                    .customerEmail(appointmentRequest.getCustomerEmail())
+                    .customerFirstName(NameFormatUtil.formatName(appointmentRequest.getCustomerFirstName()))
+                    .customerLastName(NameFormatUtil.formatName(appointmentRequest.getCustomerLastName()))
+                    .customerEmail(customerEmail)
                     .customerPhone(appointmentRequest.getCustomerPhone())
                     .serviceCode(serviceCode)
                     .bciReasonCode(bciReasonCode)
-                    .bciReasonDescription(reasonDescription.getBciReasonDescription())
+                    .bciReasonDescription(bciReasonDescription)
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonDescription(reasonDescription.getFbiReasonDescription())
+                    .fbiReasonDescription(fbiReasonDescription)
                     .appointmentTimestamp(appointmentTimestamp)
                     .appointmentStatusCode(AppointmentStatus.Scheduled.getStatusCode())
                     .orderTimestamp(currentTimestamp)
+                    .userIpAddress(this.getUserIpAddress(appointmentRequest.getUserName()))
                     .build();
             appointmentInformationRepository.save(appointmentInformationEntity);
 
@@ -101,40 +126,47 @@ public class AppointmentInformationService {
                     .serviceAmount(ServiceType.getServiceFee(serviceCode))
                     .bciAmount(ServiceType.getBciFee(serviceCode))
                     .paymentStatusCode(PaymentStatus.Pending.getPaymentStatusCode())
-                    .paymentDate(LocalDate.now())
+                    .paymentDate(LocalDate.from(appointmentTimestamp))
+                    .paymentComment("")
+                    .paymentUpdate(true)
                     .build();
             appointmentPaymentRepository.save(appointmentPaymentEntity);
 
             appointmentResponse = AppointmentResponse.builder()
                     .appointmentId(appointmentId)
-                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
+                    .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
                     .serviceName(serviceName)
                     .bciReasonCode(bciReasonCode)
                     .bciReasonDescription(appointmentRequest.getBciReasonDescription())
                     .fbiReasonCode(fbiReasonCode)
                     .fbiReasonDescription(appointmentRequest.getFbiReasonDescription())
-                    .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
+                    .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
                     .appointmentStatus(AppointmentStatus.Scheduled.name())
-                    .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentRequest.getCustomerFirstName())
-                    .customerLastName(appointmentRequest.getCustomerLastName())
-                    .customerEmail(appointmentRequest.getCustomerEmail())
-                    .customerPhone(appointmentRequest.getCustomerPhone())
+                    .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
                     .build();
 
             responseCode = 201;
-            responseMessage = "Appointment Scheduled";
+            responseMessage = "Appointment Scheduled.";
+
+            // Send confirmation email to customer
+            try {
+                String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+                awsService.sendConfirmationEmail(customerName, customerEmail, appointmentResponse);
+            } catch (Exception ex) {
+                responseCode = 409;
+                responseMessage = "Appointment Scheduled. Sending confirmation email failed.";
+            }
+
         }
 
         ApiStatus apiStatus = ApiStatus.builder()
                 .responseCode(responseCode)
                 .responseMessage(responseMessage)
                 .build();
-        ApiResponse apiResponse = ApiResponse.builder()
+        return ApiResponse.builder()
                 .apiStatus(apiStatus)
-                .apiResponse(appointmentResponse)
+                .apiResponseEntity(appointmentResponse)
                 .build();
-        return apiResponse;
     }
 
     /**
@@ -146,9 +178,9 @@ public class AppointmentInformationService {
     public ApiResponse rescheduleAppointment(String appointmentId, String strAppointmentTimestamp) {
         responseCode = 409;
         ApiStatus apiStatus;
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponseEntity();
         int appointmentStatusCode = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
@@ -158,36 +190,45 @@ public class AppointmentInformationService {
         OffsetDateTime appointmentTimestamp = TimestampUtil.getOffsetDateTime(strAppointmentTimestamp);
         String strNewAppointmentTs = appointmentTimestamp.toString().substring(0, appointmentTimestamp.toString().length() - 6) + "Z";
         if(appointmentInformationEntity == null) {
-            responseMessage = "Appointment ID not found";
-        } else if(this.isAppointmentStatusCompleted(appointmentStatusCode)) {
+            responseMessage = "Appointment ID not found.";
+        } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to reschedule. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else if(appointmentInformationEntity.getAppointmentTimestamp().toString().equals(strNewAppointmentTs)
                 && appointmentInformationEntity.getAppointmentStatusCode() != AppointmentStatus.Cancelled.getStatusCode()) {
-            responseMessage = "The given appointment date and time are not changed";
+            responseMessage = "The given appointment date and time are the same in our records (no change has been done).";
         } else {
             appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
-            appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), LocalDate.now());
+            appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), appointmentTimestamp.toLocalDate());
             responseCode = 200;
-            responseMessage = "Appointment Rescheduled";
-            String serviceCode = appointmentInformationEntity.getServiceCode();
-            String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
-            String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
-            appointmentResponse = AppointmentResponse.builder()
-                    .appointmentId(appointmentId)
-                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
-                    .serviceName(ServiceType.getServiceName(serviceCode))
-                    .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
-                    .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
-                    .appointmentTimestamp(appointmentTimestamp)
-                    .appointmentStatus(AppointmentStatus.Rescheduled.name())
-                    .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
-                    .build();
+            responseMessage = "Appointment Rescheduled.";
+        }
+
+        assert appointmentInformationEntity != null;
+        String serviceCode = appointmentInformationEntity.getServiceCode();
+        String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
+        String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
+        String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
+        String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+        appointmentResponse = AppointmentResponse.builder()
+                .appointmentId(appointmentId)
+                .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
+                .serviceName(ServiceType.getServiceName(serviceCode))
+                .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
+                .bciReasonDescription(bciReasonDescription)
+                .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
+                .fbiReasonDescription(fbiReasonDescription)
+                .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentTimestamp))
+                .appointmentStatus(AppointmentStatus.Rescheduled.name())
+                .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
+                .build();
+
+        // Send confirmation email to customer
+        try {
+            String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+            awsService.sendConfirmationEmail(customerName, appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        } catch (Exception ex) {
+            responseCode = 409;
+            responseMessage = "Appointment Rescheduled. Sending confirmation email failed.";
         }
 
         apiStatus = ApiStatus.builder()
@@ -196,7 +237,7 @@ public class AppointmentInformationService {
                 .build();
         apiResponse = ApiResponse.builder()
                 .apiStatus(apiStatus)
-                .apiResponse(appointmentResponse)
+                .apiResponseEntity(appointmentResponse)
                 .build();
         return apiResponse;
     }
@@ -209,43 +250,51 @@ public class AppointmentInformationService {
     public ApiResponse cancelAppointment(String appointmentId) {
         responseCode = 409;
         ApiStatus apiStatus;
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponseEntity();
         int appointmentStatusCode = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
         }
 
+        OffsetDateTime currentTimestamp = OffsetDateTime.now();
         if(appointmentInformationEntity == null) {
-            responseMessage = "Appointment ID not found";
+            responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to cancel. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
-            OffsetDateTime currentTimestamp = OffsetDateTime.now();
             appointmentInformationRepository.cancelAppointment(appointmentId, currentTimestamp);
             appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Cancelled.getPaymentStatusCode(), LocalDate.now());
             responseCode = 200;
-            responseMessage = "Appointment Cancelled";
-            String serviceCode = appointmentInformationEntity.getServiceCode();
-            String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
-            String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
-            appointmentResponse = AppointmentResponse.builder()
-                    .appointmentId(appointmentId)
-                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
-                    .serviceName(ServiceType.getServiceName(serviceCode))
-                    .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
-                    .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
-                    .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
-                    .appointmentStatus(AppointmentStatus.Cancelled.name())
-                    .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
-                    .build();
+            responseMessage = "Appointment Cancelled.";
+        }
+
+        String serviceCode = appointmentInformationEntity.getServiceCode();
+        String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
+        String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
+        String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
+        String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+        appointmentResponse = AppointmentResponse.builder()
+                .appointmentId(appointmentId)
+                .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
+                .serviceName(ServiceType.getServiceName(serviceCode))
+                .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
+                .bciReasonDescription(bciReasonDescription)
+                .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
+                .fbiReasonDescription(fbiReasonDescription)
+                .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
+                .appointmentStatus(AppointmentStatus.Cancelled.name())
+                .statusTimestamp(TimestampUtil.formatTimestamp(currentTimestamp))
+                .build();
+
+        // Send confirmation email to customer
+        try {
+            String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+            awsService.sendConfirmationEmail(customerName, appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        } catch (Exception ex) {
+            responseCode = 409;
+            responseMessage = "Appointment Cancelled. Sending confirmation email failed.";
         }
 
         apiStatus = ApiStatus.builder()
@@ -254,7 +303,7 @@ public class AppointmentInformationService {
                 .build();
         apiResponse = ApiResponse.builder()
                 .apiStatus(apiStatus)
-                .apiResponse(appointmentResponse)
+                .apiResponseEntity(appointmentResponse)
                 .build();
         return apiResponse;
     }
@@ -265,50 +314,82 @@ public class AppointmentInformationService {
      * @param paymentMethodName paymentMethodName
      * @return ApiResponse
      */
-    public ApiResponse completeAppointment(String appointmentId, String paymentMethodName, String strCompleteTimestamp) {
+    @RequiresLogin
+    public ApiResponse completeAppointment(String appointmentId, String paymentMethodName) {
         responseCode = 409;
         ApiStatus apiStatus;
-        AppointmentResponse appointmentResponse = null;
+        AppointmentResponse appointmentResponse;
         ApiResponse apiResponse;
-        AppointmentInformationEntity appointmentInformationEntity = this.getAppointmentDetails(appointmentId);
+        AppointmentInformationEntity appointmentInformationEntity = (AppointmentInformationEntity) this.getAppointmentDetails(appointmentId).getApiResponseEntity();
         int appointmentStatusCode = 0;
         if(appointmentInformationEntity != null) {
             appointmentStatusCode = appointmentInformationEntity.getAppointmentStatusCode();
         }
 
-        if(!UserService.isLoginSessionActive()) {
-            responseCode = 401;
-            responseMessage = "There is no active login session";
-        } else if(appointmentInformationEntity == null) {
-            responseMessage = "Appointment ID not found";
+        OffsetDateTime currentTimestamp = OffsetDateTime.now();
+        OffsetDateTime completeTimestamp = currentTimestamp;
+        if(appointmentInformationEntity == null) {
+            responseMessage = "Appointment ID not found.";
         } else if(this.isAppointmentStatusCancelledOrCompleted(appointmentStatusCode)) {
             responseMessage = "Invalid appointment status to complete. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
+        } else if(currentTimestamp.isBefore(appointmentInformationEntity.getAppointmentTimestamp())) {
+            responseMessage = "Change appointment status to 'Completed' is not allowed before appointment date.";
         } else {
-            OffsetDateTime currentTimestamp = TimestampUtil.getOffsetDateTime(strCompleteTimestamp);
-            appointmentInformationRepository.completeAppointment(appointmentId, currentTimestamp);
+            String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp().plusMinutes(15).toString();
+            completeTimestamp = TimestampUtil.getOffsetDateTime(strTimestamp.substring(0, 10) + " " + strTimestamp.substring(11, 16) + ":00");
+            appointmentInformationRepository.completeAppointment(appointmentId, completeTimestamp);
+            BigDecimal transactionFees = BigDecimal.ZERO;
+            LocalDate completeDate = completeTimestamp.toLocalDate();
+            int paymentMethodCode = PaymentMethod.getPaymentMethodCode(paymentMethodName);
+            if(paymentMethodName.equals(PaymentMethod.Card.name())) {
+                AppointmentPaymentEntity appointmentPaymentEntity = appointmentPaymentRepository.findPaymentByAppointmentId(appointmentId);
+                transactionFees = appointmentPaymentEntity.getServiceAmount().multiply(BigDecimal.valueOf(0.026)).add(BigDecimal.valueOf(0.15));
+
+                // Add transactionFees value to Expense table as expense subcategory of 604
+                expenseService.addExpenseDetails(ExpenseEntity.builder()
+                                .expenseVendorName("Square (CC Reader)")
+                                .expenseReferenceNumber("ApptID-" + appointmentId)
+                                .expenseReferenceDate(completeDate)
+                                .expenseDescription("CC Reader fee.")
+                                .expenseCategoryCode(600)
+                                .expenseSubcategoryCode(604)
+                                .expenseAmount(transactionFees)
+                                .expensePaymentStatusCode(202)
+                                .expensePaymentMethodCode(paymentMethodCode)
+                                .expensePaymentDate(completeDate)
+                                .build());
+            }
             appointmentPaymentRepository.updatePaymentStatusAndMethod(appointmentId, PaymentStatus.Processed.getPaymentStatusCode(),
-                    PaymentMethod.getPaymentMethodCode(paymentMethodName), LocalDate.now());
+                    paymentMethodCode, transactionFees);
             responseCode = 200;
-            responseMessage = "Appointment Completed";
-            String serviceCode = appointmentInformationEntity.getServiceCode();
-            String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
-            String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
-            appointmentResponse = AppointmentResponse.builder()
-                    .appointmentId(appointmentId)
-                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
-                    .serviceName(ServiceType.getServiceName(serviceCode))
-                    .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
-                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
-                    .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
-                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
-                    .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
-                    .appointmentStatus(AppointmentStatus.Completed.name())
-                    .statusTimestamp(currentTimestamp)
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
-                    .build();
+            responseMessage = "Appointment Completed.";
+        }
+
+        String serviceCode = appointmentInformationEntity.getServiceCode();
+        String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
+        String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
+        String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
+        String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointmentInformationEntity.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+        appointmentResponse = AppointmentResponse.builder()
+                .appointmentId(appointmentId)
+                .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
+                .serviceName(ServiceType.getServiceName(serviceCode))
+                .bciReasonCode(appointmentInformationEntity.getBciReasonCode())
+                .bciReasonDescription(bciReasonDescription)
+                .fbiReasonCode(appointmentInformationEntity.getFbiReasonCode())
+                .fbiReasonDescription(fbiReasonDescription)
+                .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
+                .appointmentStatus(AppointmentStatus.Completed.name())
+                .statusTimestamp(TimestampUtil.formatTimestamp(completeTimestamp))
+                .build();
+
+        // Send confirmation email to customer
+        try {
+            String customerName = appointmentInformationEntity.getCustomerFirstName() + " " + appointmentInformationEntity.getCustomerLastName();
+            awsService.sendConfirmationEmail(customerName, appointmentInformationEntity.getCustomerEmail(), appointmentResponse);
+        } catch (Exception ex) {
+            responseCode = 409;
+            responseMessage = "Appointment Completed. Sending confirmation email failed.";
         }
 
         apiStatus = ApiStatus.builder()
@@ -317,7 +398,7 @@ public class AppointmentInformationService {
                 .build();
         apiResponse = ApiResponse.builder()
                 .apiStatus(apiStatus)
-                .apiResponse(appointmentResponse)
+                .apiResponseEntity(appointmentResponse)
                 .build();
         return apiResponse;
     }
@@ -325,51 +406,127 @@ public class AppointmentInformationService {
     /**
      * Get appointment details by appointment ID
      * @param appointmentId appointmentId
-     * @return AppointmentInformationEntity
+     * @return ApiResponse
      */
-    public AppointmentInformationEntity getAppointmentDetails(String appointmentId) {
-        return appointmentInformationRepository.findByAppointmentId(appointmentId);
+    @RequiresLogin
+    public ApiResponse getAppointmentDetails(String appointmentId) {
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findByAppointmentId(appointmentId);
+        responseCode = appointment != null ? 200 : 409;
+        responseMessage = appointment != null ? "Appointment details retrieved." : "Appointment ID not found.";
+        return ApiResponse.builder()
+                .apiStatus(new ApiStatus(responseCode, responseMessage))
+                .apiResponseEntity(appointment)
+                .build();
+    }
+
+    /**
+     * Find appointment by appointment ID
+     * @param appointmentId appointmentId
+     * @return TRUE = Found / FALSE = Not Found
+     */
+    public boolean findAppointmentById(String appointmentId) {
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findByAppointmentId(appointmentId);
+        return !(appointment == null || this.isAppointmentStatusCancelledOrCompleted(appointment.getAppointmentStatusCode()));
+    }
+
+    /**
+     * Find appointment by customer first and last name
+     * @param customerFirstName customerFirstName
+     * @param customerLastName customerLastName
+     * @return appointmentId
+     */
+    public String findAppointmentByCustomerName(String customerFirstName, String customerLastName) {
+        AppointmentInformationEntity appointment = appointmentInformationRepository.findAppointmentByCustomerName(
+                NameFormatUtil.formatName(customerFirstName), NameFormatUtil.formatName(customerLastName));
+        return appointment != null ? appointment.getAppointmentId() : null;
     }
 
     /**
      * Get list of all appointments or appointments for a specific date range
      * @param startDate startDate
      * @param endDate endDate
-     * @param showByAppointmentDate showByAppointmentDate
      * @return List of appointments
      */
-    public List<AppointmentInformationEntity> getAllAppointments(LocalDate startDate, LocalDate endDate, boolean showByAppointmentDate) {
-        List<AppointmentInformationEntity> resultList = null;
+    @RequiresLogin
+    public Appointment getAllAppointments(LocalDate startDate, LocalDate endDate) {
+        List<AppointmentInformationEntity> appointmentList = new ArrayList<>();
+        List<AppointmentResponse> responseList = new ArrayList<>();
+
+        // Get Appointment Entity list
         if(startDate != null && endDate != null) {
             DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
-            if(showByAppointmentDate) {
-                resultList = appointmentInformationRepository.getAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
-            } else {
-                resultList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
-            }
+            appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         } else if(startDate == null && endDate == null) {
-            resultList = appointmentInformationRepository.getAllAppointments();
+            //appointmentList = appointmentInformationRepository.getAllAppointments();
+            String strStartDate = LocalDate.now().getYear() + "-01-01";
+            String strEndDate = LocalDate.now().getYear() + "-12-31";
+            DateRange dateRange = TimestampUtil.getOffsetDateRange(LocalDate.parse(strStartDate), LocalDate.parse(strEndDate));
+            appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         }
-        return resultList;
+
+        // Generate Appointment Response list
+        assert appointmentList != null;
+        if(!appointmentList.isEmpty()) {
+            appointmentList.forEach(appointment -> {
+                String bciReasonCode = appointment.getBciReasonCode();
+                String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointment.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
+                String fbiReasonCode = appointment.getFbiReasonCode();
+                String fbiReasonDescription = fbiReasonCode != null && fbiReasonCode.equals("NO ORC") ? appointment.getFbiReasonDescription() : fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) : null;
+                int appointmentStatusCode = appointment.getAppointmentStatusCode();
+                OffsetDateTime  statusTimestamp = OffsetDateTime.now();
+                switch(appointmentStatusCode) {
+                    case 101: statusTimestamp = appointment.getOrderTimestamp(); break;
+                    case 102: statusTimestamp = appointment.getResheduleTimestamp(); break;
+                    case 103: statusTimestamp = appointment.getCancelTimestamp(); break;
+                    case 104: statusTimestamp = appointment.getCompleteTimestamp();
+                };
+                OffsetDateTime currentTimestamp = OffsetDateTime.now();
+                String apptStrTimestamp = appointment.getAppointmentTimestamp().toString();
+                String offsetStrTimestamp = apptStrTimestamp.substring(0, 10) + " " + apptStrTimestamp.substring(11, 16) + ":00";
+                AppointmentResponse appointmentResponse = AppointmentResponse.builder()
+                        .appointmentId(appointment.getAppointmentId())
+                        .orderTimestamp(TimestampUtil.formatTimestamp(appointment.getOrderTimestamp()))
+                        .serviceName(ServiceType.getServiceName(appointment.getServiceCode()))
+                        .bciReasonCode(appointment.getBciReasonCode())
+                        .bciReasonDescription(bciReasonDescription)
+                        .fbiReasonCode(appointment.getFbiReasonCode())
+                        .fbiReasonDescription(fbiReasonDescription)
+                        .appointmentTimestamp(TimestampUtil.formatDateTime(appointment.getAppointmentTimestamp()))
+                        .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
+                        .statusTimestamp(TimestampUtil.formatTimestamp(statusTimestamp))
+                        .canComplete(currentTimestamp.isAfter(TimestampUtil.getOffsetDateTime(offsetStrTimestamp)))
+                        .build();
+                responseList.add(appointmentResponse);
+            });
+        }
+        return new Appointment(appointmentList, responseList);
     }
 
     /**
-     * Get all available appointments list for a specific date
+     * Generate all available appointments list for a specific date
      * @param selectedDate selectedDate
      * @return List of available appointments
      */
-    public List<AppointmentTime> getAppointmentTimes(LocalDate selectedDate) {
-        String strDate = selectedDate.toString() + " ";
+    public List<AppointmentTime> generateAppointmentTimes(LocalDate selectedDate) {
         List<AppointmentTime> timeList = new ArrayList<>();
+        LocalDate companyHolidayStartDate = CompanyService.getCompanyDetails(1).getCompanyHolidayStartDate();
+        LocalDate companyHolidayEndDate = CompanyService.getCompanyDetails(1).getCompanyHolidayEndDate();
+        if(companyHolidayStartDate != null && !selectedDate.isBefore(companyHolidayStartDate)
+                && companyHolidayEndDate != null && !selectedDate.isAfter(companyHolidayEndDate)) {
+            return timeList;
+        }
+
+        String strDate = selectedDate.toString() + " ";
         DateRange dateRange = TimestampUtil.getOffsetDateRange(selectedDate, selectedDate);
-        if(TimestampUtil.isValidTimestamp(dateRange.getEndTimestamp())) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        if(!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(dateRange.getEndTimestamp())) {
             return timeList;
         }
 
         // Create Time List
         StringBuilder timeLabel;
         StringBuilder apptTs;
-        for(int hour = startWorkHour; hour <= endWorkHour; hour++) {
+        for(int hour = startWorkHour; hour <= endWorkHour - 1; hour++) {
             // Delete appointments from middle of the list for a break time
             if((startBreakHour > 0 && endBreakHour > 0) && (hour >= startBreakHour && hour <= endBreakHour)) {
                 continue;
@@ -389,41 +546,53 @@ public class AppointmentInformationService {
             }
         }
 
-        // Delete appointments from bottom of the list
-        if(dateRange.getStartTimestamp().getDayOfWeek() == DayOfWeek.FRIDAY && cutFromEndIndex > 0) {
-            timeList.subList(cutFromEndIndex, timeList.size()).clear();
-        }
-
         // Delete appointments from top of the list
         if(cutFromStartIndex > 0) {
             timeList.subList(0, cutFromStartIndex).clear();
         }
 
+        // Delete appointments from bottom of the list
+        if(cutFromEndIndex > 0) {
+            timeList.subList(cutFromEndIndex, timeList.size()).clear();
+        }
+
+        int listSize = timeList.size();
+        int i = 0;
         List<AppointmentInformationEntity> appointmentInformationEntityList = appointmentInformationRepository
-                .getAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
-        if(appointmentInformationEntityList != null) {
-            appointmentInformationEntityList = appointmentInformationEntityList.stream()
-                    .filter( a -> a.getAppointmentStatusCode() == AppointmentStatus.Scheduled.getStatusCode()
-                            || a.getAppointmentStatusCode() == AppointmentStatus.Rescheduled.getStatusCode())
-                    .toList();
+                .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+        if(UserService.isUserLoggedIn(request) || !appointmentInformationEntityList.isEmpty()) {
+            // Remove booked appointments from the list
             for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
                 String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
                         .toString().substring(0, 16).replace("T", " ") + ":00";
-                int listSize = timeList.size();
-                int i = 0;
                 do {
                     if(listSize == 0) {
                         break;
                     }
                     String strApptTs = timeList.get(i).getAppointmentTimestamp();
-                    if(strApptTs.equals(strTimestamp) || TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs))) {
+                    if(strApptTs.equals(strTimestamp) || (!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
                         timeList.remove(i);
                         listSize--;
                         i--;
+                        break;
                     }
                     i++;
                 } while(i < listSize);
             }
+        } else {
+            // Remove appointments of holiday days from the list
+            do {
+                if(listSize == 0) {
+                    break;
+                }
+                OffsetDateTime appointmentTs = TimestampUtil.getOffsetDateTime(timeList.get(i).getAppointmentTimestamp());
+                if(TimestampUtil.isValidTimestamp(appointmentTs)) {
+                    timeList.remove(i);
+                    listSize--;
+                    i--;
+                }
+                i++;
+            } while(i < listSize);
         }
         return timeList;
     }
@@ -436,8 +605,8 @@ public class AppointmentInformationService {
     private AppointmentResponse checkDuplicateAppointment(AppointmentRequest appointmentRequest) {
         String serviceCode = ServiceType.getServiceCode(appointmentRequest.getServiceName());
         AppointmentInformationEntity appointmentInformationEntity = appointmentInformationRepository.checkDuplicateAppointment
-                (appointmentRequest.getCustomerFirstName(),
-                 appointmentRequest.getCustomerLastName(),
+                (NameFormatUtil.formatName(appointmentRequest.getCustomerFirstName()),
+                 NameFormatUtil.formatName(appointmentRequest.getCustomerLastName()),
                  serviceCode);
 
         AppointmentResponse appointmentResponse = null;
@@ -447,20 +616,19 @@ public class AppointmentInformationService {
             String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
             appointmentResponse = AppointmentResponse.builder()
                     .appointmentId(appointmentInformationEntity.getAppointmentId())
-                    .orderTimestamp(appointmentInformationEntity.getOrderTimestamp())
+                    .orderTimestamp(TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()))
                     .serviceName(ServiceType.getServiceName(serviceCode))
                     .bciReasonCode(bciReasonCode)
-                    .bciReasonDescription(ReasonService.getReasonDescription("BCI", bciReasonCode))
+                    .bciReasonDescription(bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) :
+                            appointmentInformationEntity.getBciReasonDescription())
                     .fbiReasonCode(fbiReasonCode)
-                    .fbiReasonDescription(ReasonService.getReasonDescription("FBI", fbiReasonCode))
-                    .appointmentTimestamp(appointmentInformationEntity.getAppointmentTimestamp())
+                    .fbiReasonDescription(fbiReasonCode != null ? ReasonService.getReasonDescription("FBI", fbiReasonCode) :
+                            appointmentInformationEntity.getFbiReasonDescription())
+                    .appointmentTimestamp(TimestampUtil.formatDateTime(appointmentInformationEntity.getAppointmentTimestamp()))
                     .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
-                    .statusTimestamp(appointmentStatusCode == 101 ? appointmentInformationEntity.getOrderTimestamp() :
-                            appointmentStatusCode == 102 ? appointmentInformationEntity.getResheduleTimestamp() : appointmentInformationEntity.getCancelTimestamp())
-                    .customerFirstName(appointmentInformationEntity.getCustomerFirstName())
-                    .customerLastName(appointmentInformationEntity.getCustomerLastName())
-                    .customerEmail(appointmentInformationEntity.getCustomerEmail())
-                    .customerPhone(appointmentInformationEntity.getCustomerPhone())
+                    .statusTimestamp(appointmentStatusCode == 101 ? TimestampUtil.formatTimestamp(appointmentInformationEntity.getOrderTimestamp()) :
+                            appointmentStatusCode == 102 ? TimestampUtil.formatTimestamp(appointmentInformationEntity.getResheduleTimestamp()) :
+                                    TimestampUtil.formatTimestamp(appointmentInformationEntity.getCancelTimestamp()))
                     .build();
         }
 
@@ -487,18 +655,21 @@ public class AppointmentInformationService {
     }
 
     /**
-     * Assign reason description values to be saved in appt_info table when reasonCode is not equal to 'NO ORC' or 'null'
-     * @param bciReasonCode bciReasonCode
-     * @param bciReasonDescription bciReasonDescription
-     * @param fbiReasonCode fbiReasonCode
-     * @param fbiReasonDescription fbiReasonDescription
-     * @return ReasonText
+     * Gets Username or Remote IP Address
+     * @return Username or Remote IP Address
      */
-    private ReasonDescription getReasonDescription(String bciReasonCode, String bciReasonDescription, String fbiReasonCode, String fbiReasonDescription) {
-        return ReasonDescription.builder()
-                .bciReasonDescription((bciReasonCode != null && bciReasonCode.equals("NO ORC")) || (bciReasonCode == null && bciReasonDescription != null) ? bciReasonDescription : null)
-                .fbiReasonDescription((fbiReasonCode != null && fbiReasonCode.equals("NO ORC")) || (fbiReasonCode == null && fbiReasonDescription != null) ? fbiReasonDescription : null)
-                .build();
+    private String getUserIpAddress(String userName) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String userIpAddress;
+        if(userName == null) {
+            userIpAddress = request.getHeader("X-Forwarded-For");
+            if (userIpAddress == null || userIpAddress.isEmpty() || userIpAddress.equalsIgnoreCase("unknown")) {
+                userIpAddress = request.getRemoteAddr();
+            }
+        } else {
+            userIpAddress = userName;
+        }
+        return userIpAddress;
     }
 
 }
