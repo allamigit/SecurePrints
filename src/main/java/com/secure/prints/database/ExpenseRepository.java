@@ -74,8 +74,8 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
      * Get expenses list for a specific date range for non-reconciled transactions
      * @return List of expenses
      */
-    @Query(value = "SELECT e FROM ExpenseEntity e WHERE e.expenseReconcileDate is null AND " +
-            "e.expenseReferenceDate BETWEEN :startDate AND :endDate ORDER BY e.expenseReferenceDate DESC")
+    @Query(value = "SELECT e FROM ExpenseEntity e WHERE e.expenseReconcileDate is null AND e.expenseReferenceNumber NOT LIKE 'ApptID-%' " +
+            "AND e.expenseReferenceDate BETWEEN :startDate AND :endDate ORDER BY e.expenseReferenceDate DESC")
     List<ExpenseEntity> getNonReconciledExpensesForDateRange(@Param("startDate") LocalDate startDate,
                                                              @Param("endDate") LocalDate endDate);
 
