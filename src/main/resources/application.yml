@@ -16,8 +16,8 @@ spring:
     host: email-smtp.us-east-1.amazonaws.com
     port: 587
     #port: 25
-    username: AKIA6OGQRCAJXMQ7467G
-    password: BFc/ZM236eDQwNaWPWKLNquhSBqlcVpYkZucXgCUsQsJ
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -27,11 +27,9 @@ spring:
             enable: true
             required: true
     default-encoding: UTF-8
-    from: info@secure-prints.com
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgresql-db.c2ywefhxo11e.us-east-2.rds.amazonaws.com:5432/postgresql_dev?currentSchema=secure-prints-prod
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
@@ -45,19 +43,13 @@ spring:
     open-in-view: true
     show-sql: false
 
-#logging:
-#  level:
-#    software:
-#      amazon:
-#        awssdk: debug
-
 aws:
   s3:
     bucket-name: secure-prints-s3
 
 secure-prints:
   encryption:
-    secret-key: mySuperSecretKey12345678
+    secret-key: ${ENCRYPTION_SECRET_KEY}
   appointment:
     cut-from-start-index: 0
     cut-from-end-index: 0
