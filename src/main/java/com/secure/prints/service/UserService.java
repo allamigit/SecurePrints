@@ -4,6 +4,9 @@ import com.secure.prints.config.RequiresLogin;
 import com.secure.prints.database.UserRepository;
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
+import com.secure.prints.model.ChangePassword;
+import com.secure.prints.model.ResetPassword;
+import com.secure.prints.model.UserLogin;
 import com.secure.prints.util.NameFormatUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -112,18 +115,19 @@ public class UserService {
 
     /**
      * Change User Password
-     * @param oldPassword oldPassword
-     * @param newPassword newPassword
+     * @param changePassword changePassword
      * @return ApiStatus
      */
     @RequiresLogin
-    public ApiStatus changeUserPassword(String oldPassword, String newPassword) {
+    public ApiStatus changeUserPassword(ChangePassword changePassword) {
         int responseCode = 409;
         String responseMessage;
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpSession session = request.getSession(false);
         String userName = session.getAttribute(USER_SESSION_KEY).toString();
         UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
+        String oldPassword = changePassword.getOldPassword();
+        String newPassword = changePassword.getNewPassword();
         if(!validatePassword(oldPassword, userEntity.getUserPassword())) {
             responseMessage = "Old password is incorrect.";
         } else if(oldPassword.equals(newPassword)) {
@@ -141,21 +145,21 @@ public class UserService {
 
     /**
      * Reset User Password
-     * @param userName userName
-     * @param newPassword newPassword
+     * @param resetPassword resetPassword
      * @return ApiStatus
      */
     @RequiresLogin
-    public ApiStatus resetUserPassword(String userName, String newPassword) {
+    public ApiStatus resetUserPassword(ResetPassword resetPassword) {
         int responseCode = 409;
         String responseMessage;
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         HttpSession session = request.getSession(false);
         String currentUserName = session.getAttribute(USER_SESSION_KEY).toString();
+        String userName = resetPassword.getUserName();
         if(currentUserName.equals(userName)) {
             responseMessage = "Reset password is only allowed for other users.";
         } else {
-            userRepository.changeUserPassword(userName, encryptPassword(newPassword));
+            userRepository.changeUserPassword(userName, encryptPassword(resetPassword.getNewPassword()));
             responseCode = 200;
             responseMessage = "Success reset password.";
         }
@@ -167,15 +171,14 @@ public class UserService {
 
     /**
      * User Login
-     * @param userName userName
-     * @param userPassword userPassword
+     * @param userLogin userLogin
      * @return ApiStatus
      */
-    public static ApiStatus userLogin(HttpServletRequest request, String userName, String userPassword) {
+    public static ApiStatus userLogin(HttpServletRequest request, UserLogin userLogin) {
         int responseCode = 401;
         String responseMessage;
-        UserEntity userEntity = userRepository.findByUserName(userName.toLowerCase());
-        if(userEntity == null || !validatePassword(userPassword, userEntity.getUserPassword())) {
+        UserEntity userEntity = userRepository.findByUserName(userLogin.getUserName().toLowerCase());
+        if(userEntity == null || !validatePassword(userLogin.getUserPassword(), userEntity.getUserPassword())) {
             responseMessage = "Invalid username or password.";
         } else if(!userEntity.getUserStatus()) {
             responseMessage = "User account is inactive.";
