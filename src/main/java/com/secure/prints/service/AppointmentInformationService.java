@@ -123,8 +123,8 @@ public class AppointmentInformationService {
             // Add payment entry to appt_pymt table
             AppointmentPaymentEntity appointmentPaymentEntity = AppointmentPaymentEntity.builder()
                     .appointmentId(appointmentId)
-                    .serviceAmount(ServiceType.getServiceFee(serviceCode))
-                    .bciAmount(ServiceType.getBciFee(serviceCode))
+                    .serviceAmount(ServiceType.getServiceFee(serviceCode, appointmentTimestamp.toLocalDate()))
+                    .bciAmount(ServiceType.getBciFee(serviceCode, appointmentTimestamp.toLocalDate()))
                     .paymentStatusCode(PaymentStatus.Pending.getPaymentStatusCode())
                     .paymentDate(LocalDate.from(appointmentTimestamp))
                     .paymentComment("")
@@ -203,8 +203,20 @@ public class AppointmentInformationService {
             responseMessage = "Appointment Rescheduled.";
         }
 
+        // Update payment entry to appt_pymt table
         assert appointmentInformationEntity != null;
         String serviceCode = appointmentInformationEntity.getServiceCode();
+        AppointmentPaymentEntity appointmentPaymentEntity = AppointmentPaymentEntity.builder()
+                .appointmentId(appointmentId)
+                .serviceAmount(ServiceType.getServiceFee(serviceCode, appointmentTimestamp.toLocalDate()))
+                .bciAmount(ServiceType.getBciFee(serviceCode, appointmentTimestamp.toLocalDate()))
+                .paymentStatusCode(PaymentStatus.Pending.getPaymentStatusCode())
+                .paymentDate(LocalDate.from(appointmentTimestamp))
+                .paymentComment("")
+                .paymentUpdate(true)
+                .build();
+        appointmentPaymentRepository.save(appointmentPaymentEntity);
+
         String bciReasonCode = appointmentInformationEntity.getBciReasonCode();
         String bciReasonDescription = bciReasonCode != null && bciReasonCode.equals("NO ORC") ? appointmentInformationEntity.getBciReasonDescription() : bciReasonCode != null ? ReasonService.getReasonDescription("BCI", bciReasonCode) : null;
         String fbiReasonCode = appointmentInformationEntity.getFbiReasonCode();
@@ -453,16 +465,16 @@ public class AppointmentInformationService {
         List<AppointmentResponse> responseList = new ArrayList<>();
 
         // Get Appointment Entity list
+        DateRange dateRange = null;
         if(startDate != null && endDate != null) {
-            DateRange dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
-            appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+            dateRange = TimestampUtil.getOffsetDateRange(startDate, endDate);
         } else if(startDate == null && endDate == null) {
-            //appointmentList = appointmentInformationRepository.getAllAppointments();
             String strStartDate = LocalDate.now().getYear() + "-01-01";
             String strEndDate = LocalDate.now().getYear() + "-12-31";
-            DateRange dateRange = TimestampUtil.getOffsetDateRange(LocalDate.parse(strStartDate), LocalDate.parse(strEndDate));
-            appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
+            dateRange = TimestampUtil.getOffsetDateRange(LocalDate.parse(strStartDate), LocalDate.parse(strEndDate));
         }
+        assert dateRange != null;
+        appointmentList = appointmentInformationRepository.getAllAppointmentsForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
 
         // Generate Appointment Response list
         assert appointmentList != null;
@@ -483,6 +495,19 @@ public class AppointmentInformationService {
                 OffsetDateTime currentTimestamp = OffsetDateTime.now();
                 String apptStrTimestamp = appointment.getAppointmentTimestamp().toString();
                 String offsetStrTimestamp = apptStrTimestamp.substring(0, 10) + " " + apptStrTimestamp.substring(11, 16) + ":00";
+                List<String> statusHistory = new ArrayList<>();
+                if(appointment.getOrderTimestamp() != null) {
+                    statusHistory.add("Scheduled: " + TimestampUtil.formatTimestamp(appointment.getOrderTimestamp()));
+                }
+                if(appointment.getResheduleTimestamp() != null) {
+                    statusHistory.add("Rescheduled: " + TimestampUtil.formatTimestamp(appointment.getResheduleTimestamp()));
+                }
+                if(appointment.getCancelTimestamp() != null) {
+                    statusHistory.add("Cancelled: " + TimestampUtil.formatTimestamp(appointment.getCancelTimestamp()));
+                }
+                if(appointment.getCompleteTimestamp() != null) {
+                    statusHistory.add("Completed: " + TimestampUtil.formatTimestamp(appointment.getCompleteTimestamp()));
+                }
                 AppointmentResponse appointmentResponse = AppointmentResponse.builder()
                         .appointmentId(appointment.getAppointmentId())
                         .orderTimestamp(TimestampUtil.formatTimestamp(appointment.getOrderTimestamp()))
@@ -494,6 +519,7 @@ public class AppointmentInformationService {
                         .appointmentTimestamp(TimestampUtil.formatDateTime(appointment.getAppointmentTimestamp()))
                         .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
                         .statusTimestamp(TimestampUtil.formatTimestamp(statusTimestamp))
+                        .statusHistory(statusHistory)
                         .canComplete(currentTimestamp.isAfter(TimestampUtil.getOffsetDateTime(offsetStrTimestamp)))
                         .build();
                 responseList.add(appointmentResponse);

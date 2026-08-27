@@ -218,11 +218,11 @@ public class AppointmentPaymentService {
             appointmentPaymentRepository.reconcilePayment(appointmentId, paymentReconcileDate,
                     !appointmentPayment.getPaymentComment().startsWith("Refund") ||
                                     appointmentPayment.getPaymentReconcileDate() != null);
-            if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
+            /*if(appointmentPayment.getPaymentMethodCode() == PaymentMethod.Card.getPaymentMethodCode()) {
                 String refNumber = "ApptID-" + appointmentId;
                 long expenseId =  expenseRepository.findByExpenseReferenceNumber(refNumber).getExpenseId();
                 expenseRepository.reconcileExpense(expenseId, paymentReconcileDate, false);
-            }
+            }*/
             responseCode = 200;
             responseMessage = "Payment Reconciled.";
         }

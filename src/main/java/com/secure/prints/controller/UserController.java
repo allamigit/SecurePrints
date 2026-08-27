@@ -2,6 +2,9 @@ package com.secure.prints.controller;
 
 import com.secure.prints.database.entity.UserEntity;
 import com.secure.prints.model.ApiStatus;
+import com.secure.prints.model.ChangePassword;
+import com.secure.prints.model.ResetPassword;
+import com.secure.prints.model.UserLogin;
 import com.secure.prints.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -70,45 +73,39 @@ public class UserController {
 
     /**
      * Change User Password
-     * @param oldPassword oldPassword
-     * @param newPassword newPassword
+     * @param changePassword changePassword
      * @return ApiStatus
      */
     @PatchMapping(value = "change-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiStatus changeUserPassword(HttpServletResponse response,
-                                        @RequestParam(name = "oldPassword") String oldPassword,
-                                        @RequestParam(name = "newPassword") String newPassword) {
-        ApiStatus apiStatus = userService.changeUserPassword(oldPassword, newPassword);
+                                        @RequestBody ChangePassword changePassword) {
+        ApiStatus apiStatus = userService.changeUserPassword(changePassword);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }
 
     /**
      * Reset User Password
-     * @param userName userName
-     * @param newPassword newPassword
+     * @param resetPassword resetPassword
      * @return ApiStatus
      */
     @PatchMapping(value = "reset-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiStatus resetUserPassword(HttpServletResponse response,
-                                        @RequestParam(name = "userName") String userName,
-                                        @RequestParam(name = "newPassword") String newPassword) {
-        ApiStatus apiStatus = userService.resetUserPassword(userName, newPassword);
+                                        @RequestBody ResetPassword resetPassword) {
+        ApiStatus apiStatus = userService.resetUserPassword(resetPassword);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }
 
     /**
      * User Login
-     * @param userName userName
-     * @param userPassword userPassword
+     * @param userLogin userLogin
      * @return  ApiStatus
      */
     @PostMapping(value = "login", produces = MediaType.APPLICATION_JSON_VALUE)
     public static ApiStatus userLogin(HttpServletRequest request, HttpServletResponse response,
-                                        @RequestParam(name = "userName") String userName,
-                                        @RequestParam(name = "userPassword") String userPassword) {
-        ApiStatus apiStatus = UserService.userLogin(request, userName, userPassword);
+                                        @RequestBody UserLogin userLogin) {
+        ApiStatus apiStatus = UserService.userLogin(request, userLogin);
         response.setStatus(apiStatus.getResponseCode());
         return apiStatus;
     }

@@ -71,6 +71,7 @@ Open a browser: http://18.119.142.19:8080
 
 Create/Edit Systemd File
 ========================
+ssh -i secure-prints-ec2-key-pair.pem ec2-user@18.119.142.19
 sudo nano /etc/systemd/system/secure-prints.service
 
 ---------------
@@ -86,25 +87,25 @@ Restart=on-failure
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-Environment=SPRING_PROFILES_ACTIVE=
 
-Environment=DB_HOST=postgresql-db.c2ywefhxo11e.us-east-2.rds.amazonaws.com
-Environment=DB_PORT=5432
-Environment=DB_NAME=postgresql_dev
-Environment=DB_SCHEMA=secure-prints-dev
+Environment=SPRING_PROFILES_ACTIVE=prod
 Environment=DB_USERNAME=postgresql_dev
 Environment=DB_PASSWORD=M01041972i
+Environment=MAIL_USERNAME=AKIA6OGQRCAJXMQ7467G
+Environment=MAIL_PASSWORD=BFc/ZM236eDQwNaWPWKLNquhSBqlcVpYkZucXgCUsQsJ
+Environment=ENCRYPTION_SECRET_KEY=mySuperSecretKey12345678
 
 [Install]
 WantedBy=multi-user.target
 ---------------
-Would you like help configuring AWS Secrets Manager or SSM for your EC2 instance and Spring Boot
 
 Press CTRL + O to write out.
 
-Press ENTER to confirm.
-
 Press CTRL + X to exit.
+
+Press Y.
+
+Press ENTER to confirm.
 
 
 Enable and Start the Service
@@ -178,6 +179,7 @@ sudo chmod -R 755 /usr/share/nginx/html
 sudo nginx -t
 sudo systemctl restart nginx
 sudo systemctl status nginx
+************************************
 
 
 Fix Permissions

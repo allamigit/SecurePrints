@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @SuperBuilder
@@ -27,6 +28,7 @@ public class AppointmentResponse implements Serializable {
     private String appointmentTimestamp;
     private String appointmentStatus;
     private String statusTimestamp;
+    private List<String> statusHistory;
     private boolean canComplete;
 
 }
