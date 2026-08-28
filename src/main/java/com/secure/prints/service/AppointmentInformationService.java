@@ -614,23 +614,23 @@ public class AppointmentInformationService {
                 .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         if(UserService.isUserLoggedIn(request) || !appointmentInformationEntityList.isEmpty()) {
             // Remove booked appointments from the list
-//            for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
-//                String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
-//                        .toString().substring(0, 16).replace("T", " ") + ":00";
-//                do {
-//                    if(listSize == 0) {
-//                        break;
-//                    }
-//                    String strApptTs = timeList.get(i).getAppointmentTimestamp();
-//                    if(strApptTs.equals(strTimestamp) || (!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
-//                        timeList.remove(i);
-//                        listSize--;
-//                        i--;
-//                        break;
-//                    }
-//                    i++;
-//                } while(i < listSize);
-//            }
+            for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
+                String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
+                        .toString().substring(0, 16).replace("T", " ") + ":00";
+                do {
+                    if(listSize == 0) {
+                        break;
+                    }
+                    String strApptTs = timeList.get(i).getAppointmentTimestamp();
+                    if(strApptTs.equals(strTimestamp) || (!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
+                        timeList.remove(i);
+                        listSize--;
+                        i--;
+                        break;
+                    }
+                    i++;
+                } while(i < listSize);
+            }
         } else {
             // Remove appointments of holiday days from the list
             do {
