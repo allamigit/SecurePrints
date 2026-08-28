@@ -43,9 +43,9 @@ public interface AppointmentPaymentRepository extends JpaRepository<AppointmentP
     @Modifying
     @Query(value = "UPDATE AppointmentPaymentEntity a SET a.paymentStatusCode = :paymentStatusCode, a.paymentDate = :paymentDate " +
             "WHERE a.appointmentId = :appointmentId")
-    void updatePaymentStatus(@Param("appointmentId") String appointmentId,
-                             @Param("paymentStatusCode") int paymentStatusCode,
-                             @Param("paymentDate") LocalDate paymentDate);
+    void updatePaymentStatusAndDate(@Param("appointmentId") String appointmentId,
+                                    @Param("paymentStatusCode") int paymentStatusCode,
+                                    @Param("paymentDate") LocalDate paymentDate);
 
     /**
      * Update payment status and method

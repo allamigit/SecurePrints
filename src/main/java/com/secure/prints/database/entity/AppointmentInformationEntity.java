@@ -63,6 +63,10 @@ public class AppointmentInformationEntity implements Serializable {
     @TimeZoneStorage(TimeZoneStorageType.NATIVE)
     private OffsetDateTime appointmentTimestamp;
 
+    @Column(name = "cncl_appt_ts")
+    @TimeZoneStorage(TimeZoneStorageType.NATIVE)
+    private OffsetDateTime cancelledAppointmentTimestamp;
+
     @Column(name = "appt_sts_code")
     private Integer appointmentStatusCode;
 

@@ -43,8 +43,8 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * @param currentTimestamp currentTimestamp
      */
     @Modifying
-    @Query(value = "UPDATE AppointmentInformationEntity a SET a.cancelTimestamp = :currentTimestamp, " +
-            "a.appointmentStatusCode = 103 WHERE a.appointmentId = :appointmentId")
+    @Query(value = "UPDATE AppointmentInformationEntity a SET a.cancelTimestamp = :currentTimestamp, a.appointmentStatusCode = 103, " +
+            "a.cancelledAppointmentTimestamp = a.appointmentTimestamp, a.appointmentTimestamp = :currentTimestamp WHERE a.appointmentId = :appointmentId")
     void cancelAppointment(@Param("appointmentId") String appointmentId,
                            @Param("currentTimestamp") OffsetDateTime currentTimestamp);
 
@@ -63,7 +63,7 @@ public interface AppointmentInformationRepository extends JpaRepository<Appointm
      * Cleanup Cancelled appointments from Appointment Information table
      */
     @Modifying
-    @Query(value = "DELETE FROM appt_info WHERE appt_sts_code = 103 AND cncl_ts <= date(now())-interval '2 days'", nativeQuery = true)
+    @Query(value = "DELETE FROM appt_info WHERE appt_sts_code = 103 AND cncl_ts <= date(now()) - interval '2 days'", nativeQuery = true)
     void cleanupCancelledAppointments();
 
     /**
