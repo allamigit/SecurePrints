@@ -11,8 +11,8 @@ import com.secure.prints.util.NameFormatUtil;
 import com.secure.prints.util.TimestampUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
+//@Transactional
 public class AppointmentInformationService {
 
     private final AppointmentInformationRepository appointmentInformationRepository;
@@ -118,7 +118,19 @@ public class AppointmentInformationService {
                     .orderTimestamp(currentTimestamp)
                     .userIpAddress(this.getUserIpAddress(appointmentRequest.getUserName()))
                     .build();
-            appointmentInformationRepository.save(appointmentInformationEntity);
+            try {
+                appointmentInformationRepository.saveAndFlush(appointmentInformationEntity);
+            } catch (DataIntegrityViolationException ex) {
+                responseMessage = "This appointment time was just booked. Please select another time.";
+                ApiStatus apiStatus = ApiStatus.builder()
+                        .responseCode(responseCode)
+                        .responseMessage(responseMessage)
+                        .build();
+                return ApiResponse.builder()
+                        .apiStatus(apiStatus)
+                        .apiResponseEntity(null)
+                        .build();
+            }
 
             // Add payment entry to appt_pymt table
             AppointmentPaymentEntity appointmentPaymentEntity = AppointmentPaymentEntity.builder()
@@ -197,10 +209,23 @@ public class AppointmentInformationService {
                 && appointmentInformationEntity.getAppointmentStatusCode() != AppointmentStatus.Cancelled.getStatusCode()) {
             responseMessage = "The given appointment date and time are the same in our records (no change has been done).";
         } else {
-            appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
-            appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), appointmentTimestamp.toLocalDate());
-            responseCode = 200;
-            responseMessage = "Appointment Rescheduled.";
+            try {
+                appointmentInformationRepository.rescheduleAppointment(appointmentId, appointmentTimestamp, currentTimestamp);
+                appointmentPaymentRepository.updatePaymentStatusAndDate(appointmentId, PaymentStatus.Pending.getPaymentStatusCode(), appointmentTimestamp.toLocalDate());
+                responseCode = 200;
+                responseMessage = "Appointment Rescheduled.";
+            } catch (DataIntegrityViolationException ex) {
+                responseCode = 409;
+                responseMessage = "This appointment time was just booked. Please select another time.";
+                apiStatus = ApiStatus.builder()
+                        .responseCode(responseCode)
+                        .responseMessage(responseMessage)
+                        .build();
+                return ApiResponse.builder()
+                        .apiStatus(apiStatus)
+                        .apiResponseEntity(null)
+                        .build();
+            }
         }
 
         // Update payment entry to appt_pymt table
@@ -277,7 +302,7 @@ public class AppointmentInformationService {
             responseMessage = "Invalid appointment status to cancel. Current status: " + AppointmentStatus.getStatusName(appointmentStatusCode);
         } else {
             appointmentInformationRepository.cancelAppointment(appointmentId, currentTimestamp);
-            appointmentPaymentRepository.updatePaymentStatus(appointmentId, PaymentStatus.Cancelled.getPaymentStatusCode(), LocalDate.now());
+            appointmentPaymentRepository.updatePaymentStatusAndDate(appointmentId, PaymentStatus.Cancelled.getPaymentStatusCode(), LocalDate.now());
             responseCode = 200;
             responseMessage = "Appointment Cancelled.";
         }
@@ -516,7 +541,8 @@ public class AppointmentInformationService {
                         .bciReasonDescription(bciReasonDescription)
                         .fbiReasonCode(appointment.getFbiReasonCode())
                         .fbiReasonDescription(fbiReasonDescription)
-                        .appointmentTimestamp(TimestampUtil.formatDateTime(appointment.getAppointmentTimestamp()))
+                        .appointmentTimestamp(TimestampUtil.formatDateTime(appointment.getAppointmentStatusCode() != 103 ?
+                                appointment.getAppointmentTimestamp() : appointment.getCancelledAppointmentTimestamp()))
                         .appointmentStatus(AppointmentStatus.getStatusName(appointmentStatusCode))
                         .statusTimestamp(TimestampUtil.formatTimestamp(statusTimestamp))
                         .statusHistory(statusHistory)
@@ -588,23 +614,23 @@ public class AppointmentInformationService {
                 .getActiveAppointmentTimesForDateRange(dateRange.getStartTimestamp(), dateRange.getEndTimestamp());
         if(UserService.isUserLoggedIn(request) || !appointmentInformationEntityList.isEmpty()) {
             // Remove booked appointments from the list
-            for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
-                String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
-                        .toString().substring(0, 16).replace("T", " ") + ":00";
-                do {
-                    if(listSize == 0) {
-                        break;
-                    }
-                    String strApptTs = timeList.get(i).getAppointmentTimestamp();
-                    if(strApptTs.equals(strTimestamp) || (!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
-                        timeList.remove(i);
-                        listSize--;
-                        i--;
-                        break;
-                    }
-                    i++;
-                } while(i < listSize);
-            }
+//            for(AppointmentInformationEntity appointmentInformationEntity : appointmentInformationEntityList) {
+//                String strTimestamp = appointmentInformationEntity.getAppointmentTimestamp()
+//                        .toString().substring(0, 16).replace("T", " ") + ":00";
+//                do {
+//                    if(listSize == 0) {
+//                        break;
+//                    }
+//                    String strApptTs = timeList.get(i).getAppointmentTimestamp();
+//                    if(strApptTs.equals(strTimestamp) || (!UserService.isUserLoggedIn(request) && TimestampUtil.isValidTimestamp(TimestampUtil.getOffsetDateTime(strApptTs)))) {
+//                        timeList.remove(i);
+//                        listSize--;
+//                        i--;
+//                        break;
+//                    }
+//                    i++;
+//                } while(i < listSize);
+//            }
         } else {
             // Remove appointments of holiday days from the list
             do {
