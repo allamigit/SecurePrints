@@ -41,6 +41,12 @@ select * from exp_info where exp_ref_no = 'ApptID-1291';
 
 --select nextval('appt_info_seq');
 
+--update appt_info set cncl_appt_ts = appt_ts, appt_ts = cncl_ts where appt_sts_code = 103;
+--select * from appt_info where appt_sts_code = 103;
+
+--update exp_info set exp_rcncl_dt = null where exp_ref_no like 'ApptID-%';
+--select * from exp_info where exp_ref_no like 'ApptID-%';
+
 --update exp_info set exp_rcncl_dt = (select pymt_rcncl_dt from appt_pymt where appt_id = '1277') where exp_ref_no = 'ApptID-1277';
 
 --update appt_pymt set bci_amt = -1 * bci_amt; --where appt_id like '%-R';
@@ -66,6 +72,8 @@ select * from exp_info where exp_ref_dt between '2025-08-01' and '2025-08-25';
 --update exp_info set exp_desc = '' where exp_desc is not null;
 --update appt_pymt set pymt_cmt = '' where pymt_cmt is null;
 --alter table appt_info add column usr_ip varchar(20) null;
+--alter table appt_info add column cncl_appt_ts timestamp null;
+--alter table appt_info add CONSTRAINT uk_appt_ts UNIQUE (appt_ts);
 
 --  Remote: 24.31.160.60, Local: 172.31.15.95 - ec2-user
 --  Remote: 174.207.97.255, Local: 172.31.15.95 - ec2-user

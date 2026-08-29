@@ -626,7 +626,6 @@ public class AppointmentInformationService {
                         timeList.remove(i);
                         listSize--;
                         i--;
-                        break;
                     }
                     i++;
                 } while(i < listSize);

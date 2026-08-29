@@ -13,14 +13,14 @@ import java.time.LocalDate;
 public enum ServiceType {
 
     // PROD Values
-    BCI("BCI Background Check", BigDecimal.valueOf(38), BigDecimal.valueOf(22), BigDecimal.valueOf(38), BigDecimal.valueOf(22), LocalDate.parse("2025-01-01")),
-    FBI("FBI Background Check", BigDecimal.valueOf(40), BigDecimal.valueOf(24), BigDecimal.valueOf(45), BigDecimal.valueOf(27), LocalDate.parse("2026-10-01")),
-    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68), BigDecimal.valueOf(46), BigDecimal.valueOf(72), BigDecimal.valueOf(49), LocalDate.parse("2026-10-01"));
+    BCI("BCI Background Check", BigDecimal.valueOf(38), BigDecimal.valueOf(22), BigDecimal.valueOf(40), BigDecimal.valueOf(22), LocalDate.parse("2026-10-01")),
+    FBI("FBI Background Check", BigDecimal.valueOf(40), BigDecimal.valueOf(24), BigDecimal.valueOf(44), BigDecimal.valueOf(27), LocalDate.parse("2026-10-01")),
+    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(68), BigDecimal.valueOf(46), BigDecimal.valueOf(75), BigDecimal.valueOf(49), LocalDate.parse("2026-10-01"));
 
     // DEV Values
-    /*BCI("BCI Background Check", BigDecimal.valueOf(32), BigDecimal.valueOf(12)),
-    FBI("FBI Background Check", BigDecimal.valueOf(34), BigDecimal.valueOf(14)),
-    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(48), BigDecimal.valueOf(28));*/
+    /*BCI("BCI Background Check", BigDecimal.valueOf(32), BigDecimal.valueOf(12), BigDecimal.valueOf(32), BigDecimal.valueOf(12), LocalDate.parse("2025-01-01")),
+    FBI("FBI Background Check", BigDecimal.valueOf(34), BigDecimal.valueOf(14), BigDecimal.valueOf(34), BigDecimal.valueOf(14), LocalDate.parse("2025-01-01")),
+    BCI_FBI("BCI and FBI Background Check", BigDecimal.valueOf(48), BigDecimal.valueOf(28)BigDecimal.valueOf(48), BigDecimal.valueOf(28), LocalDate.parse("2025-01-01"));*/
 
     private final String serviceName;
     private final BigDecimal serviceFee;
