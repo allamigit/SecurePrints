@@ -63,13 +63,15 @@ CREATE TABLE appt_info (
 	fbi_rsn_code varchar(20) NULL,
 	fbi_rsn_desc varchar(150) NULL,
 	appt_ts timestamp NOT NULL DEFAULT now(),
+	cncl_appt_ts timestamp NULL,
 	appt_sts_code int4 NOT NULL,
 	ordr_ts timestamp NOT NULL DEFAULT now(),
 	rsch_ts timestamp NULL,
 	cncl_ts timestamp NULL,
 	cmpl_ts timestamp NULL,
 	usr_ip varchar(20) NULL,
-	CONSTRAINT pk_appt_id PRIMARY KEY (appt_id)
+	CONSTRAINT pk_appt_id PRIMARY KEY (appt_id),
+	CONSTRAINT uk_appt_ts UNIQUE (appt_ts)
 );
 
 
@@ -150,5 +152,5 @@ CREATE INDEX idx_exp_ref_no ON exp_info(exp_ref_no);
 insert into com_info values (default, 'Secure Prints LLC', '1105 Schrock Rd, STE 130C', 'Columbus, Ohio 43229', '(713) 815-8120', 'secureprintscan@gmail.com');
 
 insert into usr_info values ('admin', '$2a$10$zNbq8q1.5SbOyyTyJ/tlb..MVtOp4K5a0GYzN6nDiUqHv5CmkwFz.', 'Mawj Al-Lami', true, true);
-insert into usr_info values ('admin2', '$2a$10$4GJY94/pfcxknHgFJfGUFet54ISsMMFaoTJkjyVapvDSmpq3xWvxe', 'Mohammad Al-Lami', true, true);
+insert into usr_info values ('admin2', '$2a$10$Y8nasDvAUL7PCvLd62LOsOIc0uoyK1hQqRlfZZ9xPC0JOgJpgD.yi', 'Mohammad Al-Lami', true, true);
 
